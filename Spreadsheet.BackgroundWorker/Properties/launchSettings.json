@@ -1,0 +1,10 @@
+﻿{
+  "profiles": {
+    "Spreadsheet.Workers.AccountTransfers": {
+      "commandName": "Project",
+      "environmentVariables": {
+        "DOTNET_ENVIRONMENT": "Development"
+      }
+    }
+  }
+}

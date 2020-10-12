@@ -1,0 +1,17 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>netstandard2.1</TargetFramework>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\Spreadsheet.Dto\Spreadsheet.Dto.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <PackageReference Include="Hub.Storage.Entities" Version="1.0.0" />
+      <PackageReference Include="Hub.Storage.Providers" Version="1.0.0" />
+      <PackageReference Include="Microsoft.Azure.Storage.File" Version="11.2.2" />
+    </ItemGroup>
+
+</Project>

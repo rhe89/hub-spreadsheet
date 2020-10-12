@@ -1,0 +1,12 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>netstandard2.1</TargetFramework>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\Spreadsheet.Integration\Spreadsheet.Integration.csproj" />
+      <ProjectReference Include="..\Spreadsheet.Providers\Spreadsheet.Providers.csproj" />
+    </ItemGroup>
+
+</Project>
