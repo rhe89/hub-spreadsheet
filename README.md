@@ -1,1 +1,1 @@
-# hub-spreadsheet
+[![Build Status](https://roarsmagicstuff.visualstudio.com/Hub/_apis/build/status/rhe89.hub-spreadsheet?branchName=main)](https://roarsmagicstuff.visualstudio.com/Hub/_build/latest?definitionId=12&branchName=main)
