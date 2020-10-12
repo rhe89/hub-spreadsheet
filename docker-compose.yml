@@ -10,7 +10,7 @@ services:
     spreadsheet-workers:
         container_name: "spreadsheet_worker"
         build:
-            context: ./src/Spreadsheet
+            context: ./hub-spreadsheet
             dockerfile: Spreadsheet.BackgroundWorker/Dockerfile
         image: "spreadsheet/worker"
         environment:
@@ -26,7 +26,7 @@ services:
     spreadsheet-api:
         container_name: "spreadsheet_api"
         build: 
-            context: ./src/Spreadsheet
+            context: ./hub-spreadsheet
             dockerfile: Spreadsheet.Web.Api/Dockerfile
         image: "spreadsheet/api"
         hostname: "spreadsheet-api"
