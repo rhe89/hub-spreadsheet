@@ -44,13 +44,13 @@ namespace Spreadsheet.BackgroundTasks
 
             if (coinbaseAccounts == null)
                 return null;
-            
-            var totalAvailable = coinbaseAccounts.Sum(x => x.Balance);
+
+            var summaryAccount = coinbaseAccounts.FirstOrDefault(x => x.Name == "Total");
 
             return new AccountDto
             {
                 Name = "Kryptovaluta",
-                Balance = totalAvailable
+                Balance = summaryAccount?.Balance ?? 0
             };
         }
 
