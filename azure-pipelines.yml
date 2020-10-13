@@ -5,32 +5,32 @@
 # https://docs.microsoft.com/azure/devops/pipelines/languages/dotnet-core
 
 trigger:
-  - main
-  
-  pool:
-    vmImage: 'ubuntu-latest'
-  
-  variables:
-    buildConfiguration: 'Release'
-  
-  steps:
-  - task: Bash@3
-    displayName: "Create docker files"
-    inputs:
-      filePath: 'scripts/create_docker_files.sh'
-  
-  - task: DockerCompose@0
-    displayName: "docker-compose build"
-    inputs:
-      containerregistrytype: 'Container Registry'
-      dockerRegistryEndpoint: 'docker-hub'
-      dockerComposeFile: '**/docker-compose.yml'
-      action: 'Build services'
-  
-  - task: DockerCompose@0
-    displayName: "docker-compose push"
-    inputs:
-      containerregistrytype: 'Container Registry'
-      dockerRegistryEndpoint: 'docker-hub'
-      dockerComposeFile: '**/docker-compose.yml'
-      action: 'Push services'
+- main
+
+pool:
+  vmImage: 'ubuntu-latest'
+
+variables:
+  buildConfiguration: 'Release'
+
+steps:
+- task: Bash@3
+  displayName: "Create docker files"
+  inputs:
+    filePath: 'scripts/create_docker_files.sh'
+
+- task: DockerCompose@0
+  displayName: "docker-compose build"
+  inputs:
+    containerregistrytype: 'Container Registry'
+    dockerRegistryEndpoint: 'docker-hub'
+    dockerComposeFile: '**/docker-compose.yml'
+    action: 'Build services'
+
+- task: DockerCompose@0
+  displayName: "docker-compose push"
+  inputs:
+    containerregistrytype: 'Container Registry'
+    dockerRegistryEndpoint: 'docker-hub'
+    dockerComposeFile: '**/docker-compose.yml'
+    action: 'Push services'
