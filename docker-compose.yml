@@ -1,44 +1,16 @@
 version: '3.7'
 
-networks:
-    default: 
-        external:
-            name: hub-network
-            name: hub-db-network
-
 services:
     spreadsheet-workers:
         container_name: "spreadsheet_worker"
         build:
-            context: ./hub-spreadsheet
+            context: ./
             dockerfile: Spreadsheet.BackgroundWorker/Dockerfile
-        image: "spreadsheet/worker"
-        environment:
-            - ASPNETCORE_ENVIRONMENT=${ASPNETCORE_ENVIRONMENT}
-            - SQL_DB_SPREADSHEET=${SQL_DB_SPREADSHEET}
-            - COINBASE_API_HOST=${COINBASE_API_HOST}
-            - SBANKEN_API_HOST=${SBANKEN_API_HOST}
-        restart: on-failure
-        networks:
-            - hub-network
-            - hub-db-network
-            
+        image: "rhe89/hub-spreadsheet-worker"
+        
     spreadsheet-api:
         container_name: "spreadsheet_api"
         build: 
-            context: ./hub-spreadsheet
+            context: ./
             dockerfile: Spreadsheet.Web.Api/Dockerfile
-        image: "spreadsheet/api"
-        hostname: "spreadsheet-api"
-        ports:
-            - "${SPREADSHEET_API_PORT}:80"
-        environment: 
-            - ASPNETCORE_ENVIRONMENT=${ASPNETCORE_ENVIRONMENT}
-            - ASPNETCORE_URLS=http://+
-            - SQL_DB_SPREADSHEET=${SQL_DB_SPREADSHEET}
-            - COINBASE_API_HOST=${COINBASE_API_HOST}
-            - SBANKEN_API_HOST=${SBANKEN_API_HOST}
-        restart: on-failure
-        networks:
-            - hub-network
-            - hub-db-network
+        image: "rhe89/hub-spreadsheet-api"
