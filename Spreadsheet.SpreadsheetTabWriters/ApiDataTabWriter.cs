@@ -13,10 +13,10 @@ namespace Spreadsheet.SpreadsheetTabWriters
 {
     public class ApiDataTabWriter : TabWriterBase, IApiDataTabWriter
     {
-        private readonly IApiDataTabReader _apiDataTabReader;
+        private readonly ITabReader<ApiDataTabDto> _apiDataTabReader;
         private readonly ILogger<ApiDataTabWriter> _logger;
         
-        public ApiDataTabWriter(IApiDataTabReader apiDataTabReader,
+        public ApiDataTabWriter(ITabReader<ApiDataTabDto> apiDataTabReader,
                                 IGoogleSpreadsheetConnector googleSpreadsheetConnector,
                                 ILogger<ApiDataTabWriter> logger) : base(googleSpreadsheetConnector)
         {
@@ -52,7 +52,7 @@ namespace Spreadsheet.SpreadsheetTabWriters
         }
 
         private void AddNewPeriod(BudgetSpreadsheetTabDto budgetSpreadsheetTabDto,
-                                  IList<AccountDto> accounts)
+                                  IEnumerable<AccountDto> accounts)
         {
             var newPeriod = BudgetSpreadsheetTabDto.GetCurrentPeriod();
 
@@ -60,21 +60,14 @@ namespace Spreadsheet.SpreadsheetTabWriters
 
             foreach (var account in accounts)
             {
-                var accountIdx = budgetSpreadsheetTabDto.Rows.FirstOrDefault(x => x.RowKey == account.Name)?.RowIndex;
+                var shouldUpdateAccount = ShouldUpdateAccount(budgetSpreadsheetTabDto, account, out var accountIdx);
 
-                if (accountIdx == null)
+                if (!shouldUpdateAccount)
                 {
-                    _logger.LogWarning($"No row found in tab {budgetSpreadsheetTabDto.Name} for account {account.Name}. Skipping");
                     continue;
                 }
 
-                if (account.Balance == 0)
-                {
-                    _logger.LogWarning($"Available amount in {account.Name} was 0. Skipping.");
-                    continue;
-                }
-
-                budgetSpreadsheetTabDto.Rows[accountIdx.Value].Cells.Add(account.Balance.ToCommaString());
+                budgetSpreadsheetTabDto.Rows[accountIdx].Cells.Add(account.Balance.ToCommaString());
             }
 
             var lastUpdated = DateTime.Now.FormattedDateFull();
@@ -83,28 +76,21 @@ namespace Spreadsheet.SpreadsheetTabWriters
         }
 
         private void ReplaceCurrentPeriod(BudgetSpreadsheetTabDto budgetSpreadsheetTabDto,
-                                          IList<AccountDto> accounts,
+                                          IEnumerable<AccountDto> accounts,
                                           int currentPeriodIdx)
         {
             foreach (var account in accounts)
             {
-                var accountIdx = budgetSpreadsheetTabDto.Rows.FirstOrDefault(x => x.RowKey == account.Name)?.RowIndex;
+                var shouldUpdateAccount = ShouldUpdateAccount(budgetSpreadsheetTabDto, account, out var accountIdx);
 
-                if (accountIdx == null)
+                if (!shouldUpdateAccount)
                 {
-                    _logger.LogWarning($"No row found in tab {budgetSpreadsheetTabDto.Name} for account {account.Name}. Skipping");
                     continue;
                 }
 
-                if (account.Balance == 0)
-                {
-                    _logger.LogWarning($"Available amount in {account.Name} was 0. Skipping.");
-                    continue;
-                }
+                ExpandRowAndCellsIfNecessary(budgetSpreadsheetTabDto, accountIdx, currentPeriodIdx);
 
-                ExpandRowAndCellsIfNecessary(budgetSpreadsheetTabDto, accountIdx.Value, currentPeriodIdx);
-
-                budgetSpreadsheetTabDto.Rows[accountIdx.Value].Cells[currentPeriodIdx] = account.Balance.ToCommaString();
+                budgetSpreadsheetTabDto.Rows[accountIdx].Cells[currentPeriodIdx] = account.Balance.ToCommaString();
             }
 
             var lastUpdated = DateTime.Now.FormattedDateFull();
@@ -119,6 +105,29 @@ namespace Spreadsheet.SpreadsheetTabWriters
             {
                 lastRow.Cells[currentPeriodIdx] = lastUpdated;
             }
+        }
+
+        private bool ShouldUpdateAccount(TabDto tabDto, AccountDto account, out int accountIdx)
+        {
+            var row = tabDto.Rows.FirstOrDefault(x => x.RowKey == account.Name);
+
+            if (row == null)
+            {
+                _logger.LogWarning($"No row found in tab {tabDto.Name} for account {account.Name}. Skipping");
+                accountIdx = -1;
+                return false;
+            }
+
+            if (account.Balance == 0)
+            {
+                _logger.LogWarning($"Available amount in {account.Name} was 0. Skipping.");
+                accountIdx = -1;
+                return false;
+            }
+
+            accountIdx = row.RowIndex;
+            
+            return true;
         }
 
         private static void ExpandRowAndCellsIfNecessary(TabDto tabDto, int currentRowCount, int currentCellsInRowCount)

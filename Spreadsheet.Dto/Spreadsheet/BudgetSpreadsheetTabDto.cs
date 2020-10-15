@@ -3,9 +3,9 @@ using System.Linq;
 
 namespace Spreadsheet.Dto.Spreadsheet
 {
-    public class BudgetSpreadsheetTabDto : TabDto
+    public abstract class BudgetSpreadsheetTabDto : TabDto
     {
-        public BudgetSpreadsheetTabDto()
+        protected BudgetSpreadsheetTabDto()
         {
             PopulateAllRows = true;
         }

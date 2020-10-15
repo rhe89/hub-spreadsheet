@@ -6,8 +6,10 @@ using Microsoft.Extensions.DependencyInjection;
 using Spreadsheet.BackgroundTasks;
 using Spreadsheet.Data;
 using Spreadsheet.Data.Storage;
+using Spreadsheet.Dto.Spreadsheet;
 using Spreadsheet.Integration;
 using Spreadsheet.Providers;
+using Spreadsheet.Shared.Constants;
 using Spreadsheet.SpreadsheetTabReaders;
 using Spreadsheet.SpreadsheetTabWriters;
 
@@ -26,8 +28,17 @@ namespace Spreadsheet.Web.Api
             serviceCollection.AddSingleton<UpdateAccountTransfersTask>();
             serviceCollection.AddSingleton<UpdateSbankenBalancesTask>();
             serviceCollection.AddSingleton<UpdateCoinbaseBalancesTask>();
-            serviceCollection.AddSingleton<IResultOgSavingsTabReader, ResultOgSavingsTabReader>();
-            serviceCollection.AddSingleton<IApiDataTabReader, ApiDataTabReader>();
+            
+            serviceCollection.AddSingleton<ITabReader<ResultsAndSavingsTabDto>>(x => 
+                new TabReader<ResultsAndSavingsTabDto>(x.GetRequiredService<ISpreadsheetProvider>(),
+                    x.GetRequiredService<IGoogleSpreadsheetConnector>(), 
+                    SpreadsheetTabMetadataConstants.ResultAndSavingTabName));
+            
+            serviceCollection.AddSingleton<ITabReader<ApiDataTabDto>>(x => 
+                new TabReader<ApiDataTabDto>(x.GetRequiredService<ISpreadsheetProvider>(),
+                    x.GetRequiredService<IGoogleSpreadsheetConnector>(), 
+                    SpreadsheetTabMetadataConstants.ApiDataTabName));
+            
             serviceCollection.AddSingleton<IApiDataTabWriter, ApiDataTabWriter>();
             serviceCollection.AddSingleton<IAzureStorage, AzureStorage>();
             serviceCollection.AddSingleton<ISpreadsheetProvider, SpreadsheetProvider>();

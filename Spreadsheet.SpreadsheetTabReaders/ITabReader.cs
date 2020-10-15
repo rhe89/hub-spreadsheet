@@ -3,8 +3,8 @@ using Spreadsheet.Dto.Spreadsheet;
 
 namespace Spreadsheet.SpreadsheetTabReaders
 {
-    public interface IApiDataTabReader
+    public interface ITabReader<TTabDto> where TTabDto : TabDto, new()
     {
-        Task<BudgetSpreadsheetTabDto> GetTab();
+        Task<TTabDto> GetTab();
     }
 }

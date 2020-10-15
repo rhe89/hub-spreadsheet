@@ -8,19 +8,38 @@ using Spreadsheet.Shared.Exceptions;
 
 namespace Spreadsheet.SpreadsheetTabReaders
 {
-    public abstract class TabReaderBase
+    public class TabReader<TTabDto> : ITabReader<TTabDto> where TTabDto : TabDto, new()
     {
         private readonly IGoogleSpreadsheetConnector _googleSpreadsheetConnector;
         private readonly ISpreadsheetProvider _spreadsheetProvider;
+        private readonly string _tabName;
 
-        protected TabReaderBase(ISpreadsheetProvider spreadsheetProvider, 
-            IGoogleSpreadsheetConnector googleSpreadsheetConnector)
+        public TabReader(ISpreadsheetProvider spreadsheetProvider, 
+            IGoogleSpreadsheetConnector googleSpreadsheetConnector,
+            string tabName)
         {
             _googleSpreadsheetConnector = googleSpreadsheetConnector;
+            _tabName = tabName;
             _spreadsheetProvider = spreadsheetProvider;
         }
+        
+        public async Task<TTabDto> GetTab()    
+        {
+            var apiDataTabDto = await SetTabDtoFromCurrentBudgetSpreadsheet();
+            
+            await PopulateRowsInTabDto(apiDataTabDto);
 
-        protected async Task<SpreadsheetMetadataDto> GetCurrentBudgetSpreadsheetMetadataDto()
+            return apiDataTabDto;
+        }
+
+        private async Task<TTabDto> SetTabDtoFromCurrentBudgetSpreadsheet()
+        {
+            var spreadsheetMetadataDto = await GetCurrentBudgetSpreadsheetMetadataDto();
+
+            return SetTabDtoFromSpreadsheetMetadata(spreadsheetMetadataDto, _tabName);
+        }
+
+        private async Task<SpreadsheetMetadataDto> GetCurrentBudgetSpreadsheetMetadataDto()
         {
             var spreadsheetMetadataDto = await _spreadsheetProvider.CurrentBudgetSpreadsheet();
             
@@ -31,8 +50,8 @@ namespace Spreadsheet.SpreadsheetTabReaders
 
             return spreadsheetMetadataDto;
         }
-        
-        protected static TTabDto SetTabDtoFromSpreadsheetMetadata<TTabDto>(SpreadsheetMetadataDto spreadSheet, string tabName) where TTabDto : TabDto, new()
+
+        private static TTabDto SetTabDtoFromSpreadsheetMetadata(SpreadsheetMetadataDto spreadSheet, string tabName)
         {
             var spreadsheetTabMetadata =
                 spreadSheet.SpreadsheetTabMetadataDtos.FirstOrDefault(x =>
@@ -54,8 +73,8 @@ namespace Spreadsheet.SpreadsheetTabReaders
                 SpreadsheetRowMetadataDtos = spreadsheetTabMetadata.SpreadsheetRowMetadataDtos
             };
         }
-        
-        protected async Task PopulateRowsInTabDto(TabDto tabDto)
+
+        private async Task PopulateRowsInTabDto(TabDto tabDto)
         {
             await _googleSpreadsheetConnector.LoadSpreadsheetTab(tabDto);
         }
