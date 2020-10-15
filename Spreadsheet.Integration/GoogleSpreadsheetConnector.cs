@@ -11,6 +11,7 @@ using Microsoft.Extensions.Logging;
 using Spreadsheet.Data.Storage;
 using Spreadsheet.Dto.Spreadsheet;
 using Spreadsheet.Shared.Constants;
+using Spreadsheet.Shared.Exceptions;
 
 namespace Spreadsheet.Integration
 {
@@ -76,7 +77,7 @@ namespace Spreadsheet.Integration
             }
             catch (Exception e)
             {
-                throw new Exception($"Error getting tab {tabDto.Name} in sheet with id {tabDto.SpreadsheetId} from Google API", e);
+                throw new SpreadsheetConnectorException($"Error getting tab {tabDto.Name} in sheet with id {tabDto.SpreadsheetId} from Google API", e);
             }
         }
         
@@ -110,7 +111,7 @@ namespace Spreadsheet.Integration
 
             try
             {
-                var sheetsService = new SheetsService(new BaseClientService.Initializer()
+                var sheetsService = new SheetsService(new BaseClientService.Initializer
                 {
                     HttpClientInitializer = serverCredentials,
                     ApplicationName = _applicationName
@@ -148,16 +149,6 @@ namespace Spreadsheet.Integration
             catch (Exception e)
             {
                 throw new SpreadsheetConnectorException("Error when authenticating ServiceAccountCredentials: ", e);
-            }
-        }
-
-        private class SpreadsheetConnectorException : Exception
-        {
-            public SpreadsheetConnectorException(string message) : base(message)
-            {
-            }
-            public SpreadsheetConnectorException(string message, Exception exception) : base(message, exception)
-            {
             }
         }
     }

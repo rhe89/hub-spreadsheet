@@ -124,7 +124,9 @@ namespace Spreadsheet.SpreadsheetTabWriters
         private static void ExpandRowAndCellsIfNecessary(TabDto tabDto, int currentRowCount, int currentCellsInRowCount)
         {
             if (tabDto.Rows.Count <= currentRowCount)
+            {
                 tabDto.AddRowToExistingSheet(new RowDto(2));
+            }
 
             while (tabDto.Rows[currentRowCount].Cells.Count <= currentCellsInRowCount)
             {

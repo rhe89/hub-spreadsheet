@@ -29,7 +29,9 @@ namespace Spreadsheet.Dto.Spreadsheet
                 if (PopulateAllRows || 
                     i == SpreadsheetRowMetadataConstants.PeriodRowIndex || 
                     SpreadsheetRowMetadataDtos.Any(x => x.RowKey == rowKey))
+                {
                     Rows.Add(new RowDto(i, rowKey, cellsInRow));
+                }
             }
         }
 

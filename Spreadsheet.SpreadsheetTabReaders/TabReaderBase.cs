@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Spreadsheet.Dto.Spreadsheet;
 using Spreadsheet.Integration;
 using Spreadsheet.Providers;
+using Spreadsheet.Shared.Exceptions;
 
 namespace Spreadsheet.SpreadsheetTabReaders
 {
@@ -25,7 +26,7 @@ namespace Spreadsheet.SpreadsheetTabReaders
             
             if (spreadsheetMetadataDto == null)
             {
-                throw new NullReferenceException("No metadata exists for budget spreadsheet for current date");
+                throw new SpreadsheetNotFoundException("No metadata exists for budget spreadsheet for current date");
             }
 
             return spreadsheetMetadataDto;

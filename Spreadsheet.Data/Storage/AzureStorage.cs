@@ -33,22 +33,14 @@ namespace Spreadsheet.Data.Storage
 
         public async Task<byte[]> GetGoogleCertificate()
         {
-            try
-            {
-                var certificateDir = GetCertificateDirectory();
-                
-                var file = certificateDir.GetFileReference(_settingProvider.GetSetting<string>(SettingConstants.GoogleCertificate));
-                var byteArr = new byte[file.StreamMinimumReadSizeInBytes];
+            var certificateDir = GetCertificateDirectory();
+            
+            var file = certificateDir.GetFileReference(_settingProvider.GetSetting<string>(SettingConstants.GoogleCertificate));
+            var byteArr = new byte[file.StreamMinimumReadSizeInBytes];
 
-                await file.DownloadToByteArrayAsync(byteArr, 0);
+            await file.DownloadToByteArrayAsync(byteArr, 0);
 
-                return byteArr;
-            }
-            catch (Exception e)
-            {
-                throw new Exception($"Error getting file {SettingConstants.GoogleCertificate} from Azure File Storage", e);
-            }
-
+            return byteArr;
         }
     }
 }
