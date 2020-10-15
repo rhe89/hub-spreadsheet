@@ -33,7 +33,9 @@ namespace Spreadsheet.Dto.Spreadsheet
             foreach (var col in periodRow.Cells)
             {
                 if (col.ToString() == period)
+                {
                     return idx;
+                }
 
                 idx++;
             }
@@ -41,7 +43,7 @@ namespace Spreadsheet.Dto.Spreadsheet
             return -1;
         }
 
-        public string GetCurrentPeriod()
+        public static string GetCurrentPeriod()
         {
             return $"{DateTime.Now.Month}/{DateTime.Now.Year}";
         }

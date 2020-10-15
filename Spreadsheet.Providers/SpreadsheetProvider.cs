@@ -36,7 +36,10 @@ namespace Spreadsheet.Providers
 
         private static SpreadsheetMetadataDto GetSpreadsheetMetadataDto(SpreadsheetMetadata spreadsheetMetadata)
         {
-            if (spreadsheetMetadata == null) return null;
+            if (spreadsheetMetadata == null)
+            {
+                return null;
+            }
             
             return new SpreadsheetMetadataDto
             {

@@ -2,6 +2,6 @@ namespace Spreadsheet.Shared.Constants
 {
     public static class SpreadsheetMetadataConstants
     {
-        public const string BudgetSpreadsheetName = "Budget";
+        public static readonly string BudgetSpreadsheetName = "Budget";
     }
 }

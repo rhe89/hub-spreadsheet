@@ -34,7 +34,9 @@ namespace Spreadsheet.BackgroundTasks
             var sbankenAccounts = await GetSbankenAccounts();
 
             if (sbankenAccounts == null)
+            {
                 return;
+            }
 
             await _apiDataTabWriter.UpdateTab(sbankenAccounts);
         }
@@ -46,7 +48,9 @@ namespace Spreadsheet.BackgroundTasks
             var response = await _sbankenApiConnector.GetAccounts();
 
             if (!response.Success)
+            {
                 return null;
+            }
 
             var sbankenAccounts = response.Data;
 

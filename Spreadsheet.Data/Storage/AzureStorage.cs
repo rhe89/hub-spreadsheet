@@ -18,24 +18,17 @@ namespace Spreadsheet.Data.Storage
 
         public CloudFileDirectory GetCertificateDirectory()
         {
-            try
-            {
-                var storageAccount = CloudStorageAccount.Parse(_settingProvider.GetSetting<string>(SettingConstants.StorageAccount));
+            var storageAccount = CloudStorageAccount.Parse(_settingProvider.GetSetting<string>(SettingConstants.StorageAccount));
 
-                var fileClient = storageAccount.CreateCloudFileClient();
+            var fileClient = storageAccount.CreateCloudFileClient();
 
-                var share = fileClient.GetShareReference(_settingProvider.GetSetting<string>(SettingConstants.StorageAccountFileShare));
+            var share = fileClient.GetShareReference(_settingProvider.GetSetting<string>(SettingConstants.StorageAccountFileShare));
 
-                var rootDir = share.GetRootDirectoryReference();
+            var rootDir = share.GetRootDirectoryReference();
 
-                var certificateDir = rootDir.GetDirectoryReference(_settingProvider.GetSetting<string>(SettingConstants.StorageAccountFileShareCertificateFolder));
+            var certificateDir = rootDir.GetDirectoryReference(_settingProvider.GetSetting<string>(SettingConstants.StorageAccountFileShareCertificateFolder));
 
-                return certificateDir;
-            }
-            catch (Exception e)
-            {
-                throw new Exception("Error getting storage account or directory from Azure Storage", e);
-            }
+            return certificateDir;
         }
 
         public async Task<byte[]> GetGoogleCertificate()

@@ -40,10 +40,12 @@ namespace Spreadsheet.Web.Api
 
         protected override void RegisterSharedDomainDependencies(IServiceCollection serviceCollection, IConfiguration configuration)
         {
+            // Not needed since all dependencies are registered elsewhere
         }
         
         protected override void RegisterDomainDependenciesForApi(IServiceCollection serviceCollection, IConfiguration configuration)
         {
+            // Not needed since all dependencies are registered elsewhere
         }
     }
 }

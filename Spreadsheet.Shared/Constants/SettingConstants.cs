@@ -2,15 +2,15 @@ namespace Spreadsheet.Shared.Constants
 {
     public static class SettingConstants
     {
-        public const string StorageAccount = "StorageAccount";
-        public const string StorageAccountFileShare = "StorageAccountFileShare";
-        public const string StorageAccountFileShareCertificateFolder = "StorageAccountFileShareCertificateFolder";
+        public static readonly string StorageAccount = "StorageAccount";
+        public static readonly string StorageAccountFileShare = "StorageAccountFileShare";
+        public static readonly string StorageAccountFileShareCertificateFolder = "StorageAccountFileShareCertificateFolder";
 
-        public const string GoogleCertificate = "GoogleCertificate";
-        public const string GooglePrivateKey = "GooglePrivateKey";
-        public const string GoogleServiceAccountEmail = "GoogleServiceAccountEmail";
+        public static readonly string GoogleCertificate = "GoogleCertificate";
+        public static readonly string GooglePrivateKey = "GooglePrivateKey";
+        public static readonly string GoogleServiceAccountEmail = "GoogleServiceAccountEmail";
 
-        public const string SbankenApiHost = "SbankenApiHost";
-        public const string CoinbaseApiHost = "CoinbaseApiHost";
+        public static readonly string SbankenApiHost = "SbankenApiHost";
+        public static readonly string CoinbaseApiHost = "CoinbaseApiHost";
     }
 }

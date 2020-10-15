@@ -10,15 +10,13 @@ namespace Spreadsheet.Dto.Spreadsheet
         public string Name { get; set; }
         public string FirstColumn { get; set; }
         public string LastColumn { get; set; }
-        public bool PopulateAllRows { get; set; } 
+        protected bool PopulateAllRows { get; set; } 
         public IList<RowDto> Rows { get; }
-        public IList<RowDto> NewRows { get; }
         public IList<SpreadsheetRowMetadataDto> SpreadsheetRowMetadataDtos { get; set; }
 
-        public TabDto()
+        protected TabDto()
         {
             Rows = new List<RowDto>();
-            NewRows = new List<RowDto>();
         }
 
         public void PopulateRows(IList<IList<object>> sheet)
@@ -35,19 +33,9 @@ namespace Spreadsheet.Dto.Spreadsheet
             }
         }
 
-        public virtual void AddRow(RowDto row)
-        {
-            NewRows.Add(row);
-        }
-
-        public virtual void AddRowToExistingSheet(RowDto row)
+        public void AddRowToExistingSheet(RowDto row)
         {
             Rows.Add(row);
-        }
-
-        public int GetRowCount()
-        {
-            return Rows.Count;
         }
     }
 }

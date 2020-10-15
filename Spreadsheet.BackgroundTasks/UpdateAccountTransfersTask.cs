@@ -9,7 +9,7 @@ namespace Spreadsheet.BackgroundTasks
 {
     public class UpdateAccountTransfersTask : BackgroundTask
     {
-        private IResultOgSavingsTabReader _resultOgSavingsTabReader;
+        private readonly IResultOgSavingsTabReader _resultOgSavingsTabReader;
 
         public UpdateAccountTransfersTask(IResultOgSavingsTabReader resultOgSavingsTabReader, 
             IBackgroundTaskConfigurationProvider backgroundTaskConfigurationProvider,

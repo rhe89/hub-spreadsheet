@@ -33,7 +33,9 @@ namespace Spreadsheet.BackgroundTasks
             var account = await GetAccount();
 
             if (account == null)
+            {
                 return;
+            }
             
             await _apiDataTabWriter.UpdateTab(account);
         }
@@ -43,7 +45,9 @@ namespace Spreadsheet.BackgroundTasks
             var coinbaseAccounts = await GetCoinbaseAccounts();
 
             if (coinbaseAccounts == null)
+            {
                 return null;
+            }
 
             var summaryAccount = coinbaseAccounts.FirstOrDefault(x => x.Name == "Total");
 
@@ -61,7 +65,9 @@ namespace Spreadsheet.BackgroundTasks
             var response = await _coinbaseApiConnector.GetAccounts();
 
             if (!response.Success)
+            {
                 return null;
+            }
 
             var coinbaseAccounts = response.Data;
             

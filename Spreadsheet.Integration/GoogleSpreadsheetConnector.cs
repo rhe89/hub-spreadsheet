@@ -58,7 +58,7 @@ namespace Spreadsheet.Integration
             }
             catch (Exception e)
             {
-                throw new Exception($"Error updating tab {tabDto.Name} in spreadsheet with id {tabDto.SpreadsheetId} from Google API", e);
+                throw new SpreadsheetConnectorException($"Error updating tab {tabDto.Name} in spreadsheet with id {tabDto.SpreadsheetId} from Google API", e);
             }
         }
         
@@ -88,13 +88,13 @@ namespace Spreadsheet.Integration
 
             return sheetsService.Spreadsheets.Values.Get(tabDto.SpreadsheetId, range);
         }
-        
-        public static string GetRangeFormatted(string tabName, string firstColumn, string lastColumn)
+
+        private static string GetRangeFormatted(string tabName, string firstColumn, string lastColumn)
         {
             return $"{tabName}!{firstColumn}:{lastColumn}";
         }
 
-        public static string GetRangeFormatted(string tabName, string firstColumn, int firstColumnRow, string lastColumn, int lastColumnRow)
+        private static string GetRangeFormatted(string tabName, string firstColumn, int firstColumnRow, string lastColumn, int lastColumnRow)
         {
             return $"{tabName}!{firstColumn}{firstColumnRow}:{lastColumn}{lastColumnRow}";
         }
@@ -104,7 +104,9 @@ namespace Spreadsheet.Integration
             var serverCredentials = await GetServiceAccountCredential();
 
             if (serverCredentials == null)
-                throw new Exception("Getting Google service account credentials failed");
+            {
+                throw new SpreadsheetConnectorException("Getting Google service account credentials failed");
+            }
 
             try
             {
@@ -117,7 +119,7 @@ namespace Spreadsheet.Integration
             }
             catch (Exception e)
             {
-                throw new Exception("Error when initializing SheetsService", e);
+                throw new SpreadsheetConnectorException("Error when initializing SheetsService", e);
             }
         }
         
@@ -145,7 +147,17 @@ namespace Spreadsheet.Integration
             }
             catch (Exception e)
             {
-                throw new Exception("Error when authenticating ServiceAccountCredentials: ", e);
+                throw new SpreadsheetConnectorException("Error when authenticating ServiceAccountCredentials: ", e);
+            }
+        }
+
+        private class SpreadsheetConnectorException : Exception
+        {
+            public SpreadsheetConnectorException(string message) : base(message)
+            {
+            }
+            public SpreadsheetConnectorException(string message, Exception exception) : base(message, exception)
+            {
             }
         }
     }

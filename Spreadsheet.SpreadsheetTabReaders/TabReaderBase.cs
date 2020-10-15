@@ -23,8 +23,10 @@ namespace Spreadsheet.SpreadsheetTabReaders
         {
             var spreadsheetMetadataDto = await _spreadsheetProvider.CurrentBudgetSpreadsheet();
             
-            if (spreadsheetMetadataDto == null) 
-                throw new Exception("No metadata exists for budget spreadsheet for current date");
+            if (spreadsheetMetadataDto == null)
+            {
+                throw new NullReferenceException("No metadata exists for budget spreadsheet for current date");
+            }
 
             return spreadsheetMetadataDto;
         }
@@ -36,10 +38,13 @@ namespace Spreadsheet.SpreadsheetTabReaders
                     x.Name == tabName);
 
             if (spreadsheetTabMetadata == null)
-                throw new Exception(
-                    $"No metadata exists for {tabName} in SpreadsheetMetadata with id {spreadSheet.Id}");
+            {
+                throw new ArgumentException(
+                    $"No metadata exists for {tabName} in SpreadsheetMetadata with id {spreadSheet.Id}",
+                    nameof(tabName));
+            }
 
-            return new TTabDto()
+            return new TTabDto
             {
                 Name = spreadsheetTabMetadata.Name,
                 SpreadsheetId = spreadSheet.SpreadsheetId,

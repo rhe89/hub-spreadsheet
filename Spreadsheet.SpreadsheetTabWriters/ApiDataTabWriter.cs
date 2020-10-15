@@ -36,9 +36,13 @@ namespace Spreadsheet.SpreadsheetTabWriters
             var currentPeriodIdx = apiDataTabDto.GetColIndexOfCurrentPeriodInSheet();
 
             if (currentPeriodIdx == -1)
+            {
                 AddNewPeriod(apiDataTabDto, accounts);
+            }
             else
+            {
                 ReplaceCurrentPeriod(apiDataTabDto, accounts, currentPeriodIdx);
+            }
 
             _logger.LogInformation($"Updating {apiDataTabDto.Name}");
 
@@ -50,7 +54,7 @@ namespace Spreadsheet.SpreadsheetTabWriters
         private void AddNewPeriod(BudgetSpreadsheetTabDto budgetSpreadsheetTabDto,
                                   IList<AccountDto> accounts)
         {
-            var newPeriod = budgetSpreadsheetTabDto.GetCurrentPeriod();
+            var newPeriod = BudgetSpreadsheetTabDto.GetCurrentPeriod();
 
             budgetSpreadsheetTabDto.Rows.First().Cells.Add(newPeriod);
 
@@ -108,9 +112,13 @@ namespace Spreadsheet.SpreadsheetTabWriters
             var lastRow = budgetSpreadsheetTabDto.Rows.Last();
 
             if (lastRow.Cells.Count() <= currentPeriodIdx)
+            {
                 lastRow.Cells.Add(lastUpdated);
+            }
             else
+            {
                 lastRow.Cells[currentPeriodIdx] = lastUpdated;
+            }
         }
 
         private static void ExpandRowAndCellsIfNecessary(TabDto tabDto, int currentRowCount, int currentCellsInRowCount)
@@ -124,7 +132,7 @@ namespace Spreadsheet.SpreadsheetTabWriters
             }
         }
 
-        public async Task UpdateBudgetSheet(TabDto tabDto, int lastRow)
+        private async Task UpdateBudgetSheet(TabDto tabDto, int lastRow)
         {
             await UpdateSheet(tabDto, 1, lastRow);
         }
