@@ -10,7 +10,7 @@
 
     <ItemGroup>
       <PackageReference Include="Hub.Storage.Entities" Version="1.0.0" />
-      <PackageReference Include="Hub.Storage.Providers" Version="1.0.0" />
+      <PackageReference Include="Hub.Storage.Providers" Version="1.0.1" />
       <PackageReference Include="Microsoft.Azure.Storage.File" Version="11.2.2" />
     </ItemGroup>
 
