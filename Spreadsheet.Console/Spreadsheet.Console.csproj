@@ -1,0 +1,23 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>netcoreapp3.1</TargetFramework>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <PackageReference Include="Hub.HostedServices" Version="1.0.7" />
+        <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="3.1.8" />
+        <PackageReference Include="Microsoft.EntityFrameworkCore" Version="3.1.8" />
+        <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="3.1.8" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\Spreadsheet.BackgroundTasks\Spreadsheet.BackgroundTasks.csproj" />
+      <ProjectReference Include="..\Spreadsheet.Data\Spreadsheet.Data.csproj" />
+      <ProjectReference Include="..\Spreadsheet.Integration\Spreadsheet.Integration.csproj" />
+      <ProjectReference Include="..\Spreadsheet.Providers\Spreadsheet.Providers.csproj" />
+      <ProjectReference Include="..\Spreadsheet.SpreadsheetTabReaders\Spreadsheet.SpreadsheetTabReaders.csproj" />
+      <ProjectReference Include="..\Spreadsheet.SpreadsheetTabWriters\Spreadsheet.SpreadsheetTabWriters.csproj" />
+    </ItemGroup>
+
+</Project>

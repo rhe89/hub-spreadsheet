@@ -1,29 +1,36 @@
 using System;
-using Hub.Web.DependencyRegistration;
+using AutoMapper;
+using Hub.Storage.Repository.AutoMapper;
+using Hub.Web.Api;
 using Hub.Web.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Spreadsheet.BackgroundTasks;
+using Spreadsheet.Core.Constants;
+using Spreadsheet.Core.Dto.Spreadsheet.Budget.Tabs;
+using Spreadsheet.Core.Integration;
+using Spreadsheet.Core.Providers;
+using Spreadsheet.Core.SpreadsheetTabReaders;
+using Spreadsheet.Core.SpreadsheetTabWriters;
+using Spreadsheet.Core.Storage;
 using Spreadsheet.Data;
+using Spreadsheet.Data.AutoMapper;
 using Spreadsheet.Data.Storage;
-using Spreadsheet.Dto.Spreadsheet;
 using Spreadsheet.Integration;
 using Spreadsheet.Providers;
-using Spreadsheet.Shared.Constants;
 using Spreadsheet.SpreadsheetTabReaders;
 using Spreadsheet.SpreadsheetTabWriters;
 
 namespace Spreadsheet.Web.Api
 {
-    public class DependencyRegistrationFactory : ApiWithQueueHostedServiceDependencyRegistrationFactory<SpreadsheetDbContext>
+    public class DependencyRegistrationFactory : DependencyRegistrationFactoryBase<SpreadsheetDbContext>
     {
 
         public DependencyRegistrationFactory() : base("SQL_DB_SPREADSHEET", "Spreadsheet.Data")
         {
         }
 
-        protected override void RegisterDomainDependenciesForQueueHostedService(IServiceCollection serviceCollection,
-            IConfiguration configuration)
+        protected override void AddDomainDependencies(IServiceCollection serviceCollection, IConfiguration configuration)
         {
             serviceCollection.AddSingleton<UpdateAccountTransfersTask>();
             serviceCollection.AddSingleton<UpdateSbankenBalancesTask>();
@@ -39,6 +46,11 @@ namespace Spreadsheet.Web.Api
                     x.GetRequiredService<IGoogleSpreadsheetConnector>(), 
                     SpreadsheetTabMetadataConstants.ApiDataTabName));
             
+            serviceCollection.AddSingleton<ITabReader<ApiPaymentsAccountTabDto>>(x => 
+                new TabReader<ApiPaymentsAccountTabDto>(x.GetRequiredService<ISpreadsheetProvider>(),
+                    x.GetRequiredService<IGoogleSpreadsheetConnector>(), 
+                    SpreadsheetTabMetadataConstants.ApiPaymentsAccountTabName));
+            
             serviceCollection.AddSingleton<IApiDataTabWriter, ApiDataTabWriter>();
             serviceCollection.AddSingleton<IAzureStorage, AzureStorage>();
             serviceCollection.AddSingleton<ISpreadsheetProvider, SpreadsheetProvider>();
@@ -47,16 +59,14 @@ namespace Spreadsheet.Web.Api
                 client.BaseAddress = new Uri(configuration.GetValue<string>("COINBASE_API_HOST")));
             serviceCollection.AddHubHttpClient<ISbankenApiConnector, SbankenApiConnector>(client =>
                 client.BaseAddress = new Uri(configuration.GetValue<string>("SBANKEN_API_HOST")));
-        }
+            
+            serviceCollection.AddAutoMapper(c =>
+            {
+                c.AddHostedServiceProfiles();
+                c.AddSpreadsheetProfiles();
+            });
 
-        protected override void RegisterSharedDomainDependencies(IServiceCollection serviceCollection, IConfiguration configuration)
-        {
-            // Not needed since all dependencies are registered elsewhere
-        }
-        
-        protected override void RegisterDomainDependenciesForApi(IServiceCollection serviceCollection, IConfiguration configuration)
-        {
-            // Not needed since all dependencies are registered elsewhere
+
         }
     }
 }

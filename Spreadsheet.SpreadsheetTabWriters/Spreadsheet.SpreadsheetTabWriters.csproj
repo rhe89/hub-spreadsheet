@@ -5,6 +5,6 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\Spreadsheet.SpreadsheetTabReaders\Spreadsheet.SpreadsheetTabReaders.csproj" />
+      <ProjectReference Include="..\Spreadsheet.Core\Spreadsheet.Core.csproj" />
     </ItemGroup>
 </Project>

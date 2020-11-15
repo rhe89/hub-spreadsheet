@@ -1,4 +1,5 @@
-using Hub.Web.HostBuilder;
+using Hub.Web.Api;
+using Microsoft.Extensions.Hosting;
 using Spreadsheet.Data;
 
 namespace Spreadsheet.Web.Api
@@ -6,8 +7,15 @@ namespace Spreadsheet.Web.Api
     public static class Program
     {
         public static void Main(string[] args)
+        { 
+            CreateHostBuilder(args)
+                .Build()
+                .Run();
+        }
+
+        private static IHostBuilder CreateHostBuilder(string[] args)
         {
-            new ApiHostBuilder<Startup, DependencyRegistrationFactory, SpreadsheetDbContext>().CreateHostBuilder(args);        
+            return HostBuilder<DependencyRegistrationFactory, SpreadsheetDbContext>.Create(args);
         }
     }
 }

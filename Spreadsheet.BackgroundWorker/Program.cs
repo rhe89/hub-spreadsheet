@@ -1,3 +1,5 @@
+using Spreadsheet.Data;
+using Hub.HostedServices.Timer;
 using Microsoft.Extensions.Hosting;
 
 namespace Spreadsheet.BackgroundWorker
@@ -6,7 +8,10 @@ namespace Spreadsheet.BackgroundWorker
     {
         public static void Main(string[] args)
         {
-            new SpreadsheetWorkerHostBuilder(args).Build().Run();
+            new BackgroundWorker<DependencyRegistrationFactory, SpreadsheetDbContext>(args, "SQL_DB_SPREADSHEET")
+                .CreateHostBuilder()
+                .Build()
+                .Run();
         }
     }
 }

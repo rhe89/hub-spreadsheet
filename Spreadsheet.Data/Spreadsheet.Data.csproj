@@ -5,13 +5,13 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\Spreadsheet.Dto\Spreadsheet.Dto.csproj" />
+      <ProjectReference Include="..\Spreadsheet.Core\Spreadsheet.Core.csproj" />
     </ItemGroup>
 
     <ItemGroup>
       <PackageReference Include="Hub.Storage.Entities" Version="1.0.0" />
-      <PackageReference Include="Hub.Storage.Providers" Version="1.0.1" />
-      <PackageReference Include="Microsoft.Azure.Storage.File" Version="11.2.2" />
+      <PackageReference Include="Hub.Storage.Providers" Version="1.0.4" />
+      <PackageReference Include="Hub.Storage.Repository" Version="2.0.3" />
     </ItemGroup>
 
 </Project>

@@ -1,11 +1,13 @@
 using System;
-using System.Linq;
 using System.Threading.Tasks;
-using Hub.Storage.Repository;
+using Hub.Storage.Core.Repository;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
-using Spreadsheet.Data.Entities;
-using Spreadsheet.Dto.Spreadsheet;
-using Spreadsheet.Shared.Constants;
+using Spreadsheet.Core.Constants;
+using Spreadsheet.Core.Dto.Data;
+using Spreadsheet.Core.Dto.Spreadsheet;
+using Spreadsheet.Core.Entities;
+using Spreadsheet.Core.Providers;
 
 namespace Spreadsheet.Providers
 {
@@ -21,46 +23,17 @@ namespace Spreadsheet.Providers
         public async Task<SpreadsheetMetadataDto> CurrentBudgetSpreadsheet()
         {
             using var scope = _serviceProvider.CreateScope();
-
-            using var dbRepository = scope.ServiceProvider.GetService<IScopedDbRepository>();
             
-            var spreadsheets =
-                await dbRepository.GetManyAsync<SpreadsheetMetadata>(x =>
-                        x.Name == SpreadsheetMetadataConstants.BudgetSpreadsheetName &&
-                        x.ValidFrom < DateTime.Now && (x.ValidTo == null || x.ValidTo > DateTime.Now),
-                    nameof(SpreadsheetMetadata.SpreadsheetTabMetadata),
-                    $"{nameof(SpreadsheetMetadata.SpreadsheetTabMetadata)}.{nameof(SpreadsheetTabMetadata.SpreadsheetRowMetadata)}");
+            using var dbRepository = scope.ServiceProvider.GetService<IScopedHubDbRepository>();
 
-            return GetSpreadsheetMetadataDto(spreadsheets.FirstOrDefault());
-        }
+            var spreadsheet = await dbRepository
+                .Where<SpreadsheetMetadata>(x => x.Name == SpreadsheetMetadataConstants.BudgetSpreadsheetName &&
+                                                 x.ValidFrom < DateTime.Now && (x.ValidTo == null || x.ValidTo > DateTime.Now))
+                .Include(x => x.SpreadsheetTabMetadata)
+                    .ThenInclude(x => x.SpreadsheetRowMetadata)
+                .FirstOrDefaultAsync();
 
-        private static SpreadsheetMetadataDto GetSpreadsheetMetadataDto(SpreadsheetMetadata spreadsheetMetadata)
-        {
-            if (spreadsheetMetadata == null)
-            {
-                return null;
-            }
-            
-            return new SpreadsheetMetadataDto
-            {
-                Id = spreadsheetMetadata.Id,
-                SpreadsheetId = spreadsheetMetadata.SpreadsheetId,
-                Name = spreadsheetMetadata.Name,
-                ValidFrom = spreadsheetMetadata.ValidFrom,
-                ValidTo = spreadsheetMetadata.ValidTo,
-                SpreadsheetTabMetadataDtos = spreadsheetMetadata.SpreadsheetTabMetadata.Select(spreadsheetTabMetadata =>
-                    new SpreadsheetTabMetadataDto
-                    {
-                        Name = spreadsheetTabMetadata.Name,
-                        FirstColumn = spreadsheetTabMetadata.FirstColumn,
-                        LastColumn = spreadsheetTabMetadata.LastColumn,
-                        SpreadsheetRowMetadataDtos = spreadsheetTabMetadata.SpreadsheetRowMetadata.Select(
-                            spreadsheetRowMetadata => new SpreadsheetRowMetadataDto
-                            {
-                                RowKey = spreadsheetRowMetadata.RowKey
-                            }).ToList()
-                    }).ToList()
-            };
+            return dbRepository.Map<SpreadsheetMetadata, SpreadsheetMetadataDto>(spreadsheet);
         }
     }
 }

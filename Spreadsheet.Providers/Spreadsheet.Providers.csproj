@@ -5,7 +5,7 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\Spreadsheet.Data\Spreadsheet.Data.csproj" />
+        <ProjectReference Include="..\Spreadsheet.Data\Spreadsheet.Data.csproj" />
     </ItemGroup>
 
 </Project>

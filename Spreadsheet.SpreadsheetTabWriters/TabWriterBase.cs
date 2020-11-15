@@ -1,7 +1,6 @@
-using System.Linq;
 using System.Threading.Tasks;
-using Spreadsheet.Dto.Spreadsheet;
-using Spreadsheet.Integration;
+using Spreadsheet.Core.Dto.Spreadsheet;
+using Spreadsheet.Core.Integration;
 
 namespace Spreadsheet.SpreadsheetTabWriters
 {
@@ -14,9 +13,9 @@ namespace Spreadsheet.SpreadsheetTabWriters
             _googleSpreadsheetConnector = googleSpreadsheetConnector;
         }
 
-        protected async Task UpdateSheet(TabDto tabDto, int firstColumnRow, int lastColumnRow)
+        protected async Task UpdateSheet(TabDtoBase tabDtoBase, int firstColumnRow, int lastColumnRow)
         {
-            await _googleSpreadsheetConnector.UpdateSpreadsheetTab(tabDto, firstColumnRow, lastColumnRow);
+            await _googleSpreadsheetConnector.UpdateSpreadsheetTab(tabDtoBase, firstColumnRow, lastColumnRow);
         }
     }
 }

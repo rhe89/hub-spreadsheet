@@ -1,13 +1,15 @@
 using Microsoft.Extensions.Logging;
-using Spreadsheet.Dto.Account;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Spreadsheet.Dto.Spreadsheet;
-using Spreadsheet.Integration;
-using Spreadsheet.Shared.Extensions;
-using Spreadsheet.SpreadsheetTabReaders;
+using Spreadsheet.Core.Dto.BackgroundTasks;
+using Spreadsheet.Core.Dto.Spreadsheet;
+using Spreadsheet.Core.Dto.Spreadsheet.Budget.Tabs;
+using Spreadsheet.Core.Extensions;
+using Spreadsheet.Core.Integration;
+using Spreadsheet.Core.SpreadsheetTabReaders;
+using Spreadsheet.Core.SpreadsheetTabWriters;
 
 namespace Spreadsheet.SpreadsheetTabWriters
 {
@@ -51,51 +53,51 @@ namespace Spreadsheet.SpreadsheetTabWriters
             _logger.LogInformation($"Finished updating {apiDataTabDto.Name}");
         }
 
-        private void AddNewPeriod(BudgetSpreadsheetTabDto budgetSpreadsheetTabDto,
+        private void AddNewPeriod(BudgetSpreadsheetTabDtoBase budgetSpreadsheetTabDtoBase,
                                   IEnumerable<AccountDto> accounts)
         {
-            var newPeriod = BudgetSpreadsheetTabDto.GetCurrentPeriod();
+            var newPeriod = BudgetSpreadsheetTabDtoBase.GetCurrentPeriod();
 
-            budgetSpreadsheetTabDto.Rows.First().Cells.Add(newPeriod);
+            budgetSpreadsheetTabDtoBase.Rows.First().Cells.Add(newPeriod);
 
             foreach (var account in accounts)
             {
-                var shouldUpdateAccount = ShouldUpdateAccount(budgetSpreadsheetTabDto, account, out var accountIdx);
+                var shouldUpdateAccount = ShouldUpdateAccount(budgetSpreadsheetTabDtoBase, account, out var accountIdx);
 
                 if (!shouldUpdateAccount)
                 {
                     continue;
                 }
 
-                budgetSpreadsheetTabDto.Rows[accountIdx].Cells.Add(account.Balance.ToCommaString());
+                budgetSpreadsheetTabDtoBase.Rows[accountIdx].Cells.Add(account.Balance.ToCommaString());
             }
 
             var lastUpdated = DateTime.Now.FormattedDateFull();
 
-            budgetSpreadsheetTabDto.Rows.Last().Cells.Add(lastUpdated);
+            budgetSpreadsheetTabDtoBase.Rows.Last().Cells.Add(lastUpdated);
         }
 
-        private void ReplaceCurrentPeriod(BudgetSpreadsheetTabDto budgetSpreadsheetTabDto,
+        private void ReplaceCurrentPeriod(BudgetSpreadsheetTabDtoBase budgetSpreadsheetTabDtoBase,
                                           IEnumerable<AccountDto> accounts,
                                           int currentPeriodIdx)
         {
             foreach (var account in accounts)
             {
-                var shouldUpdateAccount = ShouldUpdateAccount(budgetSpreadsheetTabDto, account, out var accountIdx);
+                var shouldUpdateAccount = ShouldUpdateAccount(budgetSpreadsheetTabDtoBase, account, out var accountIdx);
 
                 if (!shouldUpdateAccount)
                 {
                     continue;
                 }
 
-                ExpandRowAndCellsIfNecessary(budgetSpreadsheetTabDto, accountIdx, currentPeriodIdx);
+                ExpandRowAndCellsIfNecessary(budgetSpreadsheetTabDtoBase, accountIdx, currentPeriodIdx);
 
-                budgetSpreadsheetTabDto.Rows[accountIdx].Cells[currentPeriodIdx] = account.Balance.ToCommaString();
+                budgetSpreadsheetTabDtoBase.Rows[accountIdx].Cells[currentPeriodIdx] = account.Balance.ToCommaString();
             }
 
             var lastUpdated = DateTime.Now.FormattedDateFull();
 
-            var lastRow = budgetSpreadsheetTabDto.Rows.Last();
+            var lastRow = budgetSpreadsheetTabDtoBase.Rows.Last();
 
             if (lastRow.Cells.Count() <= currentPeriodIdx)
             {
@@ -107,13 +109,13 @@ namespace Spreadsheet.SpreadsheetTabWriters
             }
         }
 
-        private bool ShouldUpdateAccount(TabDto tabDto, AccountDto account, out int accountIdx)
+        private bool ShouldUpdateAccount(TabDtoBase tabDtoBase, AccountDto account, out int accountIdx)
         {
-            var row = tabDto.Rows.FirstOrDefault(x => x.RowKey == account.Name);
+            var row = tabDtoBase.Rows.FirstOrDefault(x => x.RowKey == account.Name);
 
             if (row == null)
             {
-                _logger.LogWarning($"No row found in tab {tabDto.Name} for account {account.Name}. Skipping");
+                _logger.LogWarning($"No row found in tab {tabDtoBase.Name} for account {account.Name}. Skipping");
                 accountIdx = -1;
                 return false;
             }
@@ -130,22 +132,22 @@ namespace Spreadsheet.SpreadsheetTabWriters
             return true;
         }
 
-        private static void ExpandRowAndCellsIfNecessary(TabDto tabDto, int currentRowCount, int currentCellsInRowCount)
+        private static void ExpandRowAndCellsIfNecessary(TabDtoBase tabDtoBase, int currentRowCount, int currentCellsInRowCount)
         {
-            if (tabDto.Rows.Count <= currentRowCount)
+            if (tabDtoBase.Rows.Count <= currentRowCount)
             {
-                tabDto.AddRowToExistingSheet(new RowDto(2));
+                tabDtoBase.AddRowToExistingSheet(new RowDto(2));
             }
 
-            while (tabDto.Rows[currentRowCount].Cells.Count <= currentCellsInRowCount)
+            while (tabDtoBase.Rows[currentRowCount].Cells.Count <= currentCellsInRowCount)
             {
-                tabDto.Rows[currentRowCount].Cells.Add(0);
+                tabDtoBase.Rows[currentRowCount].Cells.Add(0);
             }
         }
 
-        private async Task UpdateBudgetSheet(TabDto tabDto, int lastRow)
+        private async Task UpdateBudgetSheet(TabDtoBase tabDtoBase, int lastRow)
         {
-            await UpdateSheet(tabDto, 1, lastRow);
+            await UpdateSheet(tabDtoBase, 1, lastRow);
         }
     }
 }

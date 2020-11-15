@@ -1,9 +1,9 @@
-using System;
 using System.Threading.Tasks;
-using Hub.Storage.Providers;
+using Hub.Storage.Core.Providers;
 using Microsoft.Azure.Storage;
 using Microsoft.Azure.Storage.File;
-using Spreadsheet.Shared.Constants;
+using Spreadsheet.Core.Constants;
+using Spreadsheet.Core.Storage;
 
 namespace Spreadsheet.Data.Storage
 {

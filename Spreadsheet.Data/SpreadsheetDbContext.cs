@@ -1,18 +1,16 @@
-﻿using Hub.Storage.Entities;
+﻿using Hub.Storage.Repository.DatabaseContext;
 using Microsoft.EntityFrameworkCore;
-using Spreadsheet.Data.Entities;
+using Spreadsheet.Core.Entities;
 
 namespace Spreadsheet.Data
 {
-    public class SpreadsheetDbContext : DbContext
+    public class SpreadsheetDbContext : HostedServiceDbContext
     {
         public SpreadsheetDbContext(DbContextOptions<SpreadsheetDbContext> options) : base(options) { }
         
         protected override void OnModelCreating(ModelBuilder builder)
         {
-            builder.AddSettingEntity();
-            builder.AddWorkerLogEntity();
-            builder.AddBackgroundTaskConfigurationEntity();
+            base.OnModelCreating(builder);
             
             builder.Entity<SpreadsheetMetadata>()
                 .ToTable(schema: "dbo", name: "SpreadsheetMetadata");

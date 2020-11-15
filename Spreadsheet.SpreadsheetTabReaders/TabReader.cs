@@ -1,14 +1,16 @@
 ﻿using System;
 using System.Linq;
 using System.Threading.Tasks;
-using Spreadsheet.Dto.Spreadsheet;
-using Spreadsheet.Integration;
-using Spreadsheet.Providers;
-using Spreadsheet.Shared.Exceptions;
+using Spreadsheet.Core.Dto.Data;
+using Spreadsheet.Core.Dto.Spreadsheet;
+using Spreadsheet.Core.Exceptions;
+using Spreadsheet.Core.Integration;
+using Spreadsheet.Core.Providers;
+using Spreadsheet.Core.SpreadsheetTabReaders;
 
 namespace Spreadsheet.SpreadsheetTabReaders
 {
-    public class TabReader<TTabDto> : ITabReader<TTabDto> where TTabDto : TabDto, new()
+    public class TabReader<TTabDto> : ITabReader<TTabDto> where TTabDto : TabDtoBase, new()
     {
         private readonly IGoogleSpreadsheetConnector _googleSpreadsheetConnector;
         private readonly ISpreadsheetProvider _spreadsheetProvider;
@@ -74,9 +76,9 @@ namespace Spreadsheet.SpreadsheetTabReaders
             };
         }
 
-        private async Task PopulateRowsInTabDto(TabDto tabDto)
+        private async Task PopulateRowsInTabDto(TabDtoBase tabDtoBase)
         {
-            await _googleSpreadsheetConnector.LoadSpreadsheetTab(tabDto);
+            await _googleSpreadsheetConnector.LoadSpreadsheetTab(tabDtoBase);
         }
     }
 }

@@ -6,12 +6,13 @@ using Google.Apis.Auth.OAuth2;
 using Google.Apis.Services;
 using Google.Apis.Sheets.v4;
 using Google.Apis.Sheets.v4.Data;
-using Hub.Storage.Providers;
+using Hub.Storage.Core.Providers;
 using Microsoft.Extensions.Logging;
-using Spreadsheet.Data.Storage;
-using Spreadsheet.Dto.Spreadsheet;
-using Spreadsheet.Shared.Constants;
-using Spreadsheet.Shared.Exceptions;
+using Spreadsheet.Core.Constants;
+using Spreadsheet.Core.Dto.Spreadsheet;
+using Spreadsheet.Core.Exceptions;
+using Spreadsheet.Core.Integration;
+using Spreadsheet.Core.Storage;
 
 namespace Spreadsheet.Integration
 {
@@ -32,26 +33,26 @@ namespace Spreadsheet.Integration
             _applicationName = "Hub";
         }
         
-        public async Task UpdateSpreadsheetTab(TabDto tabDto, int firstColumnRow, int lastColumnRow)
+        public async Task UpdateSpreadsheetTab(TabDtoBase tabDtoBase, int firstColumnRow, int lastColumnRow)
         {
             try
             {
-                var range =  GetRangeFormatted(tabDto.Name,
-                tabDto.FirstColumn,
+                var range =  GetRangeFormatted(tabDtoBase.Name,
+                tabDtoBase.FirstColumn,
                 firstColumnRow,
-                tabDto.LastColumn,
+                tabDtoBase.LastColumn,
                 lastColumnRow);
             
                 var updatedValues = new ValueRange
                 {
                     MajorDimension = "ROWS",
-                    Values = tabDto.Rows.Select(row => row.Cells).ToList(),
+                    Values = tabDtoBase.Rows.Select(row => row.Cells).ToList(),
                     Range = range
                 };
 
                 var sheetsService = await GetSheetsService();
 
-                var update = sheetsService.Spreadsheets.Values.Update(updatedValues, tabDto.SpreadsheetId, range);
+                var update = sheetsService.Spreadsheets.Values.Update(updatedValues, tabDtoBase.SpreadsheetId, range);
                 
                 update.ValueInputOption = SpreadsheetsResource.ValuesResource.UpdateRequest.ValueInputOptionEnum.USERENTERED;
 
@@ -59,35 +60,35 @@ namespace Spreadsheet.Integration
             }
             catch (Exception e)
             {
-                throw new SpreadsheetConnectorException($"Error updating tab {tabDto.Name} in spreadsheet with id {tabDto.SpreadsheetId} from Google API", e);
+                throw new SpreadsheetConnectorException($"Error updating tab {tabDtoBase.Name} in spreadsheet with id {tabDtoBase.SpreadsheetId} from Google API", e);
             }
         }
         
-        public async Task LoadSpreadsheetTab(TabDto tabDto)
+        public async Task LoadSpreadsheetTab(TabDtoBase tabDtoBase)
         {
             try
             {
-                _logger.LogInformation($"Getting tab {tabDto.Name} in sheet with id {tabDto.SpreadsheetId} from Google API");
+                _logger.LogInformation($"Getting tab {tabDtoBase.Name} in sheet with id {tabDtoBase.SpreadsheetId} from Google API");
 
-                var request = await GetSpreadsheetRequest(tabDto);
+                var request = await GetSpreadsheetRequest(tabDtoBase);
 
                 var response = await request.ExecuteAsync();
                 
-                tabDto.PopulateRows(response.Values);
+                tabDtoBase.PopulateRows(response.Values);
             }
             catch (Exception e)
             {
-                throw new SpreadsheetConnectorException($"Error getting tab {tabDto.Name} in sheet with id {tabDto.SpreadsheetId} from Google API", e);
+                throw new SpreadsheetConnectorException($"Error getting tab {tabDtoBase.Name} in sheet with id {tabDtoBase.SpreadsheetId} from Google API", e);
             }
         }
         
-        private async Task<SpreadsheetsResource.ValuesResource.GetRequest> GetSpreadsheetRequest(TabDto tabDto)
+        private async Task<SpreadsheetsResource.ValuesResource.GetRequest> GetSpreadsheetRequest(TabDtoBase tabDtoBase)
         {
-            var range = GetRangeFormatted(tabDto.Name, tabDto.FirstColumn, tabDto.LastColumn);
+            var range = GetRangeFormatted(tabDtoBase.Name, tabDtoBase.FirstColumn, tabDtoBase.LastColumn);
 
             var sheetsService = await GetSheetsService();
 
-            return sheetsService.Spreadsheets.Values.Get(tabDto.SpreadsheetId, range);
+            return sheetsService.Spreadsheets.Values.Get(tabDtoBase.SpreadsheetId, range);
         }
 
         private static string GetRangeFormatted(string tabName, string firstColumn, string lastColumn)

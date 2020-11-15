@@ -3,12 +3,12 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Hub.HostedServices.Tasks;
-using Hub.Storage.Factories;
-using Hub.Storage.Providers;
+using Hub.Storage.Core.Factories;
+using Hub.Storage.Core.Providers;
 using Microsoft.Extensions.Logging;
-using Spreadsheet.Dto.Account;
-using Spreadsheet.Integration;
-using Spreadsheet.SpreadsheetTabWriters;
+using Spreadsheet.Core.Dto.BackgroundTasks;
+using Spreadsheet.Core.Integration;
+using Spreadsheet.Core.SpreadsheetTabWriters;
 
 namespace Spreadsheet.BackgroundTasks
 {

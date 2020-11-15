@@ -1,11 +1,10 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
 using Hub.HostedServices.Tasks;
-using Hub.Storage.Factories;
-using Hub.Storage.Providers;
-using Spreadsheet.Dto.Spreadsheet;
-using Spreadsheet.SpreadsheetTabReaders;
-
+using Hub.Storage.Core.Factories;
+using Hub.Storage.Core.Providers;
+using Spreadsheet.Core.Dto.Spreadsheet.Budget.Tabs;
+using Spreadsheet.Core.SpreadsheetTabReaders;
 namespace Spreadsheet.BackgroundTasks
 {
     public class UpdateAccountTransfersTask : BackgroundTask
