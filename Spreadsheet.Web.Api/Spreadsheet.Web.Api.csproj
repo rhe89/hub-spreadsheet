@@ -14,7 +14,7 @@
 
     <ItemGroup>
       <PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="8.1.0" />
-      <PackageReference Include="Hub.Web.Api" Version="1.0.1" />
+      <PackageReference Include="Hub.Web.Api" Version="1.0.2" />
     </ItemGroup>
     
 </Project>
