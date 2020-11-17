@@ -1,5 +1,5 @@
 using Spreadsheet.Data;
-using Hub.HostedServices.Timer;
+using Hub.HostedServices.TimerHost;
 using Microsoft.Extensions.Hosting;
 
 namespace Spreadsheet.BackgroundWorker

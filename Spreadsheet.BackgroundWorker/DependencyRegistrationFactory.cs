@@ -1,7 +1,7 @@
 using System;
 using AutoMapper;
 using Hub.HostedServices.Tasks;
-using Hub.HostedServices.Timer;
+using Hub.HostedServices.TimerHost;
 using Hub.Storage.Repository.AutoMapper;
 using Hub.Web.Http;
 using Microsoft.Extensions.Configuration;
