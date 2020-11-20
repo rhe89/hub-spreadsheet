@@ -23,7 +23,7 @@ using Spreadsheet.SpreadsheetTabWriters;
 
 namespace Spreadsheet.Web.Api
 {
-    public class DependencyRegistrationFactory : DependencyRegistrationFactoryBase<SpreadsheetDbContext>
+    public class DependencyRegistrationFactory : DependencyRegistrationFactoryWithHostedServiceBase<SpreadsheetDbContext>
     {
 
         public DependencyRegistrationFactory() : base("SQL_DB_SPREADSHEET", "Spreadsheet.Data")
