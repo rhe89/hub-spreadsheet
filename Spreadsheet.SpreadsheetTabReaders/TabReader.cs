@@ -56,7 +56,7 @@ namespace Spreadsheet.SpreadsheetTabReaders
         private static TTabDto SetTabDtoFromSpreadsheetMetadata(SpreadsheetMetadataDto spreadSheet, string tabName)
         {
             var spreadsheetTabMetadata =
-                spreadSheet.SpreadsheetTabMetadataDtos.FirstOrDefault(x =>
+                spreadSheet.SpreadsheetTabMetadata.FirstOrDefault(x =>
                     x.Name == tabName);
 
             if (spreadsheetTabMetadata == null)
@@ -72,7 +72,7 @@ namespace Spreadsheet.SpreadsheetTabReaders
                 SpreadsheetId = spreadSheet.SpreadsheetId,
                 FirstColumn = spreadsheetTabMetadata.FirstColumn,
                 LastColumn = spreadsheetTabMetadata.LastColumn,
-                SpreadsheetRowMetadataDtos = spreadsheetTabMetadata.SpreadsheetRowMetadataDtos
+                SpreadsheetRowMetadataDtos = spreadsheetTabMetadata.SpreadsheetRowMetadata
             };
         }
 

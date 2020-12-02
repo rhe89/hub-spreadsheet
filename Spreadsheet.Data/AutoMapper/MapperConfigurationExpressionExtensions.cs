@@ -7,7 +7,7 @@ namespace Spreadsheet.Data.AutoMapper
         public static IMapperConfigurationExpression AddSpreadsheetProfiles(this IMapperConfigurationExpression mapperConfigurationExpression)
         {
             mapperConfigurationExpression.AddProfile<SpreadsheetMetadataMapperProfile>();
-            mapperConfigurationExpression.AddProfile<SpreadsheetMetadataMapperProfile>();
+            mapperConfigurationExpression.AddProfile<SpreadsheetRowMetadataMapperProfile>();
             mapperConfigurationExpression.AddProfile<SpreadsheetTabMetadataMapperProfile>();
 
             return mapperConfigurationExpression;
