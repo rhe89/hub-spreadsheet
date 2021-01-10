@@ -41,7 +41,22 @@ namespace Spreadsheet.BackgroundWorker
             serviceCollection.AddSingleton<ITabReader<SbankenAccountsTabDto>>(x => 
                 new TabReader<SbankenAccountsTabDto>(x.GetRequiredService<ISpreadsheetProvider>(),
                     x.GetRequiredService<IGoogleSpreadsheetConnector>(), 
-                    SpreadsheetTabMetadataConstants.ApiDataTabName));
+                    SpreadsheetTabMetadataConstants.SbankenAccountsTabName));
+            
+            serviceCollection.AddSingleton<ITabReader<CoinbaseAccountsTabDto>>(x => 
+                new TabReader<CoinbaseAccountsTabDto>(x.GetRequiredService<ISpreadsheetProvider>(),
+                    x.GetRequiredService<IGoogleSpreadsheetConnector>(), 
+                    SpreadsheetTabMetadataConstants.CoinbaseAccountsTabName));
+            
+            serviceCollection.AddSingleton<ITabReader<CoinbaseProAccountsTabDto>>(x => 
+                new TabReader<CoinbaseProAccountsTabDto>(x.GetRequiredService<ISpreadsheetProvider>(),
+                    x.GetRequiredService<IGoogleSpreadsheetConnector>(), 
+                    SpreadsheetTabMetadataConstants.CoinbaseProAccountsTabName));
+            
+            serviceCollection.AddSingleton<ITabReader<ApiPaymentsAccountTabDto>>(x => 
+                new TabReader<ApiPaymentsAccountTabDto>(x.GetRequiredService<ISpreadsheetProvider>(),
+                    x.GetRequiredService<IGoogleSpreadsheetConnector>(), 
+                    SpreadsheetTabMetadataConstants.ApiPaymentsAccountTabName));
             
             serviceCollection.AddSingleton<IBankAccountsBalanceTabWriter<SbankenAccountsTabDto>, BankAccountsBalanceTabWriter<SbankenAccountsTabDto>>();
             serviceCollection.AddSingleton<IBankAccountsBalanceTabWriter<CoinbaseAccountsTabDto>, BankAccountsBalanceTabWriter<CoinbaseAccountsTabDto>>();
@@ -50,6 +65,8 @@ namespace Spreadsheet.BackgroundWorker
             serviceCollection.AddSingleton<IGoogleSpreadsheetConnector, GoogleSpreadsheetConnector>();
             serviceCollection.AddHubHttpClient<ICoinbaseApiConnector, CoinbaseApiConnector>(client =>
                 client.BaseAddress = new Uri(configuration.GetValue<string>("COINBASE_API_HOST")));
+            serviceCollection.AddHubHttpClient<ICoinbaseProApiConnector, CoinbaseProApiConnector>(client =>
+                client.BaseAddress = new Uri(configuration.GetValue<string>("COINBASE_PRO_API_HOST")));
             serviceCollection.AddHubHttpClient<ISbankenApiConnector, SbankenApiConnector>(client =>
                 client.BaseAddress = new Uri(configuration.GetValue<string>("SBANKEN_API_HOST")));
             
