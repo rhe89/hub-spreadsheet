@@ -52,12 +52,14 @@ namespace Spreadsheet.Console
                     x.GetRequiredService<IGoogleSpreadsheetConnector>(), 
                     SpreadsheetTabMetadataConstants.ResultAndSavingTabName));
             
-            serviceCollection.AddSingleton<ITabReader<ApiDataTabDto>>(x => 
-                new TabReader<ApiDataTabDto>(x.GetRequiredService<ISpreadsheetProvider>(),
+            serviceCollection.AddSingleton<ITabReader<SbankenAccountsTabDto>>(x => 
+                new TabReader<SbankenAccountsTabDto>(x.GetRequiredService<ISpreadsheetProvider>(),
                     x.GetRequiredService<IGoogleSpreadsheetConnector>(), 
                     SpreadsheetTabMetadataConstants.ApiDataTabName));
             
-            serviceCollection.AddSingleton<IApiDataTabWriter, ApiDataTabWriter>();
+            serviceCollection.AddSingleton<IBankAccountsBalanceTabWriter<SbankenAccountsTabDto>, BankAccountsBalanceTabWriter<SbankenAccountsTabDto>>();
+            serviceCollection.AddSingleton<IBankAccountsBalanceTabWriter<CoinbaseAccountsTabDto>, BankAccountsBalanceTabWriter<CoinbaseAccountsTabDto>>();
+            serviceCollection.AddSingleton<IBankAccountsBalanceTabWriter<CoinbaseProAccountsTabDto>, BankAccountsBalanceTabWriter<CoinbaseProAccountsTabDto>>();
             serviceCollection.AddSingleton<IAzureStorage, AzureStorage>();
             serviceCollection.AddSingleton<ISpreadsheetProvider, SpreadsheetProvider>();
             serviceCollection.AddSingleton<IGoogleSpreadsheetConnector, GoogleSpreadsheetConnector>();

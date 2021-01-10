@@ -7,55 +7,38 @@ using Hub.Storage.Core.Factories;
 using Hub.Storage.Core.Providers;
 using Microsoft.Extensions.Logging;
 using Spreadsheet.Core.Dto.BackgroundTasks;
+using Spreadsheet.Core.Dto.Spreadsheet.Budget.Tabs;
 using Spreadsheet.Core.Integration;
 using Spreadsheet.Core.SpreadsheetTabWriters;
 
 namespace Spreadsheet.BackgroundTasks
 {
-    public class UpdateCoinbaseBalancesTask : BackgroundTask
+    public class UpdateCoinbaseAccountsTask : BackgroundTask
     {
-        private readonly ILogger<UpdateCoinbaseBalancesTask> _logger;
+        private readonly ILogger<UpdateCoinbaseAccountsTask> _logger;
         private readonly ICoinbaseApiConnector _coinbaseApiConnector;
-        private readonly IApiDataTabWriter _apiDataTabWriter;
+        private readonly IBankAccountsBalanceTabWriter<CoinbaseAccountsTabDto> _coinbaseAccountsBalanceTabWriter;
 
-        public UpdateCoinbaseBalancesTask(ILogger<UpdateCoinbaseBalancesTask> logger, 
+        public UpdateCoinbaseAccountsTask(ILogger<UpdateCoinbaseAccountsTask> logger, 
             ICoinbaseApiConnector coinbaseApiConnector,
-            IApiDataTabWriter apiDataTabWriter, 
+            IBankAccountsBalanceTabWriter<CoinbaseAccountsTabDto> coinbaseAccountsBalanceTabWriter, 
             IBackgroundTaskConfigurationProvider backgroundTaskConfigurationProvider,
             IBackgroundTaskConfigurationFactory backgroundTaskConfigurationFactory) : base(backgroundTaskConfigurationProvider, backgroundTaskConfigurationFactory)
         {
             _logger = logger;
             _coinbaseApiConnector = coinbaseApiConnector;
-            _apiDataTabWriter = apiDataTabWriter;
+            _coinbaseAccountsBalanceTabWriter = coinbaseAccountsBalanceTabWriter;
         }
         public override async Task Execute(CancellationToken cancellationToken)
         {
-            var account = await GetAccount();
+            var accounts = await GetCoinbaseAccounts();
 
-            if (account == null)
+            if (accounts == null)
             {
                 return;
             }
             
-            await _apiDataTabWriter.UpdateTab(account);
-        }
-
-        private async Task<AccountDto> GetAccount()
-        {
-            var coinbaseAccounts = await GetCoinbaseAccounts();
-
-            if (coinbaseAccounts == null)
-            {
-                return null;
-            }
-
-            var summaryAccount = coinbaseAccounts.FirstOrDefault(x => x.Name == "Total");
-
-            return new AccountDto
-            {
-                Name = "Kryptovaluta",
-                Balance = summaryAccount?.Balance ?? 0
-            };
+            await _coinbaseAccountsBalanceTabWriter.UpdateTab(accounts);
         }
 
         private async Task<IList<AccountDto>> GetCoinbaseAccounts()

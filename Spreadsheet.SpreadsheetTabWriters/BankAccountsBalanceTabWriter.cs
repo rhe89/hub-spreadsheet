@@ -13,24 +13,20 @@ using Spreadsheet.Core.SpreadsheetTabWriters;
 
 namespace Spreadsheet.SpreadsheetTabWriters
 {
-    public class ApiDataTabWriter : TabWriterBase, IApiDataTabWriter
+    public class BankAccountsBalanceTabWriter<TBankAccountsTabDto> : TabWriterBase, IBankAccountsBalanceTabWriter<TBankAccountsTabDto>
+        where TBankAccountsTabDto : BankAccountsTabDto, new()
     {
-        private readonly ITabReader<ApiDataTabDto> _apiDataTabReader;
-        private readonly ILogger<ApiDataTabWriter> _logger;
+        private readonly ITabReader<TBankAccountsTabDto> _apiDataTabReader;
+        private readonly ILogger<BankAccountsBalanceTabWriter<TBankAccountsTabDto>> _logger;
         
-        public ApiDataTabWriter(ITabReader<ApiDataTabDto> apiDataTabReader,
+        public BankAccountsBalanceTabWriter(ITabReader<TBankAccountsTabDto> apiDataTabReader,
                                 IGoogleSpreadsheetConnector googleSpreadsheetConnector,
-                                ILogger<ApiDataTabWriter> logger) : base(googleSpreadsheetConnector)
+                                ILogger<BankAccountsBalanceTabWriter<TBankAccountsTabDto>> logger) : base(googleSpreadsheetConnector)
         {
             _apiDataTabReader = apiDataTabReader;
             _logger = logger;
         }
 
-        public async Task UpdateTab(AccountDto accountDto)
-        {
-            await UpdateTab(new List<AccountDto> {accountDto});
-        }
-        
         public async Task UpdateTab(IList<AccountDto> accounts)
         {
             var apiDataTabDto = await _apiDataTabReader.GetTab();

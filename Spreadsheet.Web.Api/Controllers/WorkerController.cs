@@ -27,18 +27,26 @@ namespace Spreadsheet.Web.Api.Controllers
             return Ok();
         }
         
-        [HttpPost("QueueUpdateCoinbaseBalancesTask")]
-        public IActionResult QueueUpdateCoinbaseBalancesTask()
+        [HttpPost("QueueUpdateCoinbaseAccountsTask")]
+        public IActionResult QueueUpdateCoinbaseAccountsTask()
         {
-            _backgroundTaskQueueHandler.QueueBackgroundTask<UpdateCoinbaseBalancesTask>();
+            _backgroundTaskQueueHandler.QueueBackgroundTask<UpdateCoinbaseAccountsTask>();
 
             return Ok();
         }
         
-        [HttpPost("QueueUpdateSbankenBalancesTask")]
-        public IActionResult QueueUpdateSbankenBalancesTask()
+        [HttpPost("QueueUpdateSbankenAccountsTask")]
+        public IActionResult QueueUpdateSbankenAccountsTask()
         {
-            _backgroundTaskQueueHandler.QueueBackgroundTask<UpdateSbankenBalancesTask>();
+            _backgroundTaskQueueHandler.QueueBackgroundTask<UpdateSbankenAccountsTask>();
+
+            return Ok();
+        }
+        
+        [HttpPost("QueueUpdateCoinbaseProAccountsTask")]
+        public IActionResult QueueUpdateCoinbaseProAccountsTask()
+        {
+            _backgroundTaskQueueHandler.QueueBackgroundTask<UpdateCoinbaseProAccountsTask>();
 
             return Ok();
         }

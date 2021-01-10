@@ -35,51 +35,37 @@ namespace Spreadsheet.Integration
         
         public async Task UpdateSpreadsheetTab(TabDtoBase tabDtoBase, int firstColumnRow, int lastColumnRow)
         {
-            try
+            var range =  GetRangeFormatted(tabDtoBase.Name,
+            tabDtoBase.FirstColumn,
+            firstColumnRow,
+            tabDtoBase.LastColumn,
+            lastColumnRow);
+        
+            var updatedValues = new ValueRange
             {
-                var range =  GetRangeFormatted(tabDtoBase.Name,
-                tabDtoBase.FirstColumn,
-                firstColumnRow,
-                tabDtoBase.LastColumn,
-                lastColumnRow);
+                MajorDimension = "ROWS",
+                Values = tabDtoBase.Rows.Select(row => row.Cells).ToList(),
+                Range = range
+            };
+
+            var sheetsService = await GetSheetsService();
+
+            var update = sheetsService.Spreadsheets.Values.Update(updatedValues, tabDtoBase.SpreadsheetId, range);
             
-                var updatedValues = new ValueRange
-                {
-                    MajorDimension = "ROWS",
-                    Values = tabDtoBase.Rows.Select(row => row.Cells).ToList(),
-                    Range = range
-                };
+            update.ValueInputOption = SpreadsheetsResource.ValuesResource.UpdateRequest.ValueInputOptionEnum.USERENTERED;
 
-                var sheetsService = await GetSheetsService();
-
-                var update = sheetsService.Spreadsheets.Values.Update(updatedValues, tabDtoBase.SpreadsheetId, range);
-                
-                update.ValueInputOption = SpreadsheetsResource.ValuesResource.UpdateRequest.ValueInputOptionEnum.USERENTERED;
-
-                await update.ExecuteAsync();
-            }
-            catch (Exception e)
-            {
-                throw new SpreadsheetConnectorException($"Error updating tab {tabDtoBase.Name} in spreadsheet with id {tabDtoBase.SpreadsheetId} from Google API", e);
-            }
+            await update.ExecuteAsync();
         }
         
         public async Task LoadSpreadsheetTab(TabDtoBase tabDtoBase)
         {
-            try
-            {
-                _logger.LogInformation($"Getting tab {tabDtoBase.Name} in sheet with id {tabDtoBase.SpreadsheetId} from Google API");
+            _logger.LogInformation($"Getting tab {tabDtoBase.Name} in sheet with id {tabDtoBase.SpreadsheetId} from Google API");
 
-                var request = await GetSpreadsheetRequest(tabDtoBase);
+            var request = await GetSpreadsheetRequest(tabDtoBase);
 
-                var response = await request.ExecuteAsync();
-                
-                tabDtoBase.PopulateRows(response.Values);
-            }
-            catch (Exception e)
-            {
-                throw new SpreadsheetConnectorException($"Error getting tab {tabDtoBase.Name} in sheet with id {tabDtoBase.SpreadsheetId} from Google API", e);
-            }
+            var response = await request.ExecuteAsync();
+            
+            tabDtoBase.PopulateRows(response.Values);
         }
         
         private async Task<SpreadsheetsResource.ValuesResource.GetRequest> GetSpreadsheetRequest(TabDtoBase tabDtoBase)
@@ -137,20 +123,13 @@ namespace Spreadsheet.Integration
                 X509KeyStorageFlags.PersistKeySet |
                 X509KeyStorageFlags.Exportable);
 
-            try
-            {
-                var accountCredential = new ServiceAccountCredential(
-                    new ServiceAccountCredential.Initializer(serviceAccountEmail)
-                    {
-                        Scopes = new[] { SheetsService.Scope.Spreadsheets }
-                    }.FromCertificate(certificate));
+            var accountCredential = new ServiceAccountCredential(
+                new ServiceAccountCredential.Initializer(serviceAccountEmail)
+                {
+                    Scopes = new[] { SheetsService.Scope.Spreadsheets }
+                }.FromCertificate(certificate));
 
-                return accountCredential;
-            }
-            catch (Exception e)
-            {
-                throw new SpreadsheetConnectorException("Error when authenticating ServiceAccountCredentials: ", e);
-            }
+            return accountCredential;
         }
     }
 }

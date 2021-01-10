@@ -3,15 +3,17 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Spreadsheet.Data;
 
 namespace Spreadsheet.Data.Migrations
 {
     [DbContext(typeof(SpreadsheetDbContext))]
-    partial class SpreadsheetDbContextModelSnapshot : ModelSnapshot
+    [Migration("20210110155750_AddBankAccountsTabs")]
+    partial class AddBankAccountsTabs
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

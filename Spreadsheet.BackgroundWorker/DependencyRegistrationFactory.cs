@@ -29,21 +29,23 @@ namespace Spreadsheet.BackgroundWorker
         protected override void AddDomainDependencies(IServiceCollection serviceCollection, IConfiguration configuration)
         {
             serviceCollection.AddSingleton<IBackgroundTask, UpdateAccountTransfersTask>();
-            serviceCollection.AddSingleton<IBackgroundTask, UpdateSbankenBalancesTask>();
-            serviceCollection.AddSingleton<IBackgroundTask, UpdateCoinbaseBalancesTask>();
+            serviceCollection.AddSingleton<IBackgroundTask, UpdateSbankenAccountsTask>();
+            serviceCollection.AddSingleton<IBackgroundTask, UpdateCoinbaseAccountsTask>();
+            serviceCollection.AddSingleton<IBackgroundTask, UpdateCoinbaseProAccountsTask>();
             
             serviceCollection.AddSingleton<ITabReader<ResultsAndSavingsTabDto>>(x => 
                 new TabReader<ResultsAndSavingsTabDto>(x.GetRequiredService<ISpreadsheetProvider>(),
                     x.GetRequiredService<IGoogleSpreadsheetConnector>(), 
                     SpreadsheetTabMetadataConstants.ResultAndSavingTabName));
             
-            serviceCollection.AddSingleton<ITabReader<ApiDataTabDto>>(x => 
-                new TabReader<ApiDataTabDto>(x.GetRequiredService<ISpreadsheetProvider>(),
+            serviceCollection.AddSingleton<ITabReader<SbankenAccountsTabDto>>(x => 
+                new TabReader<SbankenAccountsTabDto>(x.GetRequiredService<ISpreadsheetProvider>(),
                     x.GetRequiredService<IGoogleSpreadsheetConnector>(), 
                     SpreadsheetTabMetadataConstants.ApiDataTabName));
             
-            serviceCollection.AddSingleton<IApiDataTabWriter, ApiDataTabWriter>();
-            serviceCollection.AddSingleton<IAzureStorage, AzureStorage>();
+            serviceCollection.AddSingleton<IBankAccountsBalanceTabWriter<SbankenAccountsTabDto>, BankAccountsBalanceTabWriter<SbankenAccountsTabDto>>();
+            serviceCollection.AddSingleton<IBankAccountsBalanceTabWriter<CoinbaseAccountsTabDto>, BankAccountsBalanceTabWriter<CoinbaseAccountsTabDto>>();
+            serviceCollection.AddSingleton<IBankAccountsBalanceTabWriter<CoinbaseProAccountsTabDto>, BankAccountsBalanceTabWriter<CoinbaseProAccountsTabDto>>();            serviceCollection.AddSingleton<IAzureStorage, AzureStorage>();
             serviceCollection.AddSingleton<ISpreadsheetProvider, SpreadsheetProvider>();
             serviceCollection.AddSingleton<IGoogleSpreadsheetConnector, GoogleSpreadsheetConnector>();
             serviceCollection.AddHubHttpClient<ICoinbaseApiConnector, CoinbaseApiConnector>(client =>
