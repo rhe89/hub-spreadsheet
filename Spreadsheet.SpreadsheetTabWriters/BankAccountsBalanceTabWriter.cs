@@ -116,13 +116,6 @@ namespace Spreadsheet.SpreadsheetTabWriters
                 return false;
             }
 
-            if (account.Balance == 0)
-            {
-                _logger.LogWarning($"Available amount in {account.Name} was 0. Skipping.");
-                accountIdx = -1;
-                return false;
-            }
-
             accountIdx = row.RowIndex;
             
             return true;
