@@ -12,7 +12,7 @@ namespace Spreadsheet.Integration
     {
         private const string AccountsPath = "/api/account/accounts";
         
-        public SbankenApiConnector(HttpClient httpClient, ILogger<SbankenApiConnector> logger) : base(httpClient, logger, "SbankenApi") {}
+        public SbankenApiConnector(HttpClient httpClient) : base(httpClient, "SbankenApi") {}
         
         public async Task<Response<IList<AccountDto>>> GetAccounts()
         {

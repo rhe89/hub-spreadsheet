@@ -12,7 +12,7 @@ namespace Spreadsheet.Integration
     {
         private const string AccountsPath = "/api/account/accounts";
         
-        public CoinbaseProApiConnector(HttpClient httpClient, ILogger<CoinbaseProApiConnector> logger) : base(httpClient, logger, "CoinbaseProApi") {}
+        public CoinbaseProApiConnector(HttpClient httpClient) : base(httpClient, "CoinbaseProApi") {}
         
         public async Task<Response<IList<AccountDto>>> GetAccounts()
         {
