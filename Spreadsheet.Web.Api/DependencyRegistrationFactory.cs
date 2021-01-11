@@ -62,9 +62,9 @@ namespace Spreadsheet.Web.Api
                     x.GetRequiredService<IGoogleSpreadsheetConnector>(), 
                     SpreadsheetTabMetadataConstants.ApiPaymentsAccountTabName));
             
-            serviceCollection.AddSingleton<IBankAccountsBalanceTabWriter<SbankenAccountsTabDto>, BankAccountsBalanceTabWriter<SbankenAccountsTabDto>>();
-            serviceCollection.AddSingleton<IBankAccountsBalanceTabWriter<CoinbaseAccountsTabDto>, BankAccountsBalanceTabWriter<CoinbaseAccountsTabDto>>();
-            serviceCollection.AddSingleton<IBankAccountsBalanceTabWriter<CoinbaseProAccountsTabDto>, BankAccountsBalanceTabWriter<CoinbaseProAccountsTabDto>>();            serviceCollection.AddSingleton<IAzureStorage, AzureStorage>();
+            serviceCollection.AddSingleton<IBankAccountsTabWriter<SbankenAccountsTabDto>, BankAccountsTabWriter<SbankenAccountsTabDto>>();
+            serviceCollection.AddSingleton<IBankAccountsTabWriter<CoinbaseAccountsTabDto>, BankAccountsTabWriter<CoinbaseAccountsTabDto>>();
+            serviceCollection.AddSingleton<IBankAccountsTabWriter<CoinbaseProAccountsTabDto>, BankAccountsTabWriter<CoinbaseProAccountsTabDto>>();            serviceCollection.AddSingleton<IAzureStorage, AzureStorage>();
             serviceCollection.AddSingleton<ISpreadsheetProvider, SpreadsheetProvider>();
             serviceCollection.AddSingleton<IGoogleSpreadsheetConnector, GoogleSpreadsheetConnector>();
             serviceCollection.AddHubHttpClient<ICoinbaseApiConnector, CoinbaseApiConnector>(client =>

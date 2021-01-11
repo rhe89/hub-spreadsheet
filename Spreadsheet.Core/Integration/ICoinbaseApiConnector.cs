@@ -1,12 +1,6 @@
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using Hub.Web.Http;
-using Spreadsheet.Core.Dto.BackgroundTasks;
-
 namespace Spreadsheet.Core.Integration
 {
-    public interface ICoinbaseApiConnector
+    public interface ICoinbaseApiConnector : IBankApiConnector
     {
-        Task<Response<IList<AccountDto>>> GetAccounts();
     }
 }

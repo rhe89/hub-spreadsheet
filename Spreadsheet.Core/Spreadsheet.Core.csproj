@@ -6,7 +6,7 @@
 
     <ItemGroup>
       <PackageReference Include="Hub.Storage.Core" Version="1.0.9" />
-      <PackageReference Include="Hub.Web.Http" Version="2.0.12" />
+      <PackageReference Include="Hub.Web.Http" Version="3.0.1" />
       <PackageReference Include="Microsoft.Azure.Storage.File" Version="11.2.2" />
     </ItemGroup>
 
