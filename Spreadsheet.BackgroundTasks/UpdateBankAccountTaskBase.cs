@@ -7,7 +7,7 @@ using Hub.HostedServices.Tasks;
 using Hub.Storage.Core.Factories;
 using Hub.Storage.Core.Providers;
 using Microsoft.Extensions.Logging;
-using Spreadsheet.Core.Dto.BackgroundTasks;
+using Spreadsheet.Core.Dto.Integration;
 using Spreadsheet.Core.Dto.Spreadsheet.Budget.Tabs;
 using Spreadsheet.Core.Integration;
 using Spreadsheet.Core.SpreadsheetTabWriters;

@@ -15,7 +15,8 @@ namespace Spreadsheet.Web.Api
 
         private static IHostBuilder CreateHostBuilder(string[] args)
         {
-            return HostBuilder<DependencyRegistrationFactory, SpreadsheetDbContext>.Create(args);
+            return HostBuilder<DependencyRegistrationFactory, SpreadsheetDbContext>
+                .Create(args);
         }
     }
 }

@@ -1,4 +1,4 @@
-﻿namespace Spreadsheet.Core.Dto.BackgroundTasks
+﻿namespace Spreadsheet.Core.Dto.Integration
 {
     public class AccountDto
     {

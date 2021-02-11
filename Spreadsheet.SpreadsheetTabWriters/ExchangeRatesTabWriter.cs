@@ -1,8 +1,8 @@
-using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
 using Spreadsheet.Core.Dto.Integration;
 using Spreadsheet.Core.Dto.Spreadsheet;
 using Spreadsheet.Core.Dto.Spreadsheet.Budget.Tabs;
@@ -13,23 +13,22 @@ using Spreadsheet.Core.SpreadsheetTabWriters;
 
 namespace Spreadsheet.SpreadsheetTabWriters
 {
-    public class BankAccountsTabWriter<TBankAccountsTabDto> : TabWriterBase, IBankAccountsTabWriter<TBankAccountsTabDto>
-        where TBankAccountsTabDto : BankAccountsTabDto, new()
+    public class ExchangeRatesTabWriter : TabWriterBase, IExchangeRatesTabWriter
     {
-        private readonly ITabReader<TBankAccountsTabDto> _bankAccountsTabReader;
-        private readonly ILogger<BankAccountsTabWriter<TBankAccountsTabDto>> _logger;
-        
-        public BankAccountsTabWriter(ITabReader<TBankAccountsTabDto> bankAccountsTabReader,
-                                IGoogleSpreadsheetConnector googleSpreadsheetConnector,
-                                ILogger<BankAccountsTabWriter<TBankAccountsTabDto>> logger) : base(googleSpreadsheetConnector)
+        private readonly ITabReader<ExchangeRatesTabDto> _exchangeRatesTabReader;
+        private readonly ILogger<ExchangeRatesTabWriter> _logger;
+
+        public ExchangeRatesTabWriter(IGoogleSpreadsheetConnector googleSpreadsheetConnector,
+            ITabReader<ExchangeRatesTabDto> exchangeRatesTabReader,
+            ILogger<ExchangeRatesTabWriter> logger) : base(googleSpreadsheetConnector)
         {
-            _bankAccountsTabReader = bankAccountsTabReader;
+            _exchangeRatesTabReader = exchangeRatesTabReader;
             _logger = logger;
         }
 
-        public async Task UpdateTab(IList<AccountDto> accounts, DateTime bankAccountTaskLastRun)
+        public async Task UpdateTab(IList<ExchangeRateDto> accounts, DateTime bankAccountTaskLastRun)
         {
-            var apiDataTabDto = await _bankAccountsTabReader.GetTab();
+            var apiDataTabDto = await _exchangeRatesTabReader.GetTab();
             
             var currentPeriodIdx = apiDataTabDto.GetColIndexOfCurrentPeriodInSheet();
 
@@ -50,7 +49,7 @@ namespace Spreadsheet.SpreadsheetTabWriters
         }
 
         private void AddNewPeriod(BudgetSpreadsheetTabDtoBase budgetSpreadsheetTabDtoBase,
-            IEnumerable<AccountDto> accounts, DateTime bankAccountTaskLastRun)
+            IEnumerable<ExchangeRateDto> exchangeRates, DateTime bankAccountTaskLastRun)
         {
             var newPeriod = budgetSpreadsheetTabDtoBase.GetCurrentPeriod();
 
@@ -58,11 +57,11 @@ namespace Spreadsheet.SpreadsheetTabWriters
 
             var rowIdx = 0;
 
-            foreach (var account in accounts)
+            foreach (var exchangeRate in exchangeRates)
             {
-                var shouldUpdateAccount = ShouldUpdateAccount(budgetSpreadsheetTabDtoBase, account, out var accountIdx);
+                var shouldUpdateExchangeRate = ShouldUpdateExchangeRate(budgetSpreadsheetTabDtoBase, exchangeRate, out var accountIdx);
 
-                if (!shouldUpdateAccount)
+                if (!shouldUpdateExchangeRate)
                 {
                     continue;
                 }
@@ -70,7 +69,7 @@ namespace Spreadsheet.SpreadsheetTabWriters
                 if (accountIdx > rowIdx)
                     rowIdx = accountIdx;
 
-                budgetSpreadsheetTabDtoBase.Rows[accountIdx].Cells.Add(account.Balance.ToCommaString());
+                budgetSpreadsheetTabDtoBase.Rows[accountIdx].Cells.Add(exchangeRate.NOKRate.ToCommaString());
             }
 
             var lastUpdated = DateTime.Now.FormattedDateFull();
@@ -80,14 +79,14 @@ namespace Spreadsheet.SpreadsheetTabWriters
         }
 
         private void ReplaceCurrentPeriod(BudgetSpreadsheetTabDtoBase budgetSpreadsheetTabDtoBase,
-            IEnumerable<AccountDto> accounts,
+            IEnumerable<ExchangeRateDto> exchangeRates,
             int currentPeriodIdx, DateTime bankAccountTaskLastRun)
         {
             var rowIdx = 0;
             
-            foreach (var account in accounts)
+            foreach (var account in exchangeRates)
             {
-                var shouldUpdateAccount = ShouldUpdateAccount(budgetSpreadsheetTabDtoBase, account, out var accountIdx);
+                var shouldUpdateAccount = ShouldUpdateExchangeRate(budgetSpreadsheetTabDtoBase, account, out var accountIdx);
 
                 if (!shouldUpdateAccount)
                 {
@@ -96,14 +95,13 @@ namespace Spreadsheet.SpreadsheetTabWriters
 
                 ExpandRowAndCellsIfNecessary(budgetSpreadsheetTabDtoBase, accountIdx, currentPeriodIdx);
 
-                budgetSpreadsheetTabDtoBase.Rows[accountIdx].Cells[currentPeriodIdx] = account.Balance.ToCommaString();
+                budgetSpreadsheetTabDtoBase.Rows[accountIdx].Cells[currentPeriodIdx] = account.NOKRate.ToCommaString();
 
                 if (accountIdx > rowIdx)
                     rowIdx = accountIdx;
             }
 
             SetLastRun(budgetSpreadsheetTabDtoBase, currentPeriodIdx, ++rowIdx);
-            SetBankAccountTaskLastRun(budgetSpreadsheetTabDtoBase, currentPeriodIdx, bankAccountTaskLastRun, ++rowIdx);
         }
 
         private static void SetLastRun(BudgetSpreadsheetTabDtoBase budgetSpreadsheetTabDtoBase, int currentPeriodIdx,
@@ -122,29 +120,14 @@ namespace Spreadsheet.SpreadsheetTabWriters
                 row.Cells[currentPeriodIdx] = lastUpdated;
             }
         }
-        
-        private static void SetBankAccountTaskLastRun(BudgetSpreadsheetTabDtoBase budgetSpreadsheetTabDtoBase,
-            int currentPeriodIdx, DateTime bankAccountTaskLastRun, int rowIdx)
-        {
-            var row = budgetSpreadsheetTabDtoBase.Rows[rowIdx];
 
-            if (row.Cells.Count() <= currentPeriodIdx)
-            {
-                row.Cells.Add(bankAccountTaskLastRun.FormattedDateFull());
-            }
-            else
-            {
-                row.Cells[currentPeriodIdx] = bankAccountTaskLastRun.FormattedDateFull();;
-            }
-        }
-
-        private bool ShouldUpdateAccount(TabDtoBase tabDtoBase, AccountDto account, out int accountIdx)
+        private bool ShouldUpdateExchangeRate(TabDtoBase tabDtoBase, ExchangeRateDto account, out int accountIdx)
         {
-            var row = tabDtoBase.Rows.FirstOrDefault(x => x.RowKey == account.Name);
+            var row = tabDtoBase.Rows.FirstOrDefault(x => x.RowKey == account.Currency);
 
             if (row == null)
             {
-                _logger.LogWarning($"No row found in tab {tabDtoBase.Name} for account {account.Name}. Skipping");
+                _logger.LogWarning($"No row found in tab {tabDtoBase.Name} for currency {account.Currency}. Skipping");
                 accountIdx = -1;
                 return false;
             }
@@ -171,5 +154,6 @@ namespace Spreadsheet.SpreadsheetTabWriters
         {
             await UpdateSheet(tabDtoBase, 1, lastRow);
         }
+        
     }
 }

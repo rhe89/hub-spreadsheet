@@ -32,6 +32,7 @@ namespace Spreadsheet.BackgroundWorker
             serviceCollection.AddSingleton<IBackgroundTask, UpdateSbankenAccountsTask>();
             serviceCollection.AddSingleton<IBackgroundTask, UpdateCoinbaseAccountsTask>();
             serviceCollection.AddSingleton<IBackgroundTask, UpdateCoinbaseProAccountsTask>();
+            serviceCollection.AddSingleton<IBackgroundTask, UpdateExchangeRatesTask>();
             
             serviceCollection.AddSingleton<ITabReader<ResultsAndSavingsTabDto>>(x => 
                 new TabReader<ResultsAndSavingsTabDto>(x.GetRequiredService<ISpreadsheetProvider>(),
@@ -58,9 +59,16 @@ namespace Spreadsheet.BackgroundWorker
                     x.GetRequiredService<IGoogleSpreadsheetConnector>(), 
                     SpreadsheetTabMetadataConstants.ApiPaymentsAccountTabName));
             
+            serviceCollection.AddSingleton<ITabReader<ExchangeRatesTabDto>>(x => 
+                new TabReader<ExchangeRatesTabDto>(x.GetRequiredService<ISpreadsheetProvider>(),
+                    x.GetRequiredService<IGoogleSpreadsheetConnector>(), 
+                    SpreadsheetTabMetadataConstants.ExchangeRatesTabName));
+            
             serviceCollection.AddSingleton<IBankAccountsTabWriter<SbankenAccountsTabDto>, BankAccountsTabWriter<SbankenAccountsTabDto>>();
             serviceCollection.AddSingleton<IBankAccountsTabWriter<CoinbaseAccountsTabDto>, BankAccountsTabWriter<CoinbaseAccountsTabDto>>();
             serviceCollection.AddSingleton<IBankAccountsTabWriter<CoinbaseProAccountsTabDto>, BankAccountsTabWriter<CoinbaseProAccountsTabDto>>();            serviceCollection.AddSingleton<IAzureStorage, AzureStorage>();
+            serviceCollection.AddSingleton<IExchangeRatesTabWriter, ExchangeRatesTabWriter>();            
+            serviceCollection.AddSingleton<IAzureStorage, AzureStorage>();
             serviceCollection.AddSingleton<ISpreadsheetProvider, SpreadsheetProvider>();
             serviceCollection.AddSingleton<IGoogleSpreadsheetConnector, GoogleSpreadsheetConnector>();
             serviceCollection.AddHubHttpClient<ICoinbaseApiConnector, CoinbaseApiConnector>(client =>

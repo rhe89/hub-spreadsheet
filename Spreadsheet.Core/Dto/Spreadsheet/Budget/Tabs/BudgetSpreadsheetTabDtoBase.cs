@@ -36,7 +36,7 @@ namespace Spreadsheet.Core.Dto.Spreadsheet.Budget.Tabs
             return -1;
         }
 
-        public static string GetCurrentPeriod()
+        public string GetCurrentPeriod()
         {
             return $"{DateTime.Now.Month}/{DateTime.Now.Year}";
         }

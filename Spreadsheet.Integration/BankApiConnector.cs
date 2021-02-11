@@ -3,7 +3,7 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using Hub.Storage.Core.Dto;
 using Hub.Web.Http;
-using Spreadsheet.Core.Dto.BackgroundTasks;
+using Spreadsheet.Core.Dto.Integration;
 using Spreadsheet.Core.Integration;
 
 namespace Spreadsheet.Integration

@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Spreadsheet.Core.Dto.BackgroundTasks;
+using Spreadsheet.Core.Dto.Integration;
 using Spreadsheet.Core.Dto.Spreadsheet.Budget.Tabs;
 
 namespace Spreadsheet.Core.SpreadsheetTabWriters
