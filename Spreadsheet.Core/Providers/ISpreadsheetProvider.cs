@@ -1,11 +1,12 @@
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Spreadsheet.Core.Dto.Data;
-using Spreadsheet.Core.Dto.Spreadsheet;
 
 namespace Spreadsheet.Core.Providers
 {
     public interface ISpreadsheetProvider
     {
-        Task<SpreadsheetMetadataDto> CurrentBudgetSpreadsheet();
+        Task<SpreadsheetMetadataDto> CurrentBudgetSpreadsheetMetadata();
+        Task<IList<SpreadsheetRowMetadataDto>> GetRowsInTabForCurrentSpreadsheet(string tabName);
     }
 }

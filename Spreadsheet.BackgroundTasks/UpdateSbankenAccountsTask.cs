@@ -3,22 +3,18 @@ using Hub.Storage.Core.Providers;
 using Microsoft.Extensions.Logging;
 using Spreadsheet.Core.Dto.Spreadsheet.Budget.Tabs;
 using Spreadsheet.Core.Integration;
-using Spreadsheet.Core.SpreadsheetTabWriters;
+using Spreadsheet.Core.Providers;
+using Spreadsheet.Core.Services;
 
 namespace Spreadsheet.BackgroundTasks
 {
-    public class UpdateSbankenAccountsTask : UpdateBankAccountTaskBase<SbankenAccountsTabDto>
+    public class UpdateSbankenAccountsTask : UpdateTabTaskBase<SbankenAccountsTab>
     {
-        public UpdateSbankenAccountsTask(ILogger<UpdateSbankenAccountsTask> logger, 
-            ISbankenApiConnector sbankenApiConnector,
-            IBankAccountsTabWriter<SbankenAccountsTabDto> sbankenAccountsTabWriter, 
-            IBackgroundTaskConfigurationProvider backgroundTaskConfigurationProvider,
-            IBackgroundTaskConfigurationFactory backgroundTaskConfigurationFactory) : 
-                base(backgroundTaskConfigurationProvider, 
-                     backgroundTaskConfigurationFactory, 
-                     sbankenAccountsTabWriter,
-                     sbankenApiConnector,
-                     logger)
-        { }
+        public UpdateSbankenAccountsTask(IBackgroundTaskConfigurationProvider backgroundTaskConfigurationProvider, 
+            IBackgroundTaskConfigurationFactory backgroundTaskConfigurationFactory,
+            ITabWriterService<SbankenAccountsTab> tabWriterService,
+            ITabDataProvider<SbankenAccountsTab> tabDataProvider) : base(backgroundTaskConfigurationProvider, backgroundTaskConfigurationFactory, tabDataProvider, tabWriterService)
+        {
+        }
     }
 }

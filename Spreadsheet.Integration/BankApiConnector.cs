@@ -4,11 +4,9 @@ using System.Threading.Tasks;
 using Hub.Storage.Core.Dto;
 using Hub.Web.Http;
 using Spreadsheet.Core.Dto.Integration;
-using Spreadsheet.Core.Integration;
 
 namespace Spreadsheet.Integration
 {
-    //TODO Lazy to have inheritors of this one, make generic or something
     public class BankApiConnector : HttpClientService
     {
         private const string AccountsPath = "/api/account/accounts";

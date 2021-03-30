@@ -6,6 +6,7 @@ namespace Spreadsheet.Core.Entities
     {
         public long SpreadsheetTabMetadataId { get; set; }
         public string RowKey { get; set; }
+        public string Tags { get; set; }
 
         public virtual SpreadsheetTabMetadata SpreadsheetTabMetadata { get; set; }
         

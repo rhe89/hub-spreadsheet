@@ -2,20 +2,27 @@ using System.Collections.Generic;
 
 namespace Spreadsheet.Core.Dto.Spreadsheet
 {
-    public class RowDto
+    public class Row
     {
+        private string _rowKey;
         public int RowIndex { get; set; }
-        public string RowKey { get; set; }
+
+        public string RowKey
+        {
+            get => _rowKey;
+            set => _rowKey = value?.Trim();
+        }
+
         public IList<object> Cells { get; set; }
         
-        public RowDto(int rowIndex, string rowKey, IList<object> cells)
+        public Row(int rowIndex, string rowKey, IList<object> cells)
         {
             RowIndex = rowIndex;
             RowKey = rowKey;
             Cells = cells;
         }
 
-        public RowDto(int columns)
+        public Row(int columns)
         {
             Cells = new List<object>();
 

@@ -6,17 +6,18 @@ using Spreadsheet.Core.Dto.Spreadsheet;
 using Spreadsheet.Core.Exceptions;
 using Spreadsheet.Core.Integration;
 using Spreadsheet.Core.Providers;
-using Spreadsheet.Core.SpreadsheetTabReaders;
+using Spreadsheet.Core.Services;
 
-namespace Spreadsheet.SpreadsheetTabReaders
+namespace Spreadsheet.Services
 {
-    public class TabReader<TTabDto> : ITabReader<TTabDto> where TTabDto : TabDtoBase, new()
+    public class TabReaderService<TTab> : ITabReaderService<TTab> 
+        where TTab : Tab, new()
     {
         private readonly IGoogleSpreadsheetConnector _googleSpreadsheetConnector;
         private readonly ISpreadsheetProvider _spreadsheetProvider;
         private readonly string _tabName;
 
-        public TabReader(ISpreadsheetProvider spreadsheetProvider, 
+        public TabReaderService(ISpreadsheetProvider spreadsheetProvider, 
             IGoogleSpreadsheetConnector googleSpreadsheetConnector,
             string tabName)
         {
@@ -25,35 +26,23 @@ namespace Spreadsheet.SpreadsheetTabReaders
             _spreadsheetProvider = spreadsheetProvider;
         }
         
-        public async Task<TTabDto> GetTab()    
+        public async Task<TTab> GetTab()    
         {
-            var apiDataTabDto = await SetTabDtoFromCurrentBudgetSpreadsheet();
-            
-            await PopulateRowsInTabDto(apiDataTabDto);
+            var spreadsheetMetadata = await _spreadsheetProvider.CurrentBudgetSpreadsheetMetadata();
 
-            return apiDataTabDto;
-        }
-
-        private async Task<TTabDto> SetTabDtoFromCurrentBudgetSpreadsheet()
-        {
-            var spreadsheetMetadataDto = await GetCurrentBudgetSpreadsheetMetadataDto();
-
-            return SetTabDtoFromSpreadsheetMetadata(spreadsheetMetadataDto, _tabName);
-        }
-
-        private async Task<SpreadsheetMetadataDto> GetCurrentBudgetSpreadsheetMetadataDto()
-        {
-            var spreadsheetMetadataDto = await _spreadsheetProvider.CurrentBudgetSpreadsheet();
-            
-            if (spreadsheetMetadataDto == null)
+            if (spreadsheetMetadata == null)
             {
                 throw new SpreadsheetNotFoundException("No metadata exists for budget spreadsheet for current date");
             }
+            
+            var tab = SetTabDtoFromSpreadsheetMetadata(spreadsheetMetadata, _tabName);
+            
+            await PopulateRowsInTab(tab);
 
-            return spreadsheetMetadataDto;
+            return tab;
         }
 
-        private static TTabDto SetTabDtoFromSpreadsheetMetadata(SpreadsheetMetadataDto spreadSheet, string tabName)
+        private static TTab SetTabDtoFromSpreadsheetMetadata(SpreadsheetMetadataDto spreadSheet, string tabName)
         {
             var spreadsheetTabMetadata =
                 spreadSheet.SpreadsheetTabMetadata.FirstOrDefault(x =>
@@ -66,7 +55,7 @@ namespace Spreadsheet.SpreadsheetTabReaders
                     nameof(tabName));
             }
 
-            return new TTabDto
+            return new TTab
             {
                 Name = spreadsheetTabMetadata.Name,
                 SpreadsheetId = spreadSheet.SpreadsheetId,
@@ -76,9 +65,9 @@ namespace Spreadsheet.SpreadsheetTabReaders
             };
         }
 
-        private async Task PopulateRowsInTabDto(TabDtoBase tabDtoBase)
+        private async Task PopulateRowsInTab(Tab tab)
         {
-            await _googleSpreadsheetConnector.LoadSpreadsheetTab(tabDtoBase);
+            await _googleSpreadsheetConnector.LoadSpreadsheetTab(tab);
         }
     }
 }

@@ -1,4 +1,6 @@
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Hub.Storage.Core.Repository;
 using Microsoft.EntityFrameworkCore;
@@ -18,7 +20,7 @@ namespace Spreadsheet.Providers
             _dbRepository = dbRepository;
         }
         
-        public async Task<SpreadsheetMetadataDto> CurrentBudgetSpreadsheet()
+        public async Task<SpreadsheetMetadataDto> CurrentBudgetSpreadsheetMetadata()
         {
             var spreadsheet = await _dbRepository
                 .Where<SpreadsheetMetadata>(x => x.Name == SpreadsheetMetadataConstants.BudgetSpreadsheetName &&
@@ -28,6 +30,23 @@ namespace Spreadsheet.Providers
                 .FirstOrDefaultAsync();
 
             return _dbRepository.Map<SpreadsheetMetadata, SpreadsheetMetadataDto>(spreadsheet);
+        }
+
+        public async Task<IList<SpreadsheetRowMetadataDto>> GetRowsInTabForCurrentSpreadsheet(string tabName)
+        {
+            var spreadsheet = await _dbRepository
+                .Where<SpreadsheetMetadata>(x => x.Name == SpreadsheetMetadataConstants.BudgetSpreadsheetName &&
+                                                 x.ValidFrom < DateTime.Now && (x.ValidTo == null || x.ValidTo > DateTime.Now))
+                .Include(x => x.SpreadsheetTabMetadata)
+                .ThenInclude(x => x.SpreadsheetRowMetadata)
+                .FirstOrDefaultAsync();
+
+            var rows = spreadsheet
+                .SpreadsheetTabMetadata.FirstOrDefault(x => x.Name == tabName)
+                ?.SpreadsheetRowMetadata
+                ?.ToList();
+
+            return _dbRepository.Map<IList<SpreadsheetRowMetadata>, IList<SpreadsheetRowMetadataDto>>(rows);
         }
     }
 }

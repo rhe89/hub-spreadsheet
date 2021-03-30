@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Spreadsheet.Core.Constants;
@@ -5,19 +6,51 @@ using Spreadsheet.Core.Dto.Data;
 
 namespace Spreadsheet.Core.Dto.Spreadsheet
 {
-    public abstract class TabDtoBase
+    public abstract class Tab
     {
         public string SpreadsheetId { get; set; }
         public string Name { get; set; }
         public string FirstColumn { get; set; }
         public string LastColumn { get; set; }
         protected bool PopulateAllRows { get; set; } 
-        public IList<RowDto> Rows { get; }
+        public IList<Row> Rows { get; }
         public IList<SpreadsheetRowMetadataDto> SpreadsheetRowMetadataDtos { get; set; }
 
-        protected TabDtoBase()
+        protected Tab()
         {
-            Rows = new List<RowDto>();
+            Rows = new List<Row>();
+            PopulateAllRows = true;
+        }
+        
+        public int GetColumnOfCurrentPeriodInSheet()
+        {
+            var currentPeriod = GetCurrentPeriod();
+
+            return GetColIndexOfPeriodInSheet(currentPeriod);
+        }
+        
+        private int GetColIndexOfPeriodInSheet(string period)
+        {
+            var idx = 0;
+
+            var periodRow = Rows.First();
+
+            foreach (var col in periodRow.Cells)
+            {
+                if (col.ToString() == period)
+                {
+                    return idx;
+                }
+
+                idx++;
+            }
+
+            return -1;
+        }
+
+        public string GetCurrentPeriod()
+        {
+            return $"{DateTime.Now.Month}/{DateTime.Now.Year}";
         }
 
         public void PopulateRows(IList<IList<object>> sheet)
@@ -31,12 +64,12 @@ namespace Spreadsheet.Core.Dto.Spreadsheet
                     i == SpreadsheetRowMetadataConstants.PeriodRowIndex || 
                     SpreadsheetRowMetadataDtos.Any(x => x.RowKey == rowKey))
                 {
-                    Rows.Add(new RowDto(i, rowKey, cellsInRow));
+                    Rows.Add(new Row(i, rowKey, cellsInRow));
                 }
             }
         }
 
-        public void AddRowToExistingSheet(RowDto row)
+        public void AddRowToExistingSheet(Row row)
         {
             Rows.Add(row);
         }

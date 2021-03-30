@@ -3,23 +3,19 @@ using Hub.Storage.Core.Providers;
 using Microsoft.Extensions.Logging;
 using Spreadsheet.Core.Dto.Spreadsheet.Budget.Tabs;
 using Spreadsheet.Core.Integration;
-using Spreadsheet.Core.SpreadsheetTabWriters;
+using Spreadsheet.Core.Providers;
+using Spreadsheet.Core.Services;
 
 namespace Spreadsheet.BackgroundTasks
 {
-    public class UpdateCoinbaseProAccountsTask : UpdateBankAccountTaskBase<CoinbaseProAccountsTabDto>
+    public class UpdateCoinbaseProAccountsTask : UpdateTabTaskBase<CoinbaseProAccountsTab>
     {
-        public UpdateCoinbaseProAccountsTask(ILogger<UpdateCoinbaseProAccountsTask> logger, 
-            ICoinbaseProApiConnector coinbaseProApiConnector,
-            IBankAccountsTabWriter<CoinbaseProAccountsTabDto> coinbaseProAccountsTabWriter, 
-            IBackgroundTaskConfigurationProvider backgroundTaskConfigurationProvider,
-            IBackgroundTaskConfigurationFactory backgroundTaskConfigurationFactory) : 
-                base(backgroundTaskConfigurationProvider, 
-                     backgroundTaskConfigurationFactory, 
-                     coinbaseProAccountsTabWriter,
-                     coinbaseProApiConnector,
-                     logger)
-        { }
+        public UpdateCoinbaseProAccountsTask(IBackgroundTaskConfigurationProvider backgroundTaskConfigurationProvider, 
+            IBackgroundTaskConfigurationFactory backgroundTaskConfigurationFactory,
+            ITabWriterService<CoinbaseProAccountsTab> tabWriterService,
+            ITabDataProvider<CoinbaseProAccountsTab> tabDataProvider) : base(backgroundTaskConfigurationProvider, backgroundTaskConfigurationFactory, tabDataProvider, tabWriterService)
+        {
+        }
        
     }
 }

@@ -10,7 +10,7 @@ namespace Spreadsheet.Core.Extensions
             
             var date = DateTime.Parse(dateString, CultureInfo.InvariantCulture);
 
-            return date.DateHour();
+            return date.DateWithHour();
         }
     }
 }

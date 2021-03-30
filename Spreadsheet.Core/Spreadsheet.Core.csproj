@@ -10,4 +10,8 @@
       <PackageReference Include="Microsoft.Azure.Storage.File" Version="11.2.2" />
     </ItemGroup>
 
+    <ItemGroup>
+      <Folder Include="Dto\Api" />
+    </ItemGroup>
+
 </Project>

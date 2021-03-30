@@ -5,8 +5,8 @@ namespace Spreadsheet.Core.Integration
 {
     public interface IGoogleSpreadsheetConnector
     {
-        Task LoadSpreadsheetTab(TabDtoBase tabDtoBase);
+        Task LoadSpreadsheetTab(Tab tab);
 
-        Task UpdateSpreadsheetTab(TabDtoBase tabDtoBase, int firstColumnRow, int lastColumnRow);
+        Task UpdateSpreadsheetTab(Tab tab, int firstColumnRow, int lastColumnRow);
     }
 }

@@ -6,7 +6,7 @@ namespace Spreadsheet.Core.Constants
         public static readonly string CoinbaseAccountsTabName = "COINBASE_ACCOUNTS";
         public static readonly string CoinbaseProAccountsTabName = "COINBASE_PRO_ACCOUNTS";
         public static readonly string ResultAndSavingTabName = "Resultat og sparing";
-        public static readonly string ApiPaymentsAccountTabName = "API_REGNINGSKONTO";
+        public static readonly string BillingAccountTabName = "API_REGNINGSKONTO";
         public static readonly string ExchangeRatesTabName = "EXCHANGE_RATES";
     }
 }

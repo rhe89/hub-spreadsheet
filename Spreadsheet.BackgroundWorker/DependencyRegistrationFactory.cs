@@ -11,16 +11,14 @@ using Spreadsheet.Core.Constants;
 using Spreadsheet.Core.Dto.Spreadsheet.Budget.Tabs;
 using Spreadsheet.Core.Integration;
 using Spreadsheet.Core.Providers;
-using Spreadsheet.Core.SpreadsheetTabReaders;
-using Spreadsheet.Core.SpreadsheetTabWriters;
+using Spreadsheet.Core.Services;
 using Spreadsheet.Core.Storage;
 using Spreadsheet.Data;
 using Spreadsheet.Data.AutoMapper;
 using Spreadsheet.Data.Storage;
 using Spreadsheet.Integration;
 using Spreadsheet.Providers;
-using Spreadsheet.SpreadsheetTabReaders;
-using Spreadsheet.SpreadsheetTabWriters;
+using Spreadsheet.Services;
 
 namespace Spreadsheet.BackgroundWorker
 {
@@ -33,41 +31,50 @@ namespace Spreadsheet.BackgroundWorker
             serviceCollection.AddSingleton<IBackgroundTask, UpdateCoinbaseAccountsTask>();
             serviceCollection.AddSingleton<IBackgroundTask, UpdateCoinbaseProAccountsTask>();
             serviceCollection.AddSingleton<IBackgroundTask, UpdateExchangeRatesTask>();
+            serviceCollection.AddSingleton<IBackgroundTask, UpdateBillingAccountPaymentsTask>();
             
-            serviceCollection.AddSingleton<ITabReader<ResultsAndSavingsTabDto>>(x => 
-                new TabReader<ResultsAndSavingsTabDto>(x.GetRequiredService<ISpreadsheetProvider>(),
+            serviceCollection.AddSingleton<ITabReaderService<ResultsAndSavingsTab>>(x => 
+                new TabReaderService<ResultsAndSavingsTab>(x.GetRequiredService<ISpreadsheetProvider>(),
                     x.GetRequiredService<IGoogleSpreadsheetConnector>(), 
                     SpreadsheetTabMetadataConstants.ResultAndSavingTabName));
             
-            serviceCollection.AddSingleton<ITabReader<SbankenAccountsTabDto>>(x => 
-                new TabReader<SbankenAccountsTabDto>(x.GetRequiredService<ISpreadsheetProvider>(),
+            serviceCollection.AddSingleton<ITabReaderService<SbankenAccountsTab>>(x => 
+                new TabReaderService<SbankenAccountsTab>(x.GetRequiredService<ISpreadsheetProvider>(),
                     x.GetRequiredService<IGoogleSpreadsheetConnector>(), 
                     SpreadsheetTabMetadataConstants.SbankenAccountsTabName));
             
-            serviceCollection.AddSingleton<ITabReader<CoinbaseAccountsTabDto>>(x => 
-                new TabReader<CoinbaseAccountsTabDto>(x.GetRequiredService<ISpreadsheetProvider>(),
+            serviceCollection.AddSingleton<ITabReaderService<CoinbaseAccountsTab>>(x => 
+                new TabReaderService<CoinbaseAccountsTab>(x.GetRequiredService<ISpreadsheetProvider>(),
                     x.GetRequiredService<IGoogleSpreadsheetConnector>(), 
                     SpreadsheetTabMetadataConstants.CoinbaseAccountsTabName));
             
-            serviceCollection.AddSingleton<ITabReader<CoinbaseProAccountsTabDto>>(x => 
-                new TabReader<CoinbaseProAccountsTabDto>(x.GetRequiredService<ISpreadsheetProvider>(),
+            serviceCollection.AddSingleton<ITabReaderService<CoinbaseProAccountsTab>>(x => 
+                new TabReaderService<CoinbaseProAccountsTab>(x.GetRequiredService<ISpreadsheetProvider>(),
                     x.GetRequiredService<IGoogleSpreadsheetConnector>(), 
                     SpreadsheetTabMetadataConstants.CoinbaseProAccountsTabName));
             
-            serviceCollection.AddSingleton<ITabReader<ApiPaymentsAccountTabDto>>(x => 
-                new TabReader<ApiPaymentsAccountTabDto>(x.GetRequiredService<ISpreadsheetProvider>(),
+            serviceCollection.AddSingleton<ITabReaderService<BillingAccountTab>>(x => 
+                new TabReaderService<BillingAccountTab>(x.GetRequiredService<ISpreadsheetProvider>(),
                     x.GetRequiredService<IGoogleSpreadsheetConnector>(), 
-                    SpreadsheetTabMetadataConstants.ApiPaymentsAccountTabName));
+                    SpreadsheetTabMetadataConstants.BillingAccountTabName));
             
-            serviceCollection.AddSingleton<ITabReader<ExchangeRatesTabDto>>(x => 
-                new TabReader<ExchangeRatesTabDto>(x.GetRequiredService<ISpreadsheetProvider>(),
+            serviceCollection.AddSingleton<ITabReaderService<ExchangeRatesTab>>(x => 
+                new TabReaderService<ExchangeRatesTab>(x.GetRequiredService<ISpreadsheetProvider>(),
                     x.GetRequiredService<IGoogleSpreadsheetConnector>(), 
                     SpreadsheetTabMetadataConstants.ExchangeRatesTabName));
             
-            serviceCollection.AddSingleton<IBankAccountsTabWriter<SbankenAccountsTabDto>, BankAccountsTabWriter<SbankenAccountsTabDto>>();
-            serviceCollection.AddSingleton<IBankAccountsTabWriter<CoinbaseAccountsTabDto>, BankAccountsTabWriter<CoinbaseAccountsTabDto>>();
-            serviceCollection.AddSingleton<IBankAccountsTabWriter<CoinbaseProAccountsTabDto>, BankAccountsTabWriter<CoinbaseProAccountsTabDto>>();            serviceCollection.AddSingleton<IAzureStorage, AzureStorage>();
-            serviceCollection.AddSingleton<IExchangeRatesTabWriter, ExchangeRatesTabWriter>();            
+            serviceCollection.AddSingleton<ITabDataProvider<SbankenAccountsTab>, BankAccountTabDataProvider<SbankenAccountsTab, ISbankenApiConnector>>();
+            serviceCollection.AddSingleton<ITabDataProvider<CoinbaseAccountsTab>, BankAccountTabDataProvider<CoinbaseAccountsTab, ICoinbaseApiConnector>>();
+            serviceCollection.AddSingleton<ITabDataProvider<CoinbaseProAccountsTab>, BankAccountTabDataProvider<CoinbaseProAccountsTab, ICoinbaseProApiConnector>>();
+            serviceCollection.AddSingleton<ITabDataProvider<ExchangeRatesTab>, ExchangeRatesTabDataProvider>();
+            serviceCollection.AddSingleton<ITabDataProvider<BillingAccountTab>, BillingAccountPaymentsProvider>();
+
+            serviceCollection.AddSingleton<ITabWriterService<SbankenAccountsTab>, TabWriterService<SbankenAccountsTab>>();
+            serviceCollection.AddSingleton<ITabWriterService<CoinbaseAccountsTab>, TabWriterService<CoinbaseAccountsTab>>();
+            serviceCollection.AddSingleton<ITabWriterService<CoinbaseProAccountsTab>, TabWriterService<CoinbaseProAccountsTab>>();
+            serviceCollection.AddSingleton<ITabWriterService<ExchangeRatesTab>, TabWriterService<ExchangeRatesTab>>();            
+            serviceCollection.AddSingleton<ITabWriterService<BillingAccountTab>, TabWriterService<BillingAccountTab>>();            
+
             serviceCollection.AddSingleton<IAzureStorage, AzureStorage>();
             serviceCollection.AddSingleton<ISpreadsheetProvider, SpreadsheetProvider>();
             serviceCollection.AddSingleton<IGoogleSpreadsheetConnector, GoogleSpreadsheetConnector>();

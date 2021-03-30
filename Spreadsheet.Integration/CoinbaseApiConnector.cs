@@ -17,7 +17,5 @@ namespace Spreadsheet.Integration
         {
             return await Get<IList<ExchangeRateDto>>(ExchangeRatesPath);
         }
-
-        
     }
 }

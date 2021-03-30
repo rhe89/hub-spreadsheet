@@ -58,5 +58,13 @@ namespace Spreadsheet.Web.Api.Controllers
 
             return Ok();
         }
+        
+        [HttpPost("QueueUpdateBillingAccountPaymentsTask")]
+        public IActionResult QueueUpdateBillingAccountPaymentsTask()
+        {
+            _backgroundTaskQueueHandler.QueueBackgroundTask<UpdateBillingAccountPaymentsTask>();
+
+            return Ok();
+        }
     }
 }
