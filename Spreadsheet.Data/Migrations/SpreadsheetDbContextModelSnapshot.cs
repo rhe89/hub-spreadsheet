@@ -19,7 +19,7 @@ namespace Spreadsheet.Data.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 128)
                 .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-            modelBuilder.Entity("Hub.Storage.Core.Entities.BackgroundTaskConfiguration", b =>
+            modelBuilder.Entity("Hub.HostedServices.Commands.Configuration.Core.CommandConfiguration", b =>
                 {
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
@@ -35,18 +35,18 @@ namespace Spreadsheet.Data.Migrations
                     b.Property<string>("Name")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("RunIntervalType")
-                        .HasColumnType("int");
+                    b.Property<string>("RunInterval")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime>("UpdatedDate")
                         .HasColumnType("datetime2");
 
                     b.HasKey("Id");
 
-                    b.ToTable("BackgroundTaskConfiguration","dbo");
+                    b.ToTable("CommandConfiguration","dbo");
                 });
 
-            modelBuilder.Entity("Hub.Storage.Core.Entities.Setting", b =>
+            modelBuilder.Entity("Hub.Settings.Core.Setting", b =>
                 {
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
@@ -68,36 +68,6 @@ namespace Spreadsheet.Data.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Setting","dbo");
-                });
-
-            modelBuilder.Entity("Hub.Storage.Core.Entities.WorkerLog", b =>
-                {
-                    b.Property<long>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<DateTime>("CreatedDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("ErrorMessage")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("InitiatedBy")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Name")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<bool>("Success")
-                        .HasColumnType("bit");
-
-                    b.Property<DateTime>("UpdatedDate")
-                        .HasColumnType("datetime2");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("WorkerLog","dbo");
                 });
 
             modelBuilder.Entity("Spreadsheet.Core.Entities.AccountTransfer", b =>

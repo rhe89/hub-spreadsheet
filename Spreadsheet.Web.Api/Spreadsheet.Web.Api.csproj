@@ -1,19 +1,14 @@
 <Project Sdk="Microsoft.NET.Sdk.Web">
+	<PropertyGroup>
+		<TargetFramework>netcoreapp3.1</TargetFramework>
+	</PropertyGroup>
 
-    <PropertyGroup>
-        <TargetFramework>netcoreapp3.1</TargetFramework>
-    </PropertyGroup>
+	<ItemGroup>
+		<PackageReference Include="Hub.Web.Api" Version="3.0.6" />
+	</ItemGroup>
 
-    <ItemGroup>
-      <ProjectReference Include="..\Spreadsheet.BackgroundTasks\Spreadsheet.BackgroundTasks.csproj" />
-      <ProjectReference Include="..\Spreadsheet.Integration\Spreadsheet.Integration.csproj" />
-      <ProjectReference Include="..\Spreadsheet.Providers\Spreadsheet.Providers.csproj" />
-      <ProjectReference Include="..\Spreadsheet.Services\Spreadsheet.Services.csproj" />
-    </ItemGroup>
+	<ItemGroup>
+		<ProjectReference Include="..\Spreadsheet.Data\Spreadsheet.Data.csproj" />
+	</ItemGroup>
 
-    <ItemGroup>
-      <PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="8.1.0" />
-      <PackageReference Include="Hub.Web.Api" Version="3.0.3" />
-    </ItemGroup>
-    
 </Project>

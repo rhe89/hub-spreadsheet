@@ -9,7 +9,7 @@ namespace Spreadsheet.Integration
 {
     public class SbankenApiConnector : BankApiConnector, ISbankenApiConnector
     {
-        private const string TransactionsPath = "/api/transaction/BillingAccountTransactions";
+        private const string TransactionsPath = "/api/transactions/BillingAccountTransactions";
 
         public SbankenApiConnector(HttpClient httpClient) : base(httpClient, "SbankenApi") {}
 

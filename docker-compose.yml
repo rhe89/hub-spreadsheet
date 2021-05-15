@@ -1,12 +1,12 @@
 version: '3.7'
 
 services:
-    spreadsheet-workers:
-        container_name: "spreadsheet_worker"
+    spreadsheet-service-bus-queue-host:
+        container_name: "spreadsheet_service_bus_queue_host"
         build:
             context: ./
-            dockerfile: Spreadsheet.BackgroundWorker/Dockerfile
-        image: "rhe89/hub-spreadsheet-worker"
+            dockerfile: Spreadsheet.HostedServices.ServiceBusQueueHost/Dockerfile
+        image: "rhe89/hub-spreadsheet-service-bus-queue-host"
         
     spreadsheet-api:
         container_name: "spreadsheet_api"

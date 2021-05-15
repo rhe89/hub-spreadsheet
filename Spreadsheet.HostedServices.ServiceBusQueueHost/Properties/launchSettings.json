@@ -1,7 +1,8 @@
-﻿{
+{
   "profiles": {
-    "Spreadsheet.Workers.AccountTransfers": {
+    "Spreadsheet.HostedServices.ServiceBusQueueHost": {
       "commandName": "Project",
+      "launchBrowser": true,
       "environmentVariables": {
         "DOTNET_ENVIRONMENT": "Development"
       }

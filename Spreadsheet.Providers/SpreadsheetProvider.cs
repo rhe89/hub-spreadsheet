@@ -1,9 +1,11 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Threading.Tasks;
-using Hub.Storage.Core.Repository;
+using Hub.Storage.Repository.Core;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Query;
 using Spreadsheet.Core.Constants;
 using Spreadsheet.Core.Dto.Data;
 using Spreadsheet.Core.Entities;
@@ -22,31 +24,44 @@ namespace Spreadsheet.Providers
         
         public async Task<SpreadsheetMetadataDto> CurrentBudgetSpreadsheetMetadata()
         {
-            var spreadsheet = await _dbRepository
-                .Where<SpreadsheetMetadata>(x => x.Name == SpreadsheetMetadataConstants.BudgetSpreadsheetName &&
-                                                 x.ValidFrom < DateTime.Now && (x.ValidTo == null || x.ValidTo > DateTime.Now))
-                .Include(x => x.SpreadsheetTabMetadata)
-                    .ThenInclude(x => x.SpreadsheetRowMetadata)
-                .FirstOrDefaultAsync();
+            static Func<IQueryable<SpreadsheetMetadata>, IIncludableQueryable<SpreadsheetMetadata, object>> Include() =>
+                source => source
+                    .Include(x => x.SpreadsheetTabMetadata)
+                    .ThenInclude(x => x.SpreadsheetRowMetadata);
 
-            return _dbRepository.Map<SpreadsheetMetadata, SpreadsheetMetadataDto>(spreadsheet);
+            static Expression<Func<SpreadsheetMetadata, bool>> Predicate() => 
+                x => x.Name == SpreadsheetMetadataConstants.BudgetSpreadsheetName &&
+                                       x.ValidFrom < DateTime.Now && (x.ValidTo == null || x.ValidTo > DateTime.Now);
+
+            
+            var spreadsheet = await _dbRepository
+                .FirstOrDefaultAsync<SpreadsheetMetadata, SpreadsheetMetadataDto>(Predicate(), Include());
+
+            return spreadsheet;
         }
 
         public async Task<IList<SpreadsheetRowMetadataDto>> GetRowsInTabForCurrentSpreadsheet(string tabName)
         {
+            static Func<IQueryable<SpreadsheetMetadata>, IIncludableQueryable<SpreadsheetMetadata, object>> Include() =>
+                source => source
+                    .Include(x => x.SpreadsheetTabMetadata)
+                    .ThenInclude(x => x.SpreadsheetRowMetadata);
+
+            static Expression<Func<SpreadsheetMetadata, bool>> Predicate() => 
+                x => x.Name == SpreadsheetMetadataConstants.BudgetSpreadsheetName &&
+                                       x.ValidFrom < DateTime.Now &&
+                                      (x.ValidTo == null || x.ValidTo > DateTime.Now);
+            
             var spreadsheet = await _dbRepository
-                .Where<SpreadsheetMetadata>(x => x.Name == SpreadsheetMetadataConstants.BudgetSpreadsheetName &&
-                                                 x.ValidFrom < DateTime.Now && (x.ValidTo == null || x.ValidTo > DateTime.Now))
-                .Include(x => x.SpreadsheetTabMetadata)
-                .ThenInclude(x => x.SpreadsheetRowMetadata)
-                .FirstOrDefaultAsync();
+                .FirstOrDefaultAsync<SpreadsheetMetadata, SpreadsheetMetadataDto>(Predicate(), Include());
 
             var rows = spreadsheet
                 .SpreadsheetTabMetadata.FirstOrDefault(x => x.Name == tabName)
-                ?.SpreadsheetRowMetadata
-                ?.ToList();
-
-            return _dbRepository.Map<IList<SpreadsheetRowMetadata>, IList<SpreadsheetRowMetadataDto>>(rows);
+                ?.SpreadsheetRowMetadata;
+            
+            return rows;
         }
+
+        
     }
 }

@@ -7,7 +7,6 @@ using Spreadsheet.Core.Constants;
 using Spreadsheet.Core.Dto.Integration;
 using Spreadsheet.Core.Dto.Spreadsheet;
 using Spreadsheet.Core.Dto.Spreadsheet.Budget.Tabs;
-using Spreadsheet.Core.Extensions;
 using Spreadsheet.Core.Integration;
 using Spreadsheet.Core.Providers;
 
@@ -103,22 +102,6 @@ namespace Spreadsheet.Providers
             _logger.LogInformation($"Got {transactions.Count} transactions from {_sbankenApiConnector.FriendlyApiName}");
 
             return transactions;
-        }
-
-        public async Task<DateTime?> GetDataLastUpdated()
-        {
-            var response = await _sbankenApiConnector.GetBackgroundTaskConfigurations();
-
-            if (!response.Success)
-            {
-                throw new Exception(
-                    $"GetDataLastUpdated: {_sbankenApiConnector.FriendlyApiName}: {response.ErrorMessage}");
-            }
-            
-            var transactionsTask = response.Data
-                ?.FirstOrDefault(x => x.Name == "UpdateTransactionsTask");
-
-            return transactionsTask?.LastRun;
         }
     }
 }

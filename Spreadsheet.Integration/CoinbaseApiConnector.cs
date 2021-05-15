@@ -9,7 +9,7 @@ namespace Spreadsheet.Integration
 {
     public class CoinbaseApiConnector : BankApiConnector, ICoinbaseApiConnector
     {
-        private const string ExchangeRatesPath = "/api/exchangerates/exchangerates";
+        private const string ExchangeRatesPath = "/api/exchangerates";
 
         public CoinbaseApiConnector(HttpClient httpClient) : base(httpClient, "CoinbaseApi") {}
         

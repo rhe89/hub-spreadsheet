@@ -1,10 +1,10 @@
-﻿using Hub.Storage.Repository.DatabaseContext;
+﻿using Hub.Storage.Repository;
 using Microsoft.EntityFrameworkCore;
 using Spreadsheet.Core.Entities;
 
 namespace Spreadsheet.Data
 {
-    public class SpreadsheetDbContext : HostedServiceDbContext
+    public class SpreadsheetDbContext : HubDbContext
     {
         public SpreadsheetDbContext(DbContextOptions<SpreadsheetDbContext> options) : base(options) { }
         

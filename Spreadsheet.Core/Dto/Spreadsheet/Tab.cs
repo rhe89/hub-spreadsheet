@@ -12,7 +12,7 @@ namespace Spreadsheet.Core.Dto.Spreadsheet
         public string Name { get; set; }
         public string FirstColumn { get; set; }
         public string LastColumn { get; set; }
-        protected bool PopulateAllRows { get; set; } 
+        private bool PopulateAllRows { get; set; } 
         public IList<Row> Rows { get; }
         public IList<SpreadsheetRowMetadataDto> SpreadsheetRowMetadataDtos { get; set; }
 
@@ -48,7 +48,7 @@ namespace Spreadsheet.Core.Dto.Spreadsheet
             return -1;
         }
 
-        public string GetCurrentPeriod()
+        public static string GetCurrentPeriod()
         {
             return $"{DateTime.Now.Month}/{DateTime.Now.Year}";
         }

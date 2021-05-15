@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
-using Spreadsheet.Core.Dto.Integration;
 using Spreadsheet.Core.Dto.Spreadsheet;
 using Spreadsheet.Core.Extensions;
 using Spreadsheet.Core.Integration;
@@ -27,7 +26,7 @@ namespace Spreadsheet.Services
             _logger = logger;
         }
 
-        public async Task UpdateTab(IEnumerable<Cell> rows, DateTime? additionalTimeStamp = null)
+        public async Task UpdateTab(IList<Cell> rows)
         {
             var tab = await _tabReaderService.GetTab();
             
@@ -35,11 +34,11 @@ namespace Spreadsheet.Services
 
             if (columnIndexForCurrentPeriod == -1)
             {
-                AddNewColumn(tab, rows, additionalTimeStamp);
+                AddNewColumn(tab, rows);
             }
             else
             {
-                ReplaceColumn(tab, rows, columnIndexForCurrentPeriod, additionalTimeStamp);
+                ReplaceColumn(tab, rows, columnIndexForCurrentPeriod);
             }
 
             _logger.LogInformation($"Updating {tab.Name}");
@@ -55,81 +54,62 @@ namespace Spreadsheet.Services
         }
 
         private void AddNewColumn(Tab tab,
-            IEnumerable<Cell> rows, 
-            DateTime? additionalTimeStamp)
+            IList<Cell> incomingCells)
         {
-            var newPeriod = tab.GetCurrentPeriod();
+            var newPeriod = Tab.GetCurrentPeriod();
 
             tab.Rows.First().Cells.Add(newPeriod);
-
-            var rowIndex = 0;
-
-            foreach (var cell in rows)
+            
+            foreach (var row in tab.Rows)
             {
-                var shouldUpdateRow = ShouldUpdateRow(tab, cell, out var accountIndex);
+                var shouldUpdateRow = ShouldUpdateRow(tab, incomingCells, row, out var rowIndex);
 
                 if (!shouldUpdateRow)
                 {
                     continue;
                 }
                 
-                if (accountIndex > rowIndex)
-                    rowIndex = accountIndex;
+                var cellInRowToUpdate = incomingCells.First(x => x.RowKey == row.RowKey);
 
-                tab.Rows[accountIndex].Cells.Add(cell.CellValue);
+                tab.Rows[rowIndex].Cells.Add(cellInRowToUpdate.CellValue);
             }
 
             var lastUpdated = DateTime.Now.FormattedDate();
 
-            tab.Rows[++rowIndex].Cells.Add(lastUpdated);
-            
-            if (additionalTimeStamp != null)
-            {
-                tab.Rows[++rowIndex].Cells.Add(additionalTimeStamp.Value.FormattedDate());
-            }
+            tab.Rows[^1].Cells.Add(lastUpdated);
         }
 
         private void ReplaceColumn(Tab tab,
-            IEnumerable<Cell> rows,
-            int columnIndex, 
-            DateTime? additionalTimeStamp)
+            IList<Cell> incomingCells,
+            int columnIndex)
         {
-            var currentRowIndex = 0;
-            
-            foreach (var cell in rows)
+            foreach (var row in tab.Rows)
             {
-                var shouldUpdateRow = ShouldUpdateRow(tab, cell, out var rowIndex);
+                var shouldUpdateRow = ShouldUpdateRow(tab, incomingCells, row, out var rowIndex);
 
                 if (!shouldUpdateRow)
                 {
                     continue;
                 }
 
+                var cellInRowToUpdate = incomingCells.First(x => x.RowKey == row.RowKey);
+
                 ExpandRowAndCellsIfNecessary(tab, rowIndex, columnIndex);
 
-                tab.Rows[rowIndex].Cells[columnIndex] = cell.CellValue;
-
-                if (rowIndex > currentRowIndex)
-                    currentRowIndex = rowIndex;
+                tab.Rows[rowIndex].Cells[columnIndex] = cellInRowToUpdate.CellValue;
             }
 
-            SetLastUpdated(tab, columnIndex, ++currentRowIndex);
-
-            if (additionalTimeStamp != null)
-            {
-                SetAdditionalTimeStamp(tab, additionalTimeStamp.Value, columnIndex,  ++currentRowIndex);
-            }
+            SetLastUpdated(tab, columnIndex);
         }
 
         private static void SetLastUpdated(Tab tab, 
-            int columnIndex,
-            int rowIndex)
+            int columnIndex)
         {
             var lastUpdated = DateTime.Now.FormattedDate();
 
-            var row = tab.Rows[rowIndex];
+            var row = tab.Rows[^1];
 
-            if (row.Cells.Count() <= columnIndex)
+            if (row.Cells.Count <= columnIndex)
             {
                 row.Cells.Add(lastUpdated);
             }
@@ -139,35 +119,18 @@ namespace Spreadsheet.Services
             }
         }
         
-        private static void SetAdditionalTimeStamp(Tab budgetSpreadsheetTab,
-            DateTime additionalTimeStamp,
-            int columnIndex, 
-            int rowIndex)
+        private bool ShouldUpdateRow(Tab tab, IEnumerable<Cell> incomingCells, Row row, out int rowIndex)
         {
-            var row = budgetSpreadsheetTab.Rows[rowIndex];
+            var cellInRowToUpdate = incomingCells.FirstOrDefault(x => x.RowKey == row.RowKey);
 
-            if (row.Cells.Count() <= columnIndex)
+            if (cellInRowToUpdate == null)
             {
-                row.Cells.Add(additionalTimeStamp.FormattedDate());
-            }
-            else
-            {
-                row.Cells[columnIndex] = additionalTimeStamp.FormattedDate();;
-            }
-        }
-
-        private bool ShouldUpdateRow(Tab tab, Cell row, out int rowIndex)
-        {
-            var rowInTab = tab.Rows.FirstOrDefault(x => x.RowKey == row.RowKey);
-
-            if (rowInTab == null)
-            {
-                _logger.LogWarning($"No row found in tab {tab.Name} for incoming row {row.RowKey}. Skipping");
+                _logger.LogWarning($"No data (cell value) provided for row {row.RowKey} in tab {tab.Name}. Skipping");
                 rowIndex = -1;
                 return false;
             }
 
-            rowIndex = rowInTab.RowIndex;
+            rowIndex = row.RowIndex;
             
             return true;
         }

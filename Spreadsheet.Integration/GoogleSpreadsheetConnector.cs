@@ -6,29 +6,29 @@ using Google.Apis.Auth.OAuth2;
 using Google.Apis.Services;
 using Google.Apis.Sheets.v4;
 using Google.Apis.Sheets.v4.Data;
-using Hub.Storage.Core.Providers;
+using Hub.Settings.Core;
+using Hub.Storage.Azure.Core;
 using Microsoft.Extensions.Logging;
 using Spreadsheet.Core.Constants;
 using Spreadsheet.Core.Dto.Spreadsheet;
 using Spreadsheet.Core.Exceptions;
 using Spreadsheet.Core.Integration;
-using Spreadsheet.Core.Storage;
 
 namespace Spreadsheet.Integration
 {
     public class GoogleSpreadsheetConnector : IGoogleSpreadsheetConnector
     {
         private readonly ISettingProvider _settingProvider;
-        private readonly IAzureStorage _azureStorage;
+        private readonly IFileStorage _fileStorage;
         private readonly ILogger<GoogleSpreadsheetConnector> _logger;
         private readonly string _applicationName;
 
         public GoogleSpreadsheetConnector(ISettingProvider settingProvider, 
-            IAzureStorage azureStorage, 
+            IFileStorage fileStorage,
             ILogger<GoogleSpreadsheetConnector> logger)
         {
             _settingProvider = settingProvider;
-            _azureStorage = azureStorage;
+            _fileStorage = fileStorage;
             _logger = logger;
             _applicationName = "Hub";
         }
@@ -113,7 +113,11 @@ namespace Spreadsheet.Integration
         
         private async Task<ServiceAccountCredential> GetServiceAccountCredential()
         {
-            var keyFile = await _azureStorage.GetGoogleCertificate();
+            var storageAccountFileShare = _settingProvider.GetSetting<string>(SettingConstants.StorageAccountFileShare);
+            var storageAccountFileShareCertificateFolder = _settingProvider.GetSetting<string>(SettingConstants.StorageAccountFileShareCertificateFolder);
+            var googleCertificateFileReference = _settingProvider.GetSetting<string>(SettingConstants.GoogleCertificate);
+            var keyFile = await _fileStorage.GetItem(storageAccountFileShare, storageAccountFileShareCertificateFolder, googleCertificateFileReference);
+            
             var privateKey = _settingProvider.GetSetting<string>(SettingConstants.GooglePrivateKey);
             var serviceAccountEmail = _settingProvider.GetSetting<string>(SettingConstants.GoogleServiceAccountEmail);
 

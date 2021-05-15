@@ -1,5 +1,5 @@
 using System.Collections.Generic;
-using Hub.Storage.Core.Entities;
+using Hub.Storage.Repository.Entities;
 
 namespace Spreadsheet.Core.Entities
 {

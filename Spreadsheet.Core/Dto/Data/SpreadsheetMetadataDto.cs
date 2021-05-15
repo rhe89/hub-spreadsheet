@@ -1,6 +1,6 @@
 using System;
 using System.Collections.Generic;
-using Hub.Storage.Core.Dto;
+using Hub.Storage.Repository.Dto;
 
 namespace Spreadsheet.Core.Dto.Data
 {
@@ -11,6 +11,6 @@ namespace Spreadsheet.Core.Dto.Data
         public DateTime ValidFrom { get; set; }
         public DateTime? ValidTo { get; set; }
 
-        public virtual ICollection<SpreadsheetTabMetadataDto> SpreadsheetTabMetadata { get; set; }
+        public ICollection<SpreadsheetTabMetadataDto> SpreadsheetTabMetadata { get; set; }
     }
 }

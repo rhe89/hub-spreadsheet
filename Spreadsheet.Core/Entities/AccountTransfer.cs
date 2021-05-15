@@ -1,5 +1,5 @@
 using System.ComponentModel.DataAnnotations.Schema;
-using Hub.Storage.Core.Entities;
+using Hub.Storage.Repository.Entities;
 
 namespace Spreadsheet.Core.Entities
 {
@@ -21,6 +21,6 @@ namespace Spreadsheet.Core.Entities
         Daily = 1,
         Weekly = 2,
         Monthly = 3,
-        Yearly = 4,
+        Yearly = 4
     }
 }
