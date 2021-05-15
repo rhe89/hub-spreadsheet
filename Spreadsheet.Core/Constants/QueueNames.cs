@@ -6,7 +6,7 @@ namespace Spreadsheet.Core.Constants
         public const string BillingAccountsUpdated = "billingaccountpaymentsupdated";
         public const string CoinbaseAccountsUpdated = "coinbaseaccountsupdated";
         public const string CoinbaseProAccountsUpdated = "coinbaseproaccountsupdated";
-        public const string ExchangeRatesUpdated = "exchangeratesupdated";
+        public const string ExchangeRatesUpdated = "coinbaseexchangeratesupdated";
         public const string SbankenAccountsUpdated = "sbankenaccountsupdated";
     }
 }
