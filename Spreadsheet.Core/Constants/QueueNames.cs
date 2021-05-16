@@ -1,12 +1,12 @@
 namespace Spreadsheet.Core.Constants
 {
-    public class QueueNames
+    public static class QueueNames
     {
-        public const string AccountTransfersUpdated = "accounttransfersupdated";
-        public const string BillingAccountsUpdated = "billingaccountpaymentsupdated";
-        public const string CoinbaseAccountsUpdated = "coinbaseaccountsupdated";
-        public const string CoinbaseProAccountsUpdated = "coinbaseproaccountsupdated";
-        public const string ExchangeRatesUpdated = "coinbaseexchangeratesupdated";
-        public const string SbankenAccountsUpdated = "sbankenaccountsupdated";
+        public static readonly string AccountTransfersUpdated = "accounttransfersupdated";
+        public static readonly string BillingAccountsUpdated = "billingaccountpaymentsupdated";
+        public static readonly string CoinbaseAccountsUpdated = "coinbaseaccountsupdated";
+        public static readonly string CoinbaseProAccountsUpdated = "coinbaseproaccountsupdated";
+        public static readonly string ExchangeRatesUpdated = "coinbaseexchangeratesupdated";
+        public static readonly string SbankenAccountsUpdated = "sbankenaccountsupdated";
     }
 }

@@ -29,8 +29,9 @@ namespace Spreadsheet.Providers
 
             if (!response.Success)
             {
-                throw new Exception(
-                    $"GetData: {_coinbaseApiConnector.FriendlyApiName}: {response.ErrorMessage}");
+                _logger.LogError(response.ErrorMessage);
+
+                return null;
             }
 
             var exchangeRates = response.Data;
@@ -38,11 +39,6 @@ namespace Spreadsheet.Providers
             _logger.LogInformation($"Got {exchangeRates.Count} exchange rates from {_coinbaseApiConnector.FriendlyApiName}");
 
             return exchangeRates;
-        }
-
-        public Task<DateTime?> GetDataLastUpdated()
-        {
-            return null;
         }
     }
 }

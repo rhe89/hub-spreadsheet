@@ -30,8 +30,8 @@ namespace Spreadsheet.Providers
 
             if (!response.Success)
             {
-                throw new Exception(
-                    $"GetData: {_bankApiConnector.FriendlyApiName}: {response.ErrorMessage}");
+                _logger.LogError(response.ErrorMessage);
+                return null;
             }
 
             var bankAccounts = response.Data;

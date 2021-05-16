@@ -44,6 +44,11 @@ namespace Spreadsheet.Providers
             
             var transactions = await GetTransactionsFromSbankenApi();
 
+            if (transactions == null)
+            {
+                return null;
+            }
+
             var payments = transactions.Where(x => x.Amount < 0).ToList();
             
             _logger.LogInformation($"Got {payments.Count} payments to update");
@@ -93,8 +98,8 @@ namespace Spreadsheet.Providers
 
             if (!response.Success)
             {
-                throw new Exception(
-                    $"GetTransactionsFromSbankenApi: {_sbankenApiConnector.FriendlyApiName}: {response.ErrorMessage}");
+                _logger.LogError(response.ErrorMessage);
+                return null;
             }
 
             var transactions = response.Data;

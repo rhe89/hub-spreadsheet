@@ -42,18 +42,7 @@ namespace Spreadsheet.Providers
 
         public async Task<IList<SpreadsheetRowMetadataDto>> GetRowsInTabForCurrentSpreadsheet(string tabName)
         {
-            static Func<IQueryable<SpreadsheetMetadata>, IIncludableQueryable<SpreadsheetMetadata, object>> Include() =>
-                source => source
-                    .Include(x => x.SpreadsheetTabMetadata)
-                    .ThenInclude(x => x.SpreadsheetRowMetadata);
-
-            static Expression<Func<SpreadsheetMetadata, bool>> Predicate() => 
-                x => x.Name == SpreadsheetMetadataConstants.BudgetSpreadsheetName &&
-                                       x.ValidFrom < DateTime.Now &&
-                                      (x.ValidTo == null || x.ValidTo > DateTime.Now);
-            
-            var spreadsheet = await _dbRepository
-                .FirstOrDefaultAsync<SpreadsheetMetadata, SpreadsheetMetadataDto>(Predicate(), Include());
+            var spreadsheet = await CurrentBudgetSpreadsheetMetadata();
 
             var rows = spreadsheet
                 .SpreadsheetTabMetadata.FirstOrDefault(x => x.Name == tabName)
