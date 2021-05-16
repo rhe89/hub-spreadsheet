@@ -7,6 +7,7 @@ using Spreadsheet.Core.Constants;
 using Spreadsheet.Core.Dto.Integration;
 using Spreadsheet.Core.Dto.Spreadsheet;
 using Spreadsheet.Core.Dto.Spreadsheet.Budget.Tabs;
+using Spreadsheet.Core.Exceptions;
 using Spreadsheet.Core.Integration;
 using Spreadsheet.Core.Providers;
 
@@ -98,8 +99,7 @@ namespace Spreadsheet.Providers
 
             if (!response.Success)
             {
-                _logger.LogError(response.ErrorMessage);
-                return null;
+                throw new ApiConnectorException(response.ErrorMessage);
             }
 
             var transactions = response.Data;
