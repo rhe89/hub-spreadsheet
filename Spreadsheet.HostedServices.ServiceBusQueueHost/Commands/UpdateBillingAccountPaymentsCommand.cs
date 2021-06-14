@@ -12,6 +12,6 @@ namespace Spreadsheet.HostedServices.ServiceBusQueueHost.Commands
         {
         }
         
-        public override string QueueName => QueueNames.BillingAccountsUpdated;
+        public override string QueueName => QueueNames.SbankenTransactionsUpdated;
     }
 }

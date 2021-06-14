@@ -21,11 +21,8 @@ namespace Spreadsheet.Data
             builder.Entity<SpreadsheetRowMetadata>()
                 .ToTable(schema: "dbo", name: "SpreadsheetRowMetadata");
             
-            builder.Entity<AccountTransferPeriod>()
-                .ToTable(schema: "dbo", name: "AccountTransferPeriod");
-            
-            builder.Entity<AccountTransfer>()
-                .ToTable(schema: "dbo", name: "AccountTransfer");
+            builder.Entity<BillingAccountPayment>()
+                .ToTable(schema: "dbo", name: "BillingAccountPayment");
         }
     }
 }

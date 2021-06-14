@@ -1,12 +1,16 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Threading.Tasks;
+using Hub.Storage.Repository.Core;
 using Microsoft.Extensions.Logging;
 using Spreadsheet.Core.Constants;
+using Spreadsheet.Core.Dto.Data;
 using Spreadsheet.Core.Dto.Integration;
 using Spreadsheet.Core.Dto.Spreadsheet;
 using Spreadsheet.Core.Dto.Spreadsheet.Budget.Tabs;
+using Spreadsheet.Core.Entities;
 using Spreadsheet.Core.Exceptions;
 using Spreadsheet.Core.Integration;
 using Spreadsheet.Core.Providers;
@@ -17,14 +21,17 @@ namespace Spreadsheet.Providers
     {
         private readonly ISbankenApiConnector _sbankenApiConnector;
         private readonly ISpreadsheetProvider _spreadsheetProvider;
+        private readonly IHubDbRepository _hubDbRepository;
         private readonly ILogger<BillingAccountPaymentsProvider> _logger;
 
         public BillingAccountPaymentsProvider(ISbankenApiConnector sbankenApiConnector,
             ISpreadsheetProvider spreadsheetProvider,
+            IHubDbRepository hubDbRepository,
             ILogger<BillingAccountPaymentsProvider> logger)
         {
             _sbankenApiConnector = sbankenApiConnector;
             _spreadsheetProvider = spreadsheetProvider;
+            _hubDbRepository = hubDbRepository;
             _logger = logger;
         }
         
@@ -43,59 +50,85 @@ namespace Spreadsheet.Providers
             
             _logger.LogInformation($"Got metadata on {rows.Count} rows");
             
-            var transactions = await GetTransactionsFromSbankenApi();
+            var transactionsFromSbanken = await GetBillingAccountPaymentsFromSbankenApi();
 
-            if (transactions == null)
+            if (transactionsFromSbanken == null)
             {
                 return null;
             }
 
-            var payments = transactions.Where(x => x.Amount < 0).ToList();
+            var paymentsFromSbanken = transactionsFromSbanken.Where(x => x.Amount < 0).ToList();
             
-            _logger.LogInformation($"Got {payments.Count} payments to update");
-            
-            var paymentsToUpdateInTab = new Dictionary<string, TransactionDto>();
-            
-            foreach (var payment in payments)
-            {
-                var rowForPayment = rows.FirstOrDefault(row =>
-                    row.TagList.Any(tag => payment.Name.ToLower().Contains(tag.ToLower())));
+            static Expression<Func<BillingAccountPayment, bool>> Predicate() => 
+                x => x.TransactionDate.Month == DateTime.Now.Month &&
+                     x.TransactionDate.Year == DateTime.Now.Year;
 
+            var paymentsInDb = await _hubDbRepository
+                .WhereAsync<BillingAccountPayment, BillingAccountPaymentDto>(Predicate());
+            
+            _logger.LogInformation($"Got {paymentsFromSbanken.Count} payments to update");
+            
+            var paymentsToUpdateInTab = new List<TransactionDto>();
+            
+            foreach (var payment in paymentsFromSbanken)
+            {
+                if (payment.TransactionId == null)
+                {
+                    continue;
+                }
+                
+                var rowForPayment = rows.FirstOrDefault(row =>
+                    row.TagList.Any(tag => payment.Description.ToLower().Contains(tag.ToLower())));
+                
                 if (rowForPayment == null)
                 {
-                    _logger.LogInformation($"No corresponding row for payment with name {payment.Name} found");
+                    _logger.LogInformation($"No corresponding row for payment with description {payment.Description} found");
                     
                     continue;
                 }
 
-                var anotherPaymentForCategoryAlreadyExists =
-                    paymentsToUpdateInTab.TryGetValue(rowForPayment.RowKey, out var existingPayment);
+                var existingPaymentInDb = paymentsInDb.FirstOrDefault(x => x.TransactionId == payment.TransactionId);
 
-                if (anotherPaymentForCategoryAlreadyExists)
+                if (existingPaymentInDb != null)
                 {
-                    existingPayment.Amount += decimal.Negate(payment.Amount);
+                    continue;
                 }
-                else
+
+                var newPayment = new BillingAccountPaymentDto
                 {
-                    paymentsToUpdateInTab.Add(rowForPayment.RowKey, new TransactionDto
-                    {
-                        Name = rowForPayment.RowKey,
-                        TransactionDate = payment.TransactionDate,
-                        Amount = decimal.Negate(payment.Amount)
-                    });
-                }
+                    Amount = payment.Amount,
+                    TransactionId = payment.TransactionId,
+                    TransactionDate = payment.TransactionDate,
+                    Key = rowForPayment.RowKey
+                };
+                
+                _hubDbRepository.QueueAdd<BillingAccountPayment, BillingAccountPaymentDto>(newPayment);
+                
+                var previousPaymentsInSameCategoryInDb =
+                    paymentsInDb.Where(x => x.Key == rowForPayment.RowKey);
+
+                paymentsToUpdateInTab.Add(new TransactionDto
+                {
+                    RowKey = rowForPayment.RowKey,
+                    TransactionDate = payment.TransactionDate,
+                    Amount = decimal.Negate(payment.Amount) + previousPaymentsInSameCategoryInDb.Sum(x => x.Amount),
+                });
             }
+
+            await _hubDbRepository.ExecuteQueueAsync();
             
             _logger.LogInformation($"Found {paymentsToUpdateInTab.Count} payments to update in tab");
             
-            return paymentsToUpdateInTab.Values;
+            return paymentsToUpdateInTab;
         }
         
-        private async Task<IEnumerable<TransactionDto>> GetTransactionsFromSbankenApi()
+        private async Task<IEnumerable<TransactionDto>> GetBillingAccountPaymentsFromSbankenApi()
         {
             _logger.LogInformation($"Getting transactions from {_sbankenApiConnector.FriendlyApiName}");
 
-            var response = await _sbankenApiConnector.GetBillingAccountTransactions();
+            var ageInDays = DateTime.Now.Day;
+            
+            var response = await _sbankenApiConnector.GetBillingAccountTransactions(ageInDays);
 
             if (!response.Success)
             {

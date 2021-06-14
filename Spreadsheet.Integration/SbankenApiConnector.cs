@@ -13,9 +13,9 @@ namespace Spreadsheet.Integration
 
         public SbankenApiConnector(HttpClient httpClient) : base(httpClient, "SbankenApi") {}
 
-        public async Task<Response<IList<TransactionDto>>> GetBillingAccountTransactions()
+        public async Task<Response<IList<TransactionDto>>> GetBillingAccountTransactions(int ageInDays)
         {
-            return await Get<IList<TransactionDto>>(TransactionsPath, $"accountName=Regningsbetaling");
+            return await Get<IList<TransactionDto>>(TransactionsPath, $"ageInDays={ageInDays}&accountName=Regningsbetaling");
         }
     }
 }

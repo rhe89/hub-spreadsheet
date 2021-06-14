@@ -7,6 +7,6 @@ namespace Spreadsheet.Core.Integration
 {
     public interface ISbankenApiConnector : IBankApiConnector
     {
-        Task<Response<IList<TransactionDto>>> GetBillingAccountTransactions();
+        Task<Response<IList<TransactionDto>>> GetBillingAccountTransactions(int ageInDays);
     }
 }
