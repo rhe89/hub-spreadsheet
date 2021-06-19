@@ -96,7 +96,7 @@ namespace Spreadsheet.Providers
 
                 var newPayment = new BillingAccountPaymentDto
                 {
-                    Amount = payment.Amount,
+                    Amount = decimal.Negate(payment.Amount),
                     TransactionId = payment.TransactionId,
                     TransactionDate = payment.TransactionDate,
                     Key = rowForPayment.RowKey
