@@ -1,20 +1,29 @@
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Spreadsheet.Core.Dto.Spreadsheet
 {
     public class Row
     {
         private string _rowKey;
-        public int RowIndex { get; set; }
+        private IList<object> _cells;
+        public int RowIndex { get; }
 
         public string RowKey
         {
             get => _rowKey;
-            set => _rowKey = value?.Trim();
+            private set => _rowKey = value?.Trim();
         }
 
-        public IList<object> Cells { get; set; }
-        
+        public IList<object> Cells
+        {
+            get => _cells;
+            private set
+            {
+                _cells = value.Select(x => (object)((string)x).Trim()).ToList();
+            }
+        }
+
         public Row(int rowIndex, string rowKey, IList<object> cells)
         {
             RowIndex = rowIndex;
@@ -24,11 +33,11 @@ namespace Spreadsheet.Core.Dto.Spreadsheet
 
         public Row(int columns)
         {
-            Cells = new List<object>();
+            _cells = new List<object>();
 
             for (var i = 0; i <= columns; i++)
             {
-                Cells.Add(new object());
+                Cells.Add("");
             }
         }
 
