@@ -17,17 +17,17 @@ using Spreadsheet.Core.Providers;
 
 namespace Spreadsheet.Providers
 {
-    public class BillingAccountPaymentsProvider : ITabDataProvider<BillingAccountTab>
+    public class BillingAccountTransactionsProvider : ITabDataProvider<BillingAccountTab>
     {
         private readonly ISbankenApiConnector _sbankenApiConnector;
         private readonly ISpreadsheetProvider _spreadsheetProvider;
         private readonly IHubDbRepository _hubDbRepository;
-        private readonly ILogger<BillingAccountPaymentsProvider> _logger;
+        private readonly ILogger<BillingAccountTransactionsProvider> _logger;
 
-        public BillingAccountPaymentsProvider(ISbankenApiConnector sbankenApiConnector,
+        public BillingAccountTransactionsProvider(ISbankenApiConnector sbankenApiConnector,
             ISpreadsheetProvider spreadsheetProvider,
             IHubDbRepository hubDbRepository,
-            ILogger<BillingAccountPaymentsProvider> logger)
+            ILogger<BillingAccountTransactionsProvider> logger)
         {
             _sbankenApiConnector = sbankenApiConnector;
             _spreadsheetProvider = spreadsheetProvider;
@@ -50,79 +50,79 @@ namespace Spreadsheet.Providers
             
             _logger.LogInformation($"Got metadata on {rows.Count} rows");
             
-            var transactionsFromSbanken = await GetBillingAccountPaymentsFromSbankenApi();
+            var transactionsFromSbanken = await GetBillingAccountTransactionsFromSbankenApi();
 
             if (transactionsFromSbanken == null)
             {
                 return null;
             }
-
-            var paymentsFromSbanken = transactionsFromSbanken.Where(x => x.Amount < 0).ToList();
             
-            static Expression<Func<BillingAccountPayment, bool>> Predicate() => 
+            static Expression<Func<BillingAccountTransaction, bool>> Predicate() => 
                 x => x.TransactionDate.Month == DateTime.Now.Month &&
                      x.TransactionDate.Year == DateTime.Now.Year;
 
-            var paymentsInDb = await _hubDbRepository
-                .WhereAsync<BillingAccountPayment, BillingAccountPaymentDto>(Predicate());
+            var transactionsInDb = await _hubDbRepository
+                .WhereAsync<BillingAccountTransaction, BillingAccountTransactionDto>(Predicate());
+
+            var transactionsFromSbankenList = transactionsFromSbanken.ToList();
             
-            _logger.LogInformation($"Got {paymentsFromSbanken.Count} payments to update");
+            _logger.LogInformation($"Got {transactionsFromSbankenList.Count} transactions to update from Sbanken");
             
-            var paymentsToUpdateInTab = new List<TransactionDto>();
+            var transactionsToUpdateInTab = new List<TransactionDto>();
             
-            foreach (var payment in paymentsFromSbanken)
+            foreach (var transaction in transactionsFromSbankenList)
             {
-                if (payment.TransactionId == null)
+                if (transaction.TransactionId == null)
                 {
                     continue;
                 }
                 
-                var rowForPayment = rows.FirstOrDefault(row =>
-                    row.TagList.Any(tag => payment.Description.ToLower().Contains(tag.ToLower())));
+                var rowForTransaction = rows.FirstOrDefault(row =>
+                    row.TagList.Any(tag => transaction.Description.ToLower().Contains(tag.ToLower())));
                 
-                if (rowForPayment == null)
+                if (rowForTransaction == null)
                 {
-                    _logger.LogInformation($"No corresponding row for payment with description {payment.Description} found");
+                    _logger.LogInformation($"No corresponding row for transaction with description {transaction.Description} found");
                     
                     continue;
                 }
 
-                var existingPaymentInDb = paymentsInDb.FirstOrDefault(x => x.TransactionId == payment.TransactionId);
+                var existingTransactionInDb = transactionsInDb.FirstOrDefault(x => x.TransactionId == transaction.TransactionId);
 
-                if (existingPaymentInDb != null)
+                if (existingTransactionInDb != null)
                 {
                     continue;
                 }
 
-                var newPayment = new BillingAccountPaymentDto
+                var newTransaction = new BillingAccountTransactionDto
                 {
-                    Amount = decimal.Negate(payment.Amount),
-                    TransactionId = payment.TransactionId,
-                    TransactionDate = payment.TransactionDate,
-                    Key = rowForPayment.RowKey
+                    Amount = transaction.Amount,
+                    TransactionId = transaction.TransactionId,
+                    TransactionDate = transaction.TransactionDate,
+                    Key = rowForTransaction.RowKey
                 };
                 
-                _hubDbRepository.QueueAdd<BillingAccountPayment, BillingAccountPaymentDto>(newPayment);
+                _hubDbRepository.QueueAdd<BillingAccountTransaction, BillingAccountTransactionDto>(newTransaction);
                 
-                var previousPaymentsInSameCategoryInDb =
-                    paymentsInDb.Where(x => x.Key == rowForPayment.RowKey);
+                var previousTransactionsInSameCategoryInDb =
+                    transactionsInDb.Where(x => x.Key == rowForTransaction.RowKey);
 
-                paymentsToUpdateInTab.Add(new TransactionDto
+                transactionsToUpdateInTab.Add(new TransactionDto
                 {
-                    RowKey = rowForPayment.RowKey,
-                    TransactionDate = payment.TransactionDate,
-                    Amount = decimal.Negate(payment.Amount) + previousPaymentsInSameCategoryInDb.Sum(x => x.Amount),
+                    RowKey = rowForTransaction.RowKey,
+                    TransactionDate = transaction.TransactionDate,
+                    Amount = transaction.Amount + previousTransactionsInSameCategoryInDb.Sum(x => x.Amount),
                 });
             }
 
             await _hubDbRepository.ExecuteQueueAsync();
             
-            _logger.LogInformation($"Found {paymentsToUpdateInTab.Count} payments to update in tab");
+            _logger.LogInformation($"Found {transactionsToUpdateInTab.Count} transactions to update in tab");
             
-            return paymentsToUpdateInTab;
+            return transactionsToUpdateInTab;
         }
         
-        private async Task<IEnumerable<TransactionDto>> GetBillingAccountPaymentsFromSbankenApi()
+        private async Task<IEnumerable<TransactionDto>> GetBillingAccountTransactionsFromSbankenApi()
         {
             _logger.LogInformation($"Getting transactions from {_sbankenApiConnector.FriendlyApiName}");
 

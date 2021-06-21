@@ -61,7 +61,7 @@ namespace Spreadsheet.HostedServices.ServiceBusQueueHost
             serviceCollection.AddTransient<ITabDataProvider<CoinbaseAccountsTab>, BankAccountTabDataProvider<CoinbaseAccountsTab, ICoinbaseApiConnector>>();
             serviceCollection.AddTransient<ITabDataProvider<CoinbaseProAccountsTab>, BankAccountTabDataProvider<CoinbaseProAccountsTab, ICoinbaseProApiConnector>>();
             serviceCollection.AddTransient<ITabDataProvider<ExchangeRatesTab>, ExchangeRatesTabDataProvider>();
-            serviceCollection.AddTransient<ITabDataProvider<BillingAccountTab>, BillingAccountPaymentsProvider>();
+            serviceCollection.AddTransient<ITabDataProvider<BillingAccountTab>, BillingAccountTransactionsProvider>();
 
             serviceCollection.AddTransient<ITabWriterService<SbankenAccountsTab>, TabWriterService<SbankenAccountsTab>>();
             serviceCollection.AddTransient<ITabWriterService<CoinbaseAccountsTab>, TabWriterService<CoinbaseAccountsTab>>();
@@ -90,13 +90,13 @@ namespace Spreadsheet.HostedServices.ServiceBusQueueHost
 
         protected override void AddQueueListenerServices(IServiceCollection serviceCollection, IConfiguration configuration)
         {
-            serviceCollection.AddTransient<UpdateBillingAccountPaymentsCommand>();
+            serviceCollection.AddTransient<UpdateBillingAccountTransactionsCommand>();
             serviceCollection.AddTransient<UpdateCoinbaseAccountsCommand>();
             serviceCollection.AddTransient<UpdateCoinbaseProAccountsCommand>();
             serviceCollection.AddTransient<UpdateExchangeRatesCommand>();
             serviceCollection.AddTransient<UpdateSbankenAccountsCommand>();
             
-            serviceCollection.AddHostedService<BillingAccountsPaymentsUpdatedService>();
+            serviceCollection.AddHostedService<BillingAccountsTransactionsUpdatedService>();
             serviceCollection.AddHostedService<CoinbaseAccountsUpdatedQueueListener>();
             serviceCollection.AddHostedService<CoinbaseProAccountsUpdatedQueueListener>();
             serviceCollection.AddHostedService<ExchangeRatesUpdatedService>();

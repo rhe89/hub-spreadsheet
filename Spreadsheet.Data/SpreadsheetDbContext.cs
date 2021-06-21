@@ -21,7 +21,7 @@ namespace Spreadsheet.Data
             builder.Entity<SpreadsheetRowMetadata>()
                 .ToTable(schema: "dbo", name: "SpreadsheetRowMetadata");
             
-            builder.Entity<BillingAccountPayment>()
+            builder.Entity<BillingAccountTransaction>()
                 .ToTable(schema: "dbo", name: "BillingAccountPayment");
         }
     }

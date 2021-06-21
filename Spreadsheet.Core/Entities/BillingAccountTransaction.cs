@@ -1,10 +1,10 @@
 using System;
 using System.ComponentModel.DataAnnotations.Schema;
-using Hub.Storage.Repository.Dto;
+using Hub.Storage.Repository.Entities;
 
-namespace Spreadsheet.Core.Dto.Data
+namespace Spreadsheet.Core.Entities
 {
-    public class BillingAccountPaymentDto : EntityDtoBase
+    public class BillingAccountTransaction : EntityBase
     {
         public string TransactionId { get; set; }
         public string Key { get; set; }

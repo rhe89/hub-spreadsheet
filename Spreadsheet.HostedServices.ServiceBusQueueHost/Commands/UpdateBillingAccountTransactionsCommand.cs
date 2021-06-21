@@ -5,9 +5,9 @@ using Spreadsheet.Core.Services;
 
 namespace Spreadsheet.HostedServices.ServiceBusQueueHost.Commands
 {
-    public class UpdateBillingAccountPaymentsCommand : UpdateTabCommandBase<BillingAccountTab>
+    public class UpdateBillingAccountTransactionsCommand : UpdateTabCommandBase<BillingAccountTab>
     {
-        public UpdateBillingAccountPaymentsCommand(ITabWriterService<BillingAccountTab> tabWriterService,
+        public UpdateBillingAccountTransactionsCommand(ITabWriterService<BillingAccountTab> tabWriterService,
             ITabDataProvider<BillingAccountTab> billingAccountPaymentsDataProvider) : base(billingAccountPaymentsDataProvider, tabWriterService)
         {
         }

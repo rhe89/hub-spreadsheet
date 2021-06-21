@@ -7,12 +7,12 @@ using Spreadsheet.HostedServices.ServiceBusQueueHost.Commands;
 
 namespace Spreadsheet.HostedServices.ServiceBusQueueHost.QueueListeners
 {
-    public class BillingAccountsPaymentsUpdatedService : ServiceBusHostedService
+    public class BillingAccountsTransactionsUpdatedService : ServiceBusHostedService
     {
-        public BillingAccountsPaymentsUpdatedService(ILogger<BillingAccountsPaymentsUpdatedService> logger, 
+        public BillingAccountsTransactionsUpdatedService(ILogger<BillingAccountsTransactionsUpdatedService> logger, 
             ICommandLogFactory commandLogFactory, 
             IConfiguration configuration,
-            UpdateBillingAccountPaymentsCommand queuedCommand, 
+            UpdateBillingAccountTransactionsCommand queuedCommand, 
             IQueueProcessor queueProcessor) : base(logger, 
                                                  commandLogFactory, 
                                                  configuration,

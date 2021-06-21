@@ -10,7 +10,7 @@ namespace Spreadsheet.Data.AutoMapper
             mapperConfigurationExpression.AddProfile<SpreadsheetMetadataMapperProfile>();
             mapperConfigurationExpression.AddProfile<SpreadsheetRowMetadataMapperProfile>();
             mapperConfigurationExpression.AddProfile<SpreadsheetTabMetadataMapperProfile>();
-            mapperConfigurationExpression.AddProfile<BillingAccountPaymentMapperProfile>();
+            mapperConfigurationExpression.AddProfile<BillingAccountTransactionMapperProfile>();
 
             return mapperConfigurationExpression;
         }
