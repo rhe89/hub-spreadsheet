@@ -69,6 +69,8 @@ namespace Spreadsheet.Providers
             _logger.LogInformation($"Got {transactionsFromSbankenList.Count} transactions to update from Sbanken");
             
             var transactionsToUpdateInTab = new List<TransactionDto>();
+
+            var anyNewTransactions = false;
             
             foreach (var transaction in transactionsFromSbankenList)
             {
@@ -103,21 +105,38 @@ namespace Spreadsheet.Providers
                 };
                 
                 _hubDbRepository.QueueAdd<BillingAccountTransaction, BillingAccountTransactionDto>(newTransaction);
-                
-                var previousTransactionsInSameCategoryInDb =
-                    transactionsInDb.Where(x => x.Key == rowForTransaction.RowKey);
 
-                transactionsToUpdateInTab.Add(new TransactionDto
-                {
-                    RowKey = rowForTransaction.RowKey,
-                    TransactionDate = transaction.TransactionDate,
-                    Amount = transaction.Amount + previousTransactionsInSameCategoryInDb.Sum(x => x.Amount),
-                });
+                anyNewTransactions = true;
             }
 
-            await _hubDbRepository.ExecuteQueueAsync();
+            if (anyNewTransactions)
+            {
+                await _hubDbRepository.ExecuteQueueAsync();
             
-            _logger.LogInformation($"Found {transactionsToUpdateInTab.Count} transactions to update in tab");
+                transactionsInDb = await _hubDbRepository
+                    .WhereAsync<BillingAccountTransaction, BillingAccountTransactionDto>(Predicate());
+            }
+            
+            foreach (var row in rows)
+            {
+                var transactionsForRow = transactionsInDb
+                    .Where(x => x.Key == row.RowKey)
+                    .ToList();
+
+                if (!transactionsForRow.Any())
+                {
+                    continue;
+                }
+                
+                transactionsToUpdateInTab.Add(new TransactionDto
+                {
+                    RowKey = row.RowKey,
+                    TransactionDate = transactionsForRow.Last().TransactionDate,
+                    Amount = transactionsForRow.Sum(x => x.Amount)
+                });
+            }
+            
+            _logger.LogInformation($"{transactionsToUpdateInTab.Count} transactions to update in tab");
             
             return transactionsToUpdateInTab;
         }
