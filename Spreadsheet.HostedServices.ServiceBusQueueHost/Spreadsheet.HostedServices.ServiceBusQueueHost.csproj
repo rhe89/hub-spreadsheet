@@ -4,13 +4,13 @@
 	</PropertyGroup>
 
 	<ItemGroup>
-		<PackageReference Include="Hub.HostedServices.ServiceBusQueue" Version="3.1.1" />
+		<PackageReference Include="Hub.Shared.HostedServices.ServiceBusQueue" Version="3.1.2" />
 		<PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="8.1.0" />
 		<PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="3.1.8" />
 	</ItemGroup>
 
 	<ItemGroup>
-		<ProjectReference Include="..\Spreadsheet.Core\Spreadsheet.Core.csproj" />
+		<ProjectReference Include="..\Spreadsheet.Shared\Spreadsheet.Shared.csproj" />
 		<ProjectReference Include="..\Spreadsheet.Data\Spreadsheet.Data.csproj" />
 		<ProjectReference Include="..\Spreadsheet.Integration\Spreadsheet.Integration.csproj" />
 		<ProjectReference Include="..\Spreadsheet.Providers\Spreadsheet.Providers.csproj" />

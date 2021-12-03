@@ -1,12 +1,9 @@
-using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
-using Spreadsheet.Core.Dto.Spreadsheet;
-using Spreadsheet.Core.Dto.Spreadsheet.Budget.Tabs;
-using Spreadsheet.Core.Exceptions;
-using Spreadsheet.Core.Integration;
-using Spreadsheet.Core.Providers;
+using Spreadsheet.Integration;
+using Spreadsheet.Integration.Dto.Spreadsheet;
+using Spreadsheet.Integration.Dto.Spreadsheet.Budget.Tabs;
 
 namespace Spreadsheet.Providers
 {

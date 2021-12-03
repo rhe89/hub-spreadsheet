@@ -1,6 +1,6 @@
 using AutoMapper;
-using Spreadsheet.Core.Dto.Data;
-using Spreadsheet.Core.Entities;
+using Spreadsheet.Data.Documents;
+using Spreadsheet.Data.Dto;
 
 namespace Spreadsheet.Data.AutoMapper
 {
@@ -8,7 +8,8 @@ namespace Spreadsheet.Data.AutoMapper
     {
         public SpreadsheetMetadataMapperProfile()
         {
-            CreateMap<SpreadsheetMetadata, SpreadsheetMetadataDto>();
+            CreateMap<SpreadsheetMetadata, SpreadsheetMetadataDto>()
+                .ReverseMap();
         }
     }
 }

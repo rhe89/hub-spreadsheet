@@ -1,4 +1,4 @@
-using Hub.Web.Api;
+using Hub.Shared.Web.Api;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Spreadsheet.Data;

@@ -1,8 +1,9 @@
+using System;
 using System.Collections.Generic;
 using System.Net.Http;
 using System.Threading.Tasks;
-using Hub.Web.Http;
-using Spreadsheet.Core.Dto.Integration;
+using Hub.Shared.Web.Http;
+using Spreadsheet.Integration.Dto;
 
 namespace Spreadsheet.Integration
 {
@@ -15,6 +16,14 @@ namespace Spreadsheet.Integration
         public async Task<Response<IList<AccountDto>>> GetAccounts()
         {
             return await Get<IList<AccountDto>>(AccountsPath);
+        }
+    }
+    
+    public class ApiConnectorException : Exception
+    {
+        public ApiConnectorException(string responseErrorMessage) : base(responseErrorMessage)
+        {
+            
         }
     }
 }

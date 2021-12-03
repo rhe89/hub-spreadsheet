@@ -3,34 +3,32 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
-using Hub.Storage.Repository.Core;
+using Hub.Shared.Storage.Repository.Core;
 using Microsoft.Extensions.Logging;
-using Spreadsheet.Core.Constants;
-using Spreadsheet.Core.Dto.Data;
-using Spreadsheet.Core.Dto.Integration;
-using Spreadsheet.Core.Dto.Spreadsheet;
-using Spreadsheet.Core.Dto.Spreadsheet.Budget.Tabs;
-using Spreadsheet.Core.Entities;
-using Spreadsheet.Core.Exceptions;
-using Spreadsheet.Core.Integration;
-using Spreadsheet.Core.Providers;
+using Spreadsheet.Shared.Constants;
+using Spreadsheet.Data.Dto;
+using Spreadsheet.Data.Entities;
+using Spreadsheet.Integration;
+using Spreadsheet.Integration.Dto;
+using Spreadsheet.Integration.Dto.Spreadsheet;
+using Spreadsheet.Integration.Dto.Spreadsheet.Budget.Tabs;
 
 namespace Spreadsheet.Providers
 {
     public class BillingAccountTransactionsProvider : ITabDataProvider<BillingAccountTab>
     {
         private readonly ISbankenApiConnector _sbankenApiConnector;
-        private readonly ISpreadsheetProvider _spreadsheetProvider;
+        private readonly ISpreadsheetMetadataProvider _spreadsheetMetadataProvider;
         private readonly IHubDbRepository _hubDbRepository;
         private readonly ILogger<BillingAccountTransactionsProvider> _logger;
 
         public BillingAccountTransactionsProvider(ISbankenApiConnector sbankenApiConnector,
-            ISpreadsheetProvider spreadsheetProvider,
+            ISpreadsheetMetadataProvider spreadsheetMetadataProvider,
             IHubDbRepository hubDbRepository,
             ILogger<BillingAccountTransactionsProvider> logger)
         {
             _sbankenApiConnector = sbankenApiConnector;
-            _spreadsheetProvider = spreadsheetProvider;
+            _spreadsheetMetadataProvider = spreadsheetMetadataProvider;
             _hubDbRepository = hubDbRepository;
             _logger = logger;
         }
@@ -39,8 +37,7 @@ namespace Spreadsheet.Providers
         {
             _logger.LogInformation($"Getting row metadata for tab {SpreadsheetTabMetadataConstants.BillingAccountTabName}");
 
-            var rows = await _spreadsheetProvider.GetRowsInTabForCurrentSpreadsheet(SpreadsheetTabMetadataConstants
-                .BillingAccountTabName);
+            var rows = await _spreadsheetMetadataProvider.GetRowsInTabForCurrentSpreadsheet(SpreadsheetTabMetadataConstants.BillingAccountTabName);
 
             if (rows == null)
             {

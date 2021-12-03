@@ -1,0 +1,32 @@
+@inherits LayoutComponentBase
+
+@inject State State
+@implements IDisposable
+
+<div class="page">
+    <div class="main">
+        <div class="content px-4">
+            @Body
+        </div>
+    </div>
+    
+    @if (State.Saving)
+    {
+        <div id="saving-overlay">
+            <p>Saving...</p>
+        </div>
+    }
+    
+</div>
+
+@code {
+
+    protected override void OnInitialized()
+    {
+        State.OnChange += StateHasChanged;
+    }
+    public void Dispose()
+    {
+        State.OnChange -= StateHasChanged;
+    }
+}

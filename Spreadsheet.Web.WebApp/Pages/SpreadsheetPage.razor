@@ -1,0 +1,236 @@
+@page "/create"
+@page "/edit/{Id}"
+@page "/copy/{Id}/{IsCopy:bool}"
+@page "/details/{Id}/{ReadOnly:bool}"
+
+@using Microsoft.AspNetCore.Components
+@using Spreadsheet.Data.Dto
+@using Spreadsheet.Providers
+@using Spreadsheet.Services
+@using Spreadsheet.Web.WebApp.Helpers
+
+@inject ISpreadsheetMetadataProvider _spreadsheetMetadataProvider
+@inject ISpreadsheetMetadataService _spreadsheetMetadataService
+@inject State _state
+@inject NavigationManager _uriHelper
+@inject IJSRuntime _jsRuntime
+
+<section class="container mt-3">
+@if (Spreadsheet == null)
+    {
+        <p>
+            <em>Loading...</em>
+        </p>
+    }
+    else
+    {
+        <EditForm Model="@Spreadsheet" OnValidSubmit="Save" OnInvalidSubmit="ScrollToTop">
+        
+            <FluentValidationValidator DisableAssemblyScanning="@true" @ref="@_spreadsheetValidator"/>
+        
+            <div class="@Layout.FormRow">
+                <div class="@Layout.LabelContainer">
+                    <label class="@Layout.Label">Name: </label>
+                </div>
+                <div class="@Layout.InputContainer">
+                    <InputText disabled="@ReadOnly" id="row-key" @bind-Value="Spreadsheet.Name" class="form-control" @oninput="(e) => Spreadsheet.Name = InputFormatter.ToUpperCase(e)"/>
+                    <ValidationMessage For="@(() => Spreadsheet.Name)"/>
+                </div>
+            </div>
+            <div class="@Layout.FormRow">
+                <div class="@Layout.LabelContainer">
+                    <label class="@Layout.Label">Spreadsheet id (Google): </label>
+                </div>
+                <div class="@Layout.InputContainer">
+                    <InputText disabled="@ReadOnly" id="row-key" @bind-Value="Spreadsheet.SpreadsheetId" class="form-control" @oninput="(e) => Spreadsheet.SpreadsheetId = InputFormatter.Trim(e)"/>
+                    <ValidationMessage For="@(() => Spreadsheet.SpreadsheetId)"/>
+                </div>
+            </div>
+            <div class="@Layout.FormRow">
+                <div class="@Layout.LabelContainer">
+                    <label class="@Layout.Label">Valid from: </label>
+                </div>
+                <div class="@Layout.InputContainer">
+                    <InputDate disabled="@ReadOnly" id="valid-from" TValue="DateTime" @bind-Value="Spreadsheet.ValidFrom" class="form-control"/>
+                    <ValidationMessage For="@(() => Spreadsheet.ValidFrom)"/>
+                </div>
+            </div>
+            <div class="@Layout.FormRow">
+                <div class="@Layout.LabelContainer">
+                    <label class="@Layout.Label">Valid to: </label>
+                </div>
+                <div class="@Layout.InputContainer">
+                    <InputDate disabled="@ReadOnly" id="valid-to" TValue="DateTime" type="date" @bind-Value="Spreadsheet.ValidTo" class="form-control"/>
+                    <ValidationMessage For="@(() => Spreadsheet.ValidTo)"/>
+                </div>
+            </div>
+
+            <div class="row mt-5">
+                <header class="col-2">
+                    <h2>
+                        Tabs
+                    </h2>
+                </header>
+                <div class="col-3">
+                    <button disabled="@ReadOnly" class="btn btn-primary" type="button" @onclick="AddTab">Add tab</button>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-12">
+                    <ValidationMessage For="@(() => Spreadsheet.Tabs)"/>
+                </div>
+            </div>
+            
+            @foreach (var spreadsheetTab in Spreadsheet.Tabs)
+            {
+                var tabCounter = 1;
+                var rowCounter = 1;
+                <div class="card mt-2">
+                    <div class="card-body">
+                        <div class="@Layout.FormRow">
+                            <div class="@Layout.LabelContainer">
+                                <label class="@Layout.Label">Name: </label>
+                            </div>
+                            <div class="@Layout.InputContainer">
+                                <InputText disabled="@ReadOnly" id="@($"spreadsheet-tab-name-{tabCounter}")" @bind-Value="spreadsheetTab.Name" @onchange="(e) => spreadsheetTab.Name = InputFormatter.ToUpperCase(e)" class="form-control"/>
+                                <ValidationMessage For="@(() => spreadsheetTab.Name)"/>
+                            </div>
+                            <div class="col-1 offset-3">
+                                <button disabled="@ReadOnly" class="btn btn-danger" @onclick="() => RemoveTab(spreadsheetTab)">Remove</button>
+                            </div>
+                        </div>
+                        <div class="@Layout.FormRow">
+                            <div class="@Layout.LabelContainer">
+                                <label class="@Layout.Label">First column:</label>
+                            </div>
+                            <div class="@Layout.InputContainer">
+                                <InputText disabled="@ReadOnly" id="@($"spreadsheet-tab-first-column-{tabCounter}")" @bind-Value="spreadsheetTab.FirstColumn" @onchange="(e) => spreadsheetTab.FirstColumn = InputFormatter.ToUpperCase(e)" class="form-control"/>
+                                <ValidationMessage For="@(() => spreadsheetTab.FirstColumn)"/>
+                            </div>
+                        </div>
+                        <div class="@Layout.FormRow">
+                            <div class="@Layout.LabelContainer">
+                                <label class="@Layout.Label">Last column:</label>
+                            </div>
+                            <div class="@Layout.InputContainer">
+                                <InputText disabled="@ReadOnly" id="@($"spreadsheet-tab-last-column-{tabCounter}")" @bind-Value="spreadsheetTab.LastColumn" @onchange="(e) => spreadsheetTab.LastColumn = InputFormatter.ToUpperCase(e)" class="form-control"/>
+                                <ValidationMessage For="@(() => spreadsheetTab.LastColumn)"/>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-12">
+                                <ValidationMessage For="@(() => spreadsheetTab.Rows)"/>
+                            </div>
+                        </div>
+                        
+                        <table class="table-striped mt-2">
+                            @foreach (var row in spreadsheetTab.Rows)
+                            {
+                                <tr>
+                                    <td>
+                                        <InputText disabled="@ReadOnly" id="@($"spreadsheet-tab-{tabCounter}-row-{rowCounter}-key")" placeholder="Row key" @bind-Value="row.RowKey" @onchange="(e) => row.RowKey = InputFormatter.ToUpperCase(e)" class="form-control"/>
+                                        <ValidationMessage For="@(() => row.RowKey)"/>
+                                    </td>
+                                    <td>
+                                        <InputText disabled="@ReadOnly" id="@($"spreadsheet-tab-{tabCounter}-row-{rowCounter++}-tags")" placeholder="Tags" @bind-Value="row.Tags" class="form-control"/>
+                                        <ValidationMessage For="@(() => row.Tags)"/>
+                                    </td>
+                                    <td>
+                                        <button disabled="@ReadOnly" class="btn btn-danger" @onclick="() => RemoveRow(spreadsheetTab, row)">Remove row</button>
+                                    </td>
+                                </tr>
+                            }
+                            <tr>
+                                <td colspan="3">
+                                    <button disabled="@ReadOnly" class="btn btn-primary" type="button" @onclick="() => AddRow(spreadsheetTab)">Add row</button>
+                                </td>
+                            </tr>
+                        </table>
+
+                        @{
+                            tabCounter++;
+                        }
+                    </div>
+                </div>
+            }
+            <div class="row mt-y">
+                <div class="col-6">
+                    <button disabled="@ReadOnly" class="btn btn-primary" type="submit">Save</button>
+                </div>
+            </div>
+        </EditForm>
+    }
+
+</section>
+  
+
+
+@code {
+    
+    [Parameter]
+    public string Id { get; set; }
+    [Parameter]
+    public bool IsCopy { get; set; }
+    [Parameter]
+    public bool ReadOnly { get; set; }
+    
+    private SpreadsheetMetadataDto Spreadsheet { get; set; }
+    private FluentValidationValidator _spreadsheetValidator;
+    
+    protected override async Task OnInitializedAsync()
+    {
+        if (Spreadsheet != null)
+            return;
+        
+        if (!string.IsNullOrEmpty(Id))
+        {
+            if (IsCopy)
+                Spreadsheet = await _spreadsheetMetadataService.InitializeSpreadsheetMetadataCopy(Id);
+            else
+                Spreadsheet = await _spreadsheetMetadataProvider.GetSpreadsheet(Id);
+        }
+        else
+            Spreadsheet = _spreadsheetMetadataService.InitializeEmptySpreadsheetMetadata();
+
+        StateHasChanged();
+    }
+
+    private async Task Save()
+    {
+        _state.SetSaving(true);
+        
+        await _spreadsheetMetadataService.CreateOrUpdateSpreadsheetMetadata(Spreadsheet);
+        
+        _state.SetSaving(false);
+    }
+    
+    private void AddTab()
+    {
+        Spreadsheet.Tabs.Add(new SpreadsheetMetadataDto.Tab());
+        _spreadsheetValidator.Validate(x => x.IncludeProperties(nameof(SpreadsheetMetadataDto.Tabs)));
+    }
+
+    private void AddRow(SpreadsheetMetadataDto.Tab spreadsheetTab)
+    {
+        spreadsheetTab.Rows.Add(new SpreadsheetMetadataDto.Row());
+        _spreadsheetValidator.Validate(x => x.IncludeProperties(nameof(SpreadsheetMetadataDto.Tab.Rows)));
+    }
+    
+    private void RemoveTab(SpreadsheetMetadataDto.Tab spreadsheetTab)
+    {
+        Spreadsheet.Tabs.Remove(spreadsheetTab);
+        _spreadsheetValidator.Validate(x => x.IncludeProperties(nameof(SpreadsheetMetadataDto.Tabs)));
+    }
+
+    private void RemoveRow(SpreadsheetMetadataDto.Tab spreadsheetTab, SpreadsheetMetadataDto.Row row)
+    {
+        spreadsheetTab.Rows.Remove(row);
+        _spreadsheetValidator.Validate(x => x.IncludeProperties(nameof(SpreadsheetMetadataDto.Tab.Rows)));
+    }
+
+    private async Task ScrollToTop()
+    {
+        await _jsRuntime.InvokeAsync<bool>("scrollToElementId", "elementId");
+    }
+
+}

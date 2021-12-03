@@ -1,10 +1,10 @@
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Hub.HostedServices.ServiceBusQueue.Commands;
-using Spreadsheet.Core.Dto.Spreadsheet;
-using Spreadsheet.Core.Providers;
-using Spreadsheet.Core.Services;
+using Hub.Shared.HostedServices.ServiceBusQueue;
+using Spreadsheet.Integration.Dto.Spreadsheet;
+using Spreadsheet.Providers;
+using Spreadsheet.Services;
 
 namespace Spreadsheet.HostedServices.ServiceBusQueueHost.Commands
 {

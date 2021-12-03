@@ -4,7 +4,9 @@
 	</PropertyGroup>
 
 	<ItemGroup>
-		<ProjectReference Include="..\Spreadsheet.Core\Spreadsheet.Core.csproj" />
+		<ProjectReference Include="..\Spreadsheet.Shared\Spreadsheet.Shared.csproj" />
+		<ProjectReference Include="..\Spreadsheet.Data\Spreadsheet.Data.csproj" />
+		<ProjectReference Include="..\Spreadsheet.Providers\Spreadsheet.Providers.csproj" />
 	</ItemGroup>
 
 </Project>

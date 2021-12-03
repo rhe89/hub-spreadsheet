@@ -1,7 +1,7 @@
-using Spreadsheet.Core.Constants;
-using Spreadsheet.Core.Dto.Spreadsheet.Budget.Tabs;
-using Spreadsheet.Core.Providers;
-using Spreadsheet.Core.Services;
+using Spreadsheet.Shared.Constants;
+using Spreadsheet.Integration.Dto.Spreadsheet.Budget.Tabs;
+using Spreadsheet.Providers;
+using Spreadsheet.Services;
 
 namespace Spreadsheet.HostedServices.ServiceBusQueueHost.Commands
 {
@@ -12,6 +12,6 @@ namespace Spreadsheet.HostedServices.ServiceBusQueueHost.Commands
         {
         }
 
-        public override string QueueName => QueueNames.CoinbaseProAccountsUpdated;
+        public override string Trigger => QueueNames.CoinbaseProAccountsUpdated;
     }
 }

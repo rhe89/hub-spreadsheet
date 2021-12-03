@@ -1,6 +1,6 @@
-﻿using Hub.Storage.Repository;
+﻿using Hub.Shared.Storage.Repository;
 using Microsoft.EntityFrameworkCore;
-using Spreadsheet.Core.Entities;
+using Spreadsheet.Data.Entities;
 
 namespace Spreadsheet.Data
 {
@@ -11,15 +11,6 @@ namespace Spreadsheet.Data
         protected override void OnModelCreating(ModelBuilder builder)
         {
             base.OnModelCreating(builder);
-            
-            builder.Entity<SpreadsheetMetadata>()
-                .ToTable(schema: "dbo", name: "SpreadsheetMetadata");
-            
-            builder.Entity<SpreadsheetTabMetadata>()
-                .ToTable(schema: "dbo", name: "SpreadsheetTabMetadata");
-            
-            builder.Entity<SpreadsheetRowMetadata>()
-                .ToTable(schema: "dbo", name: "SpreadsheetRowMetadata");
             
             builder.Entity<BillingAccountTransaction>()
                 .ToTable(schema: "dbo", name: "BillingAccountPayment");

@@ -1,4 +1,4 @@
-using Hub.HostedServices.ServiceBusQueue;
+using Hub.Shared.HostedServices.ServiceBusQueue;
 using Microsoft.Extensions.Hosting;
 using Spreadsheet.Data;
 

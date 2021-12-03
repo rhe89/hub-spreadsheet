@@ -6,16 +6,21 @@ using Google.Apis.Auth.OAuth2;
 using Google.Apis.Services;
 using Google.Apis.Sheets.v4;
 using Google.Apis.Sheets.v4.Data;
-using Hub.Settings.Core;
-using Hub.Storage.Azure.Core;
+using Hub.Shared.Settings;
+using Hub.Shared.Storage.Azure;
 using Microsoft.Extensions.Logging;
-using Spreadsheet.Core.Constants;
-using Spreadsheet.Core.Dto.Spreadsheet;
-using Spreadsheet.Core.Exceptions;
-using Spreadsheet.Core.Integration;
+using Spreadsheet.Shared.Constants;
+using Spreadsheet.Integration.Dto.Spreadsheet;
 
 namespace Spreadsheet.Integration
 {
+    public interface IGoogleSpreadsheetConnector
+    {
+        Task LoadSpreadsheetTab(Tab tab);
+
+        Task UpdateSpreadsheetTab(Tab tab, int firstColumnRow, int lastColumnRow);
+    }
+    
     public class GoogleSpreadsheetConnector : IGoogleSpreadsheetConnector
     {
         private readonly ISettingProvider _settingProvider;
@@ -135,5 +140,17 @@ namespace Spreadsheet.Integration
 
             return accountCredential;
         }
+        
+        private class SpreadsheetConnectorException : Exception
+        {
+            public SpreadsheetConnectorException(string message) : base(message)
+            {
+            }
+            public SpreadsheetConnectorException(string message, Exception exception) : base(message, exception)
+            {
+            }
+        }
     }
+    
+    
 }

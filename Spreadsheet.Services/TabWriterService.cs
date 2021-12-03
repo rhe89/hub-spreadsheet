@@ -3,13 +3,18 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
-using Spreadsheet.Core.Dto.Spreadsheet;
-using Spreadsheet.Core.Extensions;
-using Spreadsheet.Core.Integration;
-using Spreadsheet.Core.Services;
+using Spreadsheet.Shared.Extensions;
+using Spreadsheet.Integration;
+using Spreadsheet.Integration.Dto.Spreadsheet;
 
 namespace Spreadsheet.Services
 {
+    public interface ITabWriterService<TTab>
+        where TTab : Tab, new()
+    {
+        Task UpdateTab(IList<Cell> rows);
+    }
+    
     public class TabWriterService<TTab> : ITabWriterService<TTab>
         where TTab : Tab, new()
     {

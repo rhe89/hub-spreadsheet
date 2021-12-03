@@ -1,0 +1,79 @@
+@page "/spreadsheets"
+@page "/"
+
+@using Spreadsheet.Data.Dto
+@using Spreadsheet.Providers
+@using Spreadsheet.Services
+
+@inject ISpreadsheetMetadataProvider _spreadsheetMetadataProvider
+@inject ISpreadsheetMetadataService _spreadsheetMetadataService
+
+@inject NavigationManager _uriHelper
+
+<h1>Spreadsheets</h1>
+
+<NavLink Match="NavLinkMatch.All" href="@($"/create")">Create new spreadsheet</NavLink>
+
+@if (_spreadsheets == null)
+{
+    <p>
+        <em>Loading...</em>
+    </p>
+}
+else
+{
+    <table class="table">
+        <thead>
+        <tr>
+            <th>Name</th>
+            <th>Valid from</th>
+            <th>Valid to</th>
+            <th>Actions</th>
+        </tr>
+        </thead>
+        <tbody>
+        @foreach (var spreadsheet in _spreadsheets)
+        {
+            <tr>
+                <td>@spreadsheet.Name</td>
+                <td>@spreadsheet.ValidFrom.ToShortDateString()</td>
+                <td>
+                    @if (spreadsheet.ValidTo != DateTime.MinValue)
+                    {
+                        @spreadsheet.ValidTo.ToShortDateString()
+                    }
+                </td>
+                <td>
+                    <button @onclick="() => Details(spreadsheet.SpreadsheetId)" class="btn btn-link">Details</button>
+                    <button @onclick="() => Edit(spreadsheet.SpreadsheetId)" class="btn btn-link">Edit</button>
+                    <button @onclick="() => CopySpreadsheet(spreadsheet.SpreadsheetId)" class="btn btn-link">Create copy</button>
+                </td>
+            </tr>
+        }
+        </tbody>
+    </table>
+}
+
+@code {
+    private IList<SpreadsheetMetadataDto> _spreadsheets;
+
+    protected override async Task OnInitializedAsync()
+    {
+        _spreadsheets = await _spreadsheetMetadataProvider.GetSpreadsheets();
+    }
+    
+    private void CopySpreadsheet(string id)
+    {
+        _uriHelper.NavigateTo($"/copy/{id}/{true}/");
+    }
+    
+    private void Details(string id)
+    {
+        _uriHelper.NavigateTo($"/details/{id}/{true}");
+    }
+    
+    private void Edit(string id)
+    {
+        _uriHelper.NavigateTo($"/edit/{id}");
+    }
+}

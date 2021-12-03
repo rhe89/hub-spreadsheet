@@ -19,7 +19,7 @@ namespace Spreadsheet.Data.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 128)
                 .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-            modelBuilder.Entity("Hub.HostedServices.Commands.Configuration.Core.CommandConfiguration", b =>
+            modelBuilder.Entity("Hub.Shared.HostedServices.Commands.CommandConfiguration", b =>
                 {
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
@@ -46,7 +46,7 @@ namespace Spreadsheet.Data.Migrations
                     b.ToTable("CommandConfiguration","dbo");
                 });
 
-            modelBuilder.Entity("Hub.Settings.Core.Setting", b =>
+            modelBuilder.Entity("Hub.Shared.Settings.Setting", b =>
                 {
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
@@ -70,7 +70,7 @@ namespace Spreadsheet.Data.Migrations
                     b.ToTable("Setting","dbo");
                 });
 
-            modelBuilder.Entity("Spreadsheet.Core.Entities.BillingAccountPayment", b =>
+            modelBuilder.Entity("Spreadsheet.Data.Entities.BillingAccountTransaction", b =>
                 {
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
@@ -98,115 +98,6 @@ namespace Spreadsheet.Data.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("BillingAccountPayment","dbo");
-                });
-
-            modelBuilder.Entity("Spreadsheet.Core.Entities.SpreadsheetMetadata", b =>
-                {
-                    b.Property<long>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<DateTime>("CreatedDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("Name")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("SpreadsheetId")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime>("UpdatedDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<DateTime>("ValidFrom")
-                        .HasColumnType("datetime2");
-
-                    b.Property<DateTime?>("ValidTo")
-                        .HasColumnType("datetime2");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("SpreadsheetMetadata","dbo");
-                });
-
-            modelBuilder.Entity("Spreadsheet.Core.Entities.SpreadsheetRowMetadata", b =>
-                {
-                    b.Property<long>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<DateTime>("CreatedDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("RowKey")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<long>("SpreadsheetTabMetadataId")
-                        .HasColumnType("bigint");
-
-                    b.Property<string>("Tags")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime>("UpdatedDate")
-                        .HasColumnType("datetime2");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("SpreadsheetTabMetadataId");
-
-                    b.ToTable("SpreadsheetRowMetadata","dbo");
-                });
-
-            modelBuilder.Entity("Spreadsheet.Core.Entities.SpreadsheetTabMetadata", b =>
-                {
-                    b.Property<long>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<DateTime>("CreatedDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("FirstColumn")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("LastColumn")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Name")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<long>("SpreadsheetMetadataId")
-                        .HasColumnType("bigint");
-
-                    b.Property<DateTime>("UpdatedDate")
-                        .HasColumnType("datetime2");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("SpreadsheetMetadataId");
-
-                    b.ToTable("SpreadsheetTabMetadata","dbo");
-                });
-
-            modelBuilder.Entity("Spreadsheet.Core.Entities.SpreadsheetRowMetadata", b =>
-                {
-                    b.HasOne("Spreadsheet.Core.Entities.SpreadsheetTabMetadata", "SpreadsheetTabMetadata")
-                        .WithMany("SpreadsheetRowMetadata")
-                        .HasForeignKey("SpreadsheetTabMetadataId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
-            modelBuilder.Entity("Spreadsheet.Core.Entities.SpreadsheetTabMetadata", b =>
-                {
-                    b.HasOne("Spreadsheet.Core.Entities.SpreadsheetMetadata", "SpreadsheetMetadata")
-                        .WithMany("SpreadsheetTabMetadata")
-                        .HasForeignKey("SpreadsheetMetadataId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
                 });
 #pragma warning restore 612, 618
         }

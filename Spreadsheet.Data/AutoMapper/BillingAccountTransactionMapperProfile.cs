@@ -1,6 +1,6 @@
 using AutoMapper;
-using Spreadsheet.Core.Dto.Data;
-using Spreadsheet.Core.Entities;
+using Spreadsheet.Data.Dto;
+using Spreadsheet.Data.Entities;
 
 namespace Spreadsheet.Data.AutoMapper
 {
