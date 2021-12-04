@@ -37,7 +37,6 @@ namespace Spreadsheet.Web.WebApp
                 ConnectionString = Configuration.GetValue<string>("AI_CONNECTION_STRING")
             });
             
-            serviceCollection.AddDatabase<SpreadsheetDbContext>(Configuration, "SQL_DB_SPREADSHEET", "Sbanken.Spreadsheet");
             serviceCollection.AddTransient<ISpreadsheetCosmosDb, SpreadsheetCosmosDb>();
             serviceCollection.AddTransient<ISpreadsheetMetadataProvider, SpreadsheetMetadataProvider>();
             serviceCollection.AddTransient<ISpreadsheetMetadataService, SpreadsheetMetadataService>();

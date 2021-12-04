@@ -34,11 +34,6 @@ namespace Spreadsheet.HostedServices.ServiceBusQueueHost
                     x.GetRequiredService<IGoogleSpreadsheetConnector>(), 
                     SpreadsheetTabMetadataConstants.SbankenAccountsTabName));
             
-            serviceCollection.AddTransient<ITabReaderService<CoinbaseAccountsTab>>(x => 
-                new TabReaderService<CoinbaseAccountsTab>(x.GetRequiredService<ISpreadsheetMetadataProvider>(),
-                    x.GetRequiredService<IGoogleSpreadsheetConnector>(), 
-                    SpreadsheetTabMetadataConstants.CoinbaseAccountsTabName));
-            
             serviceCollection.AddTransient<ITabReaderService<CoinbaseProAccountsTab>>(x => 
                 new TabReaderService<CoinbaseProAccountsTab>(x.GetRequiredService<ISpreadsheetMetadataProvider>(),
                     x.GetRequiredService<IGoogleSpreadsheetConnector>(), 
@@ -55,13 +50,11 @@ namespace Spreadsheet.HostedServices.ServiceBusQueueHost
                     SpreadsheetTabMetadataConstants.ExchangeRatesTabName));
             
             serviceCollection.AddTransient<ITabDataProvider<SbankenAccountsTab>, BankAccountTabDataProvider<SbankenAccountsTab, ISbankenApiConnector>>();
-            serviceCollection.AddTransient<ITabDataProvider<CoinbaseAccountsTab>, BankAccountTabDataProvider<CoinbaseAccountsTab, ICoinbaseApiConnector>>();
             serviceCollection.AddTransient<ITabDataProvider<CoinbaseProAccountsTab>, BankAccountTabDataProvider<CoinbaseProAccountsTab, ICoinbaseProApiConnector>>();
             serviceCollection.AddTransient<ITabDataProvider<ExchangeRatesTab>, ExchangeRatesTabDataProvider>();
             serviceCollection.AddTransient<ITabDataProvider<BillingAccountTab>, BillingAccountTransactionsProvider>();
 
             serviceCollection.AddTransient<ITabWriterService<SbankenAccountsTab>, TabWriterService<SbankenAccountsTab>>();
-            serviceCollection.AddTransient<ITabWriterService<CoinbaseAccountsTab>, TabWriterService<CoinbaseAccountsTab>>();
             serviceCollection.AddTransient<ITabWriterService<CoinbaseProAccountsTab>, TabWriterService<CoinbaseProAccountsTab>>();
             serviceCollection.AddTransient<ITabWriterService<ExchangeRatesTab>, TabWriterService<ExchangeRatesTab>>();            
             serviceCollection.AddTransient<ITabWriterService<BillingAccountTab>, TabWriterService<BillingAccountTab>>();
@@ -88,13 +81,11 @@ namespace Spreadsheet.HostedServices.ServiceBusQueueHost
         protected override void AddQueueListenerServices(IServiceCollection serviceCollection, IConfiguration configuration)
         {
             serviceCollection.AddTransient<UpdateBillingAccountTransactionsCommand>();
-            serviceCollection.AddTransient<UpdateCoinbaseAccountsCommand>();
             serviceCollection.AddTransient<UpdateCoinbaseProAccountsCommand>();
             serviceCollection.AddTransient<UpdateExchangeRatesCommand>();
             serviceCollection.AddTransient<UpdateSbankenAccountsCommand>();
             
             serviceCollection.AddHostedService<BillingAccountsTransactionsUpdatedService>();
-            serviceCollection.AddHostedService<CoinbaseAccountsUpdatedQueueListener>();
             serviceCollection.AddHostedService<CoinbaseProAccountsUpdatedQueueListener>();
             serviceCollection.AddHostedService<ExchangeRatesUpdatedService>();
             serviceCollection.AddHostedService<SbankenAccountsUpdatedQueueListener>();
