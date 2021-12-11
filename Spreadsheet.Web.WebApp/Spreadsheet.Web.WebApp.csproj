@@ -6,11 +6,11 @@
 	<ItemGroup>
 		<PackageReference Include="Blazored.FluentValidation" Version="2.0.3" />
 		<PackageReference Include="FluentValidation.AspNetCore" Version="10.3.5" />
+		<PackageReference Include="Hub.Shared.Logging" Version="6.0.0" />
+		<PackageReference Include="Hub.Shared.Web.BlazorServer" Version="6.0.0" />
 	</ItemGroup>
 
 	<ItemGroup>
-		<ProjectReference Include="..\..\hub-shared\Hub.Shared.Logging\Hub.Shared.Logging.csproj" />
-		<ProjectReference Include="..\..\hub-shared\Hub.Shared.Web\Hub.Shared.Web.BlazorServer\Hub.Shared.Web.BlazorServer.csproj" />
 		<ProjectReference Include="..\Spreadsheet.Data\Spreadsheet.Data.csproj" />
 		<ProjectReference Include="..\Spreadsheet.Providers\Spreadsheet.Providers.csproj" />
 		<ProjectReference Include="..\Spreadsheet.Services\Spreadsheet.Services.csproj" />

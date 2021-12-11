@@ -1,15 +1,15 @@
 <Project Sdk="Microsoft.NET.Sdk">
-
-    <PropertyGroup>
+	<PropertyGroup>
 		<TargetFramework>net6.0</TargetFramework>
-    </PropertyGroup>
-
-    <ItemGroup>
-      <ProjectReference Include="..\..\hub-shared\Hub.Shared.Storage\Hub.Shared.Storage.Repository\Hub.Shared.Storage.Repository.csproj" />
-      <ProjectReference Include="..\Spreadsheet.Shared\Spreadsheet.Shared.csproj" />
-    </ItemGroup>
+	</PropertyGroup>
 
 	<ItemGroup>
-	  <PackageReference Include="Microsoft.Azure.Cosmos" Version="3.23.0" />
+		<PackageReference Include="Hub.Shared.Storage.Repository" Version="6.0.0" />
+		<PackageReference Include="Microsoft.Azure.Cosmos" Version="3.23.0" />
 	</ItemGroup>
+
+	<ItemGroup>
+		<ProjectReference Include="..\Spreadsheet.Shared\Spreadsheet.Shared.csproj" />
+	</ItemGroup>
+
 </Project>

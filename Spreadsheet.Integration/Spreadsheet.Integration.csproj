@@ -6,13 +6,13 @@
 	<ItemGroup>
 		<PackageReference Include="Google.Apis.Auth" Version="1.36.1" />
 		<PackageReference Include="Google.Apis.Sheets.v4" Version="1.36.1.1443" />
+		<PackageReference Include="Hub.Shared.DataContracts.Coinbase" Version="6.0.0" />
+		<PackageReference Include="Hub.Shared.DataContracts.Sbanken" Version="6.0.0" />
+		<PackageReference Include="Hub.Shared.DataContracts.Banking" Version="6.0.0" />
+		<PackageReference Include="Hub.Shared.Web.Http" Version="6.0.0" />
 	</ItemGroup>
 
 	<ItemGroup>
-		<ProjectReference Include="..\..\hub-shared\Hub.Shared.DataContracts\Hub.Shared.DataContracts.Coinbase\Hub.Shared.DataContracts.Coinbase.csproj" />
-		<ProjectReference Include="..\..\hub-shared\Hub.Shared.DataContracts\Hub.Shared.DataContracts.Sbanken\Hub.Shared.DataContracts.Sbanken.csproj" />
-		<ProjectReference Include="..\..\hub-shared\Hub.Shared.DataContracts\Hub.Shared.DataContracts.Banking\Hub.Shared.DataContracts.Banking.csproj" />
-		<ProjectReference Include="..\..\hub-shared\Hub.Shared.Web\Hub.Shared.Web.Http\Hub.Shared.Web.Http.csproj" />
 		<ProjectReference Include="..\Spreadsheet.Shared\Spreadsheet.Shared.csproj" />
 		<ProjectReference Include="..\Spreadsheet.Data\Spreadsheet.Data.csproj" />
 	</ItemGroup>
