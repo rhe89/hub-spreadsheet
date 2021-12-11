@@ -1,4 +1,5 @@
 using System.IO;
+using Hub.Shared.Web.BlazorServer;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
@@ -9,23 +10,12 @@ namespace Spreadsheet.Web.WebApp
     {
         public static void Main(string[] args)
         {
-            var configPath = $"{Directory.GetCurrentDirectory()}/../..";
-
-            var configuration = new ConfigurationBuilder()
-                .AddEnvironmentVariables()
-                .SetBasePath(configPath)
-                .AddJsonFile("appsettings.json", true)
-                .Build();
-
-            CreateHostBuilder(args, configuration).Build().Run();
+            CreateHostBuilder(args)
+                .Build()
+                .Run();
         }
 
-        private static IHostBuilder CreateHostBuilder(string[] args, IConfiguration configuration)
-        {
-            return Host.CreateDefaultBuilder(args)
-                .ConfigureWebHostDefaults(webBuilder => { webBuilder.UseStartup<Startup>(); })
-                .ConfigureHostConfiguration(
-                    configurationBuilder => configurationBuilder.AddConfiguration(configuration));
-        }
+        private static IHostBuilder CreateHostBuilder(string[] args) =>
+            HostBuilder<Startup, DependencyRegistrationFactory>.Create(args);
     }
 }

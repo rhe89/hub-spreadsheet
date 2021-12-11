@@ -60,6 +60,7 @@ a, .btn-link {
     height: 100%;
     background: #ffffff96;
     text-align: center;
+    z-index: 100;
 }
 
 #saving-overlay p {

@@ -2,6 +2,7 @@ using AutoMapper;
 using FluentValidation;
 using FluentValidation.AspNetCore;
 using Hub.Shared.Logging;
+using JetBrains.Annotations;
 using Microsoft.ApplicationInsights.AspNetCore.Extensions;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -17,62 +18,11 @@ using Spreadsheet.Web.WebApp.Validation;
 
 namespace Spreadsheet.Web.WebApp
 {
-    public class Startup
+    [UsedImplicitly]
+    public class Startup : Hub.Shared.Web.BlazorServer.Startup<DependencyRegistrationFactory>
     {
-        public Startup(IConfiguration configuration)
+        public Startup(IConfiguration configuration) : base(configuration)
         {
-            _configuration = configuration;
-        }
-
-        private readonly IConfiguration _configuration;
-
-        // This method gets called by the runtime. Use this method to add services to the container.
-        // For more information on how to configure your application, visit https://go.microsoft.com/fwlink/?LinkID=398940
-        public void ConfigureServices(IServiceCollection serviceCollection)
-        {
-            serviceCollection.AddRazorPages();
-            serviceCollection.AddServerSideBlazor(c => c.DetailedErrors = true);
-            serviceCollection.AddApplicationInsightsTelemetry(new ApplicationInsightsServiceOptions
-            {
-                ConnectionString = _configuration.GetValue<string>("AI_CONNECTION_STRING")
-            });
-
-            serviceCollection.AddTransient<ISpreadsheetCosmosDb, SpreadsheetCosmosDb>();
-            serviceCollection.AddTransient<ISpreadsheetMetadataProvider, SpreadsheetMetadataProvider>();
-            serviceCollection.AddTransient<ISpreadsheetMetadataService, SpreadsheetMetadataService>();
-            serviceCollection.AddSingleton<State>();
-
-            serviceCollection.AddAutoMapper(c => { c.AddSpreadsheetProfiles(); });
-
-            serviceCollection.AddFluentValidation();
-            serviceCollection.AddTransient<IValidator<SpreadsheetMetadataDto>, SpreadsheetMetadataValidator>();
-            serviceCollection.AddLogging(loggingBuilder => loggingBuilder.AddHubLogging());
-        }
-
-        // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
-        {
-            if (env.IsDevelopment())
-            {
-                app.UseDeveloperExceptionPage();
-            }
-            else
-            {
-                app.UseExceptionHandler("/Error");
-                // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
-                app.UseHsts();
-            }
-
-            app.UseHttpsRedirection();
-            app.UseStaticFiles();
-
-            app.UseRouting();
-
-            app.UseEndpoints(endpoints =>
-            {
-                endpoints.MapBlazorHub();
-                endpoints.MapFallbackToPage("/_Host");
-            });
         }
     }
 }

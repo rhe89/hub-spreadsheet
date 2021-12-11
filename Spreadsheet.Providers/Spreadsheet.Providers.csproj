@@ -4,7 +4,7 @@
 	</PropertyGroup>
 
 	<ItemGroup>
-		<PackageReference Include="Hub.Shared.Storage.Repository.Core" Version="3.2" />
+		<PackageReference Include="Hub.Shared.Storage.Repository.Core" Version="3.3" />
 	</ItemGroup>
 
 	<ItemGroup>
