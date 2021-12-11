@@ -5,20 +5,19 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Spreadsheet.HostedServices.ServiceBusQueueHost.Commands;
 
-namespace Spreadsheet.HostedServices.ServiceBusQueueHost.QueueListeners
+namespace Spreadsheet.HostedServices.ServiceBusQueueHost.QueueListeners;
+
+public class ExchangeRatesUpdatedService : ServiceBusHostedService
 {
-    public class ExchangeRatesUpdatedService : ServiceBusHostedService
+    public ExchangeRatesUpdatedService(ILogger<ExchangeRatesUpdatedService> logger,
+        IConfiguration configuration,
+        UpdateExchangeRatesCommand queuedCommand,
+        IQueueProcessor queueProcessor,
+        TelemetryClient telemetryClient) : base(logger, 
+        configuration,
+        queuedCommand, 
+        queueProcessor,
+        telemetryClient)
     {
-        public ExchangeRatesUpdatedService(ILogger<ExchangeRatesUpdatedService> logger,
-            IConfiguration configuration,
-            UpdateExchangeRatesCommand queuedCommand,
-            IQueueProcessor queueProcessor,
-            TelemetryClient telemetryClient) : base(logger, 
-                                                 configuration,
-                                                 queuedCommand, 
-                                                 queueProcessor,
-                                                 telemetryClient)
-        {
-        }
     }
 }

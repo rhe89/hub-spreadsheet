@@ -6,78 +6,77 @@ using Spreadsheet.Integration;
 using Spreadsheet.Integration.Dto.Spreadsheet;
 using Spreadsheet.Providers;
 
-namespace Spreadsheet.Services
+namespace Spreadsheet.Services;
+
+public interface ITabReaderService<TTab> where TTab : Tab, new()
 {
-    public interface ITabReaderService<TTab> where TTab : Tab, new()
-    {
-        Task<TTab> GetTab();
-    }
+    Task<TTab> GetTab();
+}
     
-    public class TabReaderService<TTab> : ITabReaderService<TTab> 
-        where TTab : Tab, new()
+public class TabReaderService<TTab> : ITabReaderService<TTab> 
+    where TTab : Tab, new()
+{
+    private readonly IGoogleSpreadsheetConnector _googleSpreadsheetConnector;
+    private readonly ISpreadsheetMetadataProvider _spreadsheetMetadataProvider;
+    private readonly string _tabName;
+
+    public TabReaderService(ISpreadsheetMetadataProvider spreadsheetMetadataProvider, 
+        IGoogleSpreadsheetConnector googleSpreadsheetConnector,
+        string tabName)
     {
-        private readonly IGoogleSpreadsheetConnector _googleSpreadsheetConnector;
-        private readonly ISpreadsheetMetadataProvider _spreadsheetMetadataProvider;
-        private readonly string _tabName;
-
-        public TabReaderService(ISpreadsheetMetadataProvider spreadsheetMetadataProvider, 
-            IGoogleSpreadsheetConnector googleSpreadsheetConnector,
-            string tabName)
-        {
-            _googleSpreadsheetConnector = googleSpreadsheetConnector;
-            _tabName = tabName;
-            _spreadsheetMetadataProvider = spreadsheetMetadataProvider;
-        }
+        _googleSpreadsheetConnector = googleSpreadsheetConnector;
+        _tabName = tabName;
+        _spreadsheetMetadataProvider = spreadsheetMetadataProvider;
+    }
         
-        public async Task<TTab> GetTab()    
-        {
-            var spreadsheetMetadata = await _spreadsheetMetadataProvider.GetCurrentBudgetSpreadsheetMetadata();
+    public async Task<TTab> GetTab()    
+    {
+        var spreadsheetMetadata = await _spreadsheetMetadataProvider.GetCurrentBudgetSpreadsheetMetadata();
 
-            if (spreadsheetMetadata == null)
-            {
-                throw new SpreadsheetNotFoundException("No metadata exists for budget spreadsheet for current date");
-            }
+        if (spreadsheetMetadata == null)
+        {
+            throw new SpreadsheetNotFoundException("No metadata exists for budget spreadsheet for current date");
+        }
             
-            var tab = SetTabDtoFromSpreadsheetMetadata(spreadsheetMetadata, _tabName);
+        var tab = SetTabDtoFromSpreadsheetMetadata(spreadsheetMetadata, _tabName);
             
-            await PopulateRowsInTab(tab);
+        await PopulateRowsInTab(tab);
 
-            return tab;
-        }
+        return tab;
+    }
 
-        private static TTab SetTabDtoFromSpreadsheetMetadata(SpreadsheetMetadataDto spreadSheet, string tabName)
+    private static TTab SetTabDtoFromSpreadsheetMetadata(SpreadsheetMetadataDto spreadSheet, string tabName)
+    {
+        var spreadsheetTabMetadata =
+            spreadSheet.Tabs.FirstOrDefault(x =>
+                x.Name == tabName);
+
+        if (spreadsheetTabMetadata == null)
         {
-            var spreadsheetTabMetadata =
-                spreadSheet.Tabs.FirstOrDefault(x =>
-                    x.Name == tabName);
-
-            if (spreadsheetTabMetadata == null)
-            {
-                throw new ArgumentException(
-                    $"No metadata exists for {tabName} in SpreadsheetMetadata with id {spreadSheet.SpreadsheetId}",
-                    nameof(tabName));
-            }
-
-            return new TTab
-            {
-                Name = spreadsheetTabMetadata.Name,
-                SpreadsheetId = spreadSheet.SpreadsheetId,
-                FirstColumn = spreadsheetTabMetadata.FirstColumn,
-                LastColumn = spreadsheetTabMetadata.LastColumn,
-                SpreadsheetRowMetadataDtos = spreadsheetTabMetadata.Rows
-            };
+            throw new ArgumentException(
+                $"No metadata exists for {tabName} in SpreadsheetMetadata with id {spreadSheet.SpreadsheetId}",
+                nameof(tabName));
         }
 
-        private async Task PopulateRowsInTab(Tab tab)
+        return new TTab
         {
-            await _googleSpreadsheetConnector.LoadSpreadsheetTab(tab);
-        }
+            Name = spreadsheetTabMetadata.Name,
+            SpreadsheetId = spreadSheet.SpreadsheetId,
+            FirstColumn = spreadsheetTabMetadata.FirstColumn,
+            LastColumn = spreadsheetTabMetadata.LastColumn,
+            SpreadsheetRowMetadataDtos = spreadsheetTabMetadata.Rows
+        };
+    }
+
+    private async Task PopulateRowsInTab(Tab tab)
+    {
+        await _googleSpreadsheetConnector.LoadSpreadsheetTab(tab);
+    }
         
-        private class SpreadsheetNotFoundException : Exception
+    private class SpreadsheetNotFoundException : Exception
+    {
+        public SpreadsheetNotFoundException(string message) : base(message)
         {
-            public SpreadsheetNotFoundException(string message) : base(message)
-            {
-            }
         }
     }
 }

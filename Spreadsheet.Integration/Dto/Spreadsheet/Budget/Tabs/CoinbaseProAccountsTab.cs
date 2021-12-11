@@ -1,7 +1,6 @@
-namespace Spreadsheet.Integration.Dto.Spreadsheet.Budget.Tabs
+namespace Spreadsheet.Integration.Dto.Spreadsheet.Budget.Tabs;
+
+public class CoinbaseProAccountsTab : Tab
 {
-    public class CoinbaseProAccountsTab : Tab
-    {
         
-    }
 }

@@ -2,11 +2,10 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Spreadsheet.Integration.Dto.Spreadsheet;
 
-namespace Spreadsheet.Providers
+namespace Spreadsheet.Providers;
+
+public interface ITabDataProvider<TTab> 
+    where TTab : Tab
 {
-    public interface ITabDataProvider<TTab> 
-        where TTab : Tab
-    {
-        public Task<IEnumerable<ICell>> GetData();
-    }
+    public Task<IEnumerable<ICell>> GetData();
 }

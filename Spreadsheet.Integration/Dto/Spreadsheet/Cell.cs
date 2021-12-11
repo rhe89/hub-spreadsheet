@@ -1,8 +1,7 @@
-namespace Spreadsheet.Integration.Dto.Spreadsheet
+namespace Spreadsheet.Integration.Dto.Spreadsheet;
+
+public interface ICell
 {
-    public interface ICell
-    {
-        string RowKey { get; }
-        string CellValue { get; }
-    }
+    string RowKey { get; }
+    string CellValue { get; }
 }

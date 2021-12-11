@@ -1,20 +1,19 @@
 using System;
 
-namespace Spreadsheet.Shared.Extensions
+namespace Spreadsheet.Shared.Extensions;
+
+public static class DateTimeExtensions
 {
-    public static class DateTimeExtensions
+    public static string FormattedDate(this DateTime date)
     {
-        public static string FormattedDate(this DateTime date)
-        {
-            var day = date.Day < 10 ? $"0{date.Day}" : $"{date.Day}";
+        var day = date.Day < 10 ? $"0{date.Day}" : $"{date.Day}";
 
-            var month = date.Month < 10 ? $"0{date.Month}" : $"{date.Month}";
+        var month = date.Month < 10 ? $"0{date.Month}" : $"{date.Month}";
 
-            var hour = date.Hour < 10 ? $"0{date.Hour}" : $"{date.Hour}";
-            var minute = date.Minute < 10 ? $"0{date.Minute}" : $"{date.Minute}";
-            var seconds = date.Second < 10 ? $"0{date.Second}" : $"{date.Second}";
+        var hour = date.Hour < 10 ? $"0{date.Hour}" : $"{date.Hour}";
+        var minute = date.Minute < 10 ? $"0{date.Minute}" : $"{date.Minute}";
+        var seconds = date.Second < 10 ? $"0{date.Second}" : $"{date.Second}";
 
-            return $"{month}/{day}/{date.Year} {hour}:{minute}:{seconds}";
-        }
+        return $"{month}/{day}/{date.Year} {hour}:{minute}:{seconds}";
     }
 }

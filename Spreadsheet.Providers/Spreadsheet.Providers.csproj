@@ -1,13 +1,10 @@
 <Project Sdk="Microsoft.NET.Sdk">
 	<PropertyGroup>
-		<TargetFramework>netstandard2.1</TargetFramework>
+		<TargetFramework>net6.0</TargetFramework>
 	</PropertyGroup>
 
 	<ItemGroup>
-		<PackageReference Include="Hub.Shared.Storage.Repository.Core" Version="3.3" />
-	</ItemGroup>
-
-	<ItemGroup>
+		<ProjectReference Include="..\..\hub-shared\Hub.Shared.Storage\Hub.Shared.Storage.Repository.Core\Hub.Shared.Storage.Repository.Core.csproj" />
 		<ProjectReference Include="..\Spreadsheet.Shared\Spreadsheet.Shared.csproj" />
 		<ProjectReference Include="..\Spreadsheet.Integration\Spreadsheet.Integration.csproj" />
 	</ItemGroup>

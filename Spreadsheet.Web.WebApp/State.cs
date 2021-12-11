@@ -1,18 +1,17 @@
 using System;
 
-namespace Spreadsheet.Web.WebApp
+namespace Spreadsheet.Web.WebApp;
+
+public class State
 {
-    public class State
+    public event Action OnChange;
+
+    public bool Saving { get; private set; }
+
+    public void SetSaving(bool saving)
     {
-        public event Action OnChange;
+        Saving = saving;
 
-        public bool Saving { get; private set; }
-
-        public void SetSaving(bool saving)
-        {
-            Saving = saving;
-
-            OnChange?.Invoke();
-        }
+        OnChange?.Invoke();
     }
 }

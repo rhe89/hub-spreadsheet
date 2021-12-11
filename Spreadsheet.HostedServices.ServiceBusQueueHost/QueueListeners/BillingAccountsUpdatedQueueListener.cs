@@ -5,20 +5,19 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Spreadsheet.HostedServices.ServiceBusQueueHost.Commands;
 
-namespace Spreadsheet.HostedServices.ServiceBusQueueHost.QueueListeners
+namespace Spreadsheet.HostedServices.ServiceBusQueueHost.QueueListeners;
+
+public class BillingAccountsTransactionsUpdatedService : ServiceBusHostedService
 {
-    public class BillingAccountsTransactionsUpdatedService : ServiceBusHostedService
+    public BillingAccountsTransactionsUpdatedService(ILogger<BillingAccountsTransactionsUpdatedService> logger, 
+        IConfiguration configuration,
+        UpdateBillingAccountTransactionsCommand queuedCommand, 
+        IQueueProcessor queueProcessor,
+        TelemetryClient telemetryClient) : base(logger, 
+        configuration,
+        queuedCommand, 
+        queueProcessor,
+        telemetryClient)
     {
-        public BillingAccountsTransactionsUpdatedService(ILogger<BillingAccountsTransactionsUpdatedService> logger, 
-            IConfiguration configuration,
-            UpdateBillingAccountTransactionsCommand queuedCommand, 
-            IQueueProcessor queueProcessor,
-            TelemetryClient telemetryClient) : base(logger, 
-                                                 configuration,
-                                                 queuedCommand, 
-                                                 queueProcessor,
-                                                 telemetryClient)
-        {
-        }
     }
 }

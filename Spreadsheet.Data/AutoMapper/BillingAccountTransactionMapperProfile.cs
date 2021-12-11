@@ -2,14 +2,13 @@ using AutoMapper;
 using Spreadsheet.Data.Dto;
 using Spreadsheet.Data.Entities;
 
-namespace Spreadsheet.Data.AutoMapper
+namespace Spreadsheet.Data.AutoMapper;
+
+public class BillingAccountTransactionMapperProfile : Profile
 {
-    public class BillingAccountTransactionMapperProfile : Profile
+    public BillingAccountTransactionMapperProfile()
     {
-        public BillingAccountTransactionMapperProfile()
-        {
-            CreateMap<BillingAccountTransaction, BillingAccountTransactionDto>()
-                .ReverseMap();
-        }
+        CreateMap<BillingAccountTransaction, BillingAccountTransactionDto>()
+            .ReverseMap();
     }
 }

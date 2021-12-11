@@ -1,7 +1,6 @@
-namespace Spreadsheet.Shared.Constants
+namespace Spreadsheet.Shared.Constants;
+
+public static class SpreadsheetRowMetadataConstants
 {
-    public static class SpreadsheetRowMetadataConstants
-    {
-        public static readonly int PeriodRowIndex = 0;
-    }
+    public static readonly int PeriodRowIndex = 0;
 }

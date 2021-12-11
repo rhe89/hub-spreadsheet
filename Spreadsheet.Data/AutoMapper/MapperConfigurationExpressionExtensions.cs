@@ -1,13 +1,12 @@
 using AutoMapper;
 
-namespace Spreadsheet.Data.AutoMapper
+namespace Spreadsheet.Data.AutoMapper;
+
+public static class MapperConfigurationExpressionExtensions
 {
-    public static class MapperConfigurationExpressionExtensions
+    public static void AddSpreadsheetProfiles(this IMapperConfigurationExpression mapperConfigurationExpression)
     {
-        public static void AddSpreadsheetProfiles(this IMapperConfigurationExpression mapperConfigurationExpression)
-        {
-            mapperConfigurationExpression.AddProfile<SpreadsheetMetadataMapperProfile>();
-            mapperConfigurationExpression.AddProfile<BillingAccountTransactionMapperProfile>();
-        }
+        mapperConfigurationExpression.AddProfile<SpreadsheetMetadataMapperProfile>();
+        mapperConfigurationExpression.AddProfile<BillingAccountTransactionMapperProfile>();
     }
 }

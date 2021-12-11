@@ -1,6 +1,5 @@
-﻿namespace Spreadsheet.Integration.Dto.Spreadsheet.Budget.Tabs
+﻿namespace Spreadsheet.Integration.Dto.Spreadsheet.Budget.Tabs;
+
+public class ResultsAndSavingsTab : Tab
 {
-    public class ResultsAndSavingsTab : Tab
-    {
-    }
 }

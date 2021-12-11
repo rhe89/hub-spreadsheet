@@ -1,20 +1,15 @@
 <Project Sdk="Microsoft.NET.Sdk">
-	<PropertyGroup>
-		<TargetFramework>netstandard2.1</TargetFramework>
-	</PropertyGroup>
+
+    <PropertyGroup>
+		<TargetFramework>net6.0</TargetFramework>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\..\hub-shared\Hub.Shared.Storage\Hub.Shared.Storage.Repository\Hub.Shared.Storage.Repository.csproj" />
+      <ProjectReference Include="..\Spreadsheet.Shared\Spreadsheet.Shared.csproj" />
+    </ItemGroup>
 
 	<ItemGroup>
-		<PackageReference Include="Hub.Shared.Storage.Repository" Version="3.3" />
-		<PackageReference Include="Microsoft.Azure.Cosmos" Version="3.22.1" />
-		<PackageReference Include="AutoMapper" Version="10.1.0" />
-		<PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="8.1.0" />
-		<PackageReference Include="Microsoft.EntityFrameworkCore" Version="3.1.8" />
-		<PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="3.1.8" />
-		<PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="3.1.8" />
+	  <PackageReference Include="Microsoft.Azure.Cosmos" Version="3.23.0" />
 	</ItemGroup>
-
-	<ItemGroup>
-		<ProjectReference Include="..\Spreadsheet.Shared\Spreadsheet.Shared.csproj" />
-	</ItemGroup>
-
 </Project>

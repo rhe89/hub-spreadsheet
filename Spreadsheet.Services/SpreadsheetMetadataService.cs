@@ -3,50 +3,49 @@ using Spreadsheet.Data;
 using Spreadsheet.Data.Dto;
 using Spreadsheet.Providers;
 
-namespace Spreadsheet.Services
+namespace Spreadsheet.Services;
+
+public interface ISpreadsheetMetadataService
 {
-    public interface ISpreadsheetMetadataService
+    Task CreateOrUpdateSpreadsheetMetadata(SpreadsheetMetadataDto spreadsheetMetadataDto);
+    Task<SpreadsheetMetadataDto> InitializeSpreadsheetMetadataCopy(string id);
+    SpreadsheetMetadataDto InitializeEmptySpreadsheetMetadata();
+}
+
+public class SpreadsheetMetadataService : ISpreadsheetMetadataService
+{
+    private readonly ISpreadsheetCosmosDb _spreadsheetCosmosDb;
+    private readonly ISpreadsheetMetadataProvider _spreadsheetMetadataProvider;
+
+    public SpreadsheetMetadataService(ISpreadsheetMetadataProvider spreadsheetMetadataProvider,
+        ISpreadsheetCosmosDb spreadsheetCosmosDb)
     {
-        Task CreateOrUpdateSpreadsheetMetadata(SpreadsheetMetadataDto spreadsheetMetadataDto);
-        Task<SpreadsheetMetadataDto> InitializeSpreadsheetMetadataCopy(string id);
-        SpreadsheetMetadataDto InitializeEmptySpreadsheetMetadata();
+        _spreadsheetMetadataProvider = spreadsheetMetadataProvider;
+        _spreadsheetCosmosDb = spreadsheetCosmosDb;
     }
 
-    public class SpreadsheetMetadataService : ISpreadsheetMetadataService
+    public async Task CreateOrUpdateSpreadsheetMetadata(SpreadsheetMetadataDto spreadsheetMetadataDto)
     {
-        private readonly ISpreadsheetCosmosDb _spreadsheetCosmosDb;
-        private readonly ISpreadsheetMetadataProvider _spreadsheetMetadataProvider;
+        await _spreadsheetCosmosDb.AddOrUpdateSpreadsheetMetadata(spreadsheetMetadataDto.MapToEntity());
+    }
 
-        public SpreadsheetMetadataService(ISpreadsheetMetadataProvider spreadsheetMetadataProvider,
-            ISpreadsheetCosmosDb spreadsheetCosmosDb)
-        {
-            _spreadsheetMetadataProvider = spreadsheetMetadataProvider;
-            _spreadsheetCosmosDb = spreadsheetCosmosDb;
-        }
+    public async Task<SpreadsheetMetadataDto> InitializeSpreadsheetMetadataCopy(string id)
+    {
+        var spreadsheet = await _spreadsheetMetadataProvider.GetSpreadsheet(id);
 
-        public async Task CreateOrUpdateSpreadsheetMetadata(SpreadsheetMetadataDto spreadsheetMetadataDto)
-        {
-            await _spreadsheetCosmosDb.AddOrUpdateSpreadsheetMetadata(spreadsheetMetadataDto.MapToEntity());
-        }
+        return spreadsheet;
+    }
 
-        public async Task<SpreadsheetMetadataDto> InitializeSpreadsheetMetadataCopy(string id)
-        {
-            var spreadsheet = await _spreadsheetMetadataProvider.GetSpreadsheet(id);
+    public SpreadsheetMetadataDto InitializeEmptySpreadsheetMetadata()
+    {
+        var spreadsheet = new SpreadsheetMetadataDto();
 
-            return spreadsheet;
-        }
+        var spreadsheetTabMetadata = new SpreadsheetMetadataDto.Tab();
 
-        public SpreadsheetMetadataDto InitializeEmptySpreadsheetMetadata()
-        {
-            var spreadsheet = new SpreadsheetMetadataDto();
+        spreadsheetTabMetadata.Rows.Add(new SpreadsheetMetadataDto.Row());
 
-            var spreadsheetTabMetadata = new SpreadsheetMetadataDto.Tab();
+        spreadsheet.Tabs.Add(spreadsheetTabMetadata);
 
-            spreadsheetTabMetadata.Rows.Add(new SpreadsheetMetadataDto.Row());
-
-            spreadsheet.Tabs.Add(spreadsheetTabMetadata);
-
-            return spreadsheet;
-        }
+        return spreadsheet;
     }
 }

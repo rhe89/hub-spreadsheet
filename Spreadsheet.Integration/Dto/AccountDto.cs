@@ -2,13 +2,12 @@
 using Spreadsheet.Shared.Extensions;
 using Spreadsheet.Integration.Dto.Spreadsheet;
 
-namespace Spreadsheet.Integration.Dto
+namespace Spreadsheet.Integration.Dto;
+
+[UsedImplicitly]
+public class AccountDto : Hub.Shared.DataContracts.Banking.AccountDto, ICell
 {
-    [UsedImplicitly]
-    public class AccountDto : Hub.Shared.DataContracts.Banking.AccountDto, ICell
-    {
-        public string RowKey => Name;
+    public string RowKey => Name;
         
-        public string CellValue => Balance.ToComma();
-    }
+    public string CellValue => Balance.ToComma();
 }

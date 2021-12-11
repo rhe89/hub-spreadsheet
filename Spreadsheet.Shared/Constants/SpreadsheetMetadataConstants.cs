@@ -1,7 +1,6 @@
-namespace Spreadsheet.Shared.Constants
+namespace Spreadsheet.Shared.Constants;
+
+public static class SpreadsheetMetadataConstants
 {
-    public static class SpreadsheetMetadataConstants
-    {
-        public static readonly string BudgetSpreadsheetName = "Budget";
-    }
+    public static readonly string BudgetSpreadsheetName = "Budget";
 }
