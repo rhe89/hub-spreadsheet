@@ -8,9 +8,9 @@ using Spreadsheet.Providers;
 
 namespace Spreadsheet.Services
 {
-    public interface ITabReaderService<TTabDto> where TTabDto : Tab, new()
+    public interface ITabReaderService<TTab> where TTab : Tab, new()
     {
-        Task<TTabDto> GetTab();
+        Task<TTab> GetTab();
     }
     
     public class TabReaderService<TTab> : ITabReaderService<TTab> 

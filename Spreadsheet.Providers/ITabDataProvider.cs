@@ -7,6 +7,6 @@ namespace Spreadsheet.Providers
     public interface ITabDataProvider<TTab> 
         where TTab : Tab
     {
-        public Task<IEnumerable<Cell>> GetData();
+        public Task<IEnumerable<ICell>> GetData();
     }
 }

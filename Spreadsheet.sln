@@ -59,6 +59,16 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Spreadsheet.Business", "Spr
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Spreadsheet.Web.WebApp", "Spreadsheet.Web.WebApp\Spreadsheet.Web.WebApp.csproj", "{D6370ADB-E46B-4320-A90F-C2F8242319C2}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Hub.Shared.DataContracts", "Hub.Shared.DataContracts", "{CF153E06-9D71-430C-8310-001813BAC9CA}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Hub.Shared.DataContracts.Coinbase", "..\hub-shared\Hub.Shared.DataContracts\Hub.Shared.DataContracts.Coinbase\Hub.Shared.DataContracts.Coinbase.csproj", "{F3898E83-1142-4105-8C70-EAF91888E63C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Hub.Shared.DataContracts.CoinbasePro", "..\hub-shared\Hub.Shared.DataContracts\Hub.Shared.DataContracts.CoinbasePro\Hub.Shared.DataContracts.CoinbasePro.csproj", "{BF870C92-2A02-437D-B036-46845F2F549B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Hub.Shared.DataContracts.Sbanken", "..\hub-shared\Hub.Shared.DataContracts\Hub.Shared.DataContracts.Sbanken\Hub.Shared.DataContracts.Sbanken.csproj", "{CE4D71E9-75C7-45D4-B597-6F2DB552B672}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Hub.Shared.DataContracts.Banking", "..\hub-shared\Hub.Shared.DataContracts\Hub.Shared.DataContracts.Banking\Hub.Shared.DataContracts.Banking.csproj", "{5EE94BA2-563F-450B-956D-5903259AE3A5}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -153,6 +163,22 @@ Global
 		{D6370ADB-E46B-4320-A90F-C2F8242319C2}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D6370ADB-E46B-4320-A90F-C2F8242319C2}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D6370ADB-E46B-4320-A90F-C2F8242319C2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F3898E83-1142-4105-8C70-EAF91888E63C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F3898E83-1142-4105-8C70-EAF91888E63C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F3898E83-1142-4105-8C70-EAF91888E63C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F3898E83-1142-4105-8C70-EAF91888E63C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BF870C92-2A02-437D-B036-46845F2F549B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BF870C92-2A02-437D-B036-46845F2F549B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BF870C92-2A02-437D-B036-46845F2F549B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BF870C92-2A02-437D-B036-46845F2F549B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CE4D71E9-75C7-45D4-B597-6F2DB552B672}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CE4D71E9-75C7-45D4-B597-6F2DB552B672}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CE4D71E9-75C7-45D4-B597-6F2DB552B672}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CE4D71E9-75C7-45D4-B597-6F2DB552B672}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5EE94BA2-563F-450B-956D-5903259AE3A5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5EE94BA2-563F-450B-956D-5903259AE3A5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5EE94BA2-563F-450B-956D-5903259AE3A5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5EE94BA2-563F-450B-956D-5903259AE3A5}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{78DC9B62-21DC-4511-AC01-63DAFF5D6A2C} = {B328846E-B016-4808-9D8E-F7D986C53CD6}
@@ -180,5 +206,10 @@ Global
 		{CC9E6CE2-1AC3-4479-BD3E-76CA318616F5} = {34AA0AA9-08EF-417B-87A3-7A25320DA827}
 		{829DA397-1A2D-4955-A5F2-99AF5EAA235E} = {34AA0AA9-08EF-417B-87A3-7A25320DA827}
 		{D6370ADB-E46B-4320-A90F-C2F8242319C2} = {750E0330-BEB2-4C3A-905B-A6EC53C55B5B}
+		{CF153E06-9D71-430C-8310-001813BAC9CA} = {03B13645-89A1-43E0-823B-F98A297C1D34}
+		{F3898E83-1142-4105-8C70-EAF91888E63C} = {CF153E06-9D71-430C-8310-001813BAC9CA}
+		{BF870C92-2A02-437D-B036-46845F2F549B} = {CF153E06-9D71-430C-8310-001813BAC9CA}
+		{CE4D71E9-75C7-45D4-B597-6F2DB552B672} = {CF153E06-9D71-430C-8310-001813BAC9CA}
+		{5EE94BA2-563F-450B-956D-5903259AE3A5} = {CF153E06-9D71-430C-8310-001813BAC9CA}
 	EndGlobalSection
 EndGlobal

@@ -6,7 +6,7 @@ using Spreadsheet.Integration.Dto.Spreadsheet;
 
 namespace Spreadsheet.Providers
 {
-    public class BankAccountTabDataProvider<TTab, TBankApiConnector> : ITabDataProvider<TTab> 
+    public class BankAccountTabDataProvider<TTab, TBankApiConnector> : ITabDataProvider<TTab>
         where TTab : Tab
         where TBankApiConnector : IBankApiConnector
     {
@@ -19,21 +19,15 @@ namespace Spreadsheet.Providers
             _bankApiConnector = bankApiConnector;
             _logger = logger;
         }
-        
-        public async Task<IEnumerable<Cell>> GetData()
+
+        public async Task<IEnumerable<ICell>> GetData()
         {
-            _logger.LogInformation($"Getting accounts from {_bankApiConnector.FriendlyApiName}");
+            _logger.LogInformation("Getting accounts from {ApiName}", _bankApiConnector.FriendlyApiName);
 
-            var response = await _bankApiConnector.GetAccounts();
+            var bankAccounts = await _bankApiConnector.GetAccounts();
 
-            if (!response.Success)
-            {
-                throw new ApiConnectorException(response.ErrorMessage);
-            }
-
-            var bankAccounts = response.Data;
-            
-            _logger.LogInformation($"Got {bankAccounts.Count} accounts from {_bankApiConnector.FriendlyApiName}");
+            _logger.LogInformation("Got {Count} accounts from {ApiName}", bankAccounts.Count,
+                _bankApiConnector.FriendlyApiName);
 
             return bankAccounts;
         }

@@ -1,19 +1,14 @@
-﻿using System;
-using Spreadsheet.Shared.Extensions;
+﻿using JetBrains.Annotations;
 using Spreadsheet.Integration.Dto.Spreadsheet;
+using Spreadsheet.Shared.Extensions;
 
 namespace Spreadsheet.Integration.Dto
 {
-    public class TransactionDto : Cell
+    [UsedImplicitly]
+    public class TransactionDto : Hub.Shared.DataContracts.Sbanken.TransactionDto, ICell
     {
-        public string Description { get; set; }
-        public decimal Amount { get; set; }
-        public long AccountId { get; set; }
-        public DateTime TransactionDate { get; set; }
-        public int TransactionType { get; set; }
-        public string TransactionId { get; set; }
-
-        public override string RowKey { get; set; }
-        public override string CellValue => Amount.ToComma();
+        public string RowKey { get; set; }
+        
+        public string CellValue => Amount.ToComma();
     }
 }

@@ -1,8 +1,6 @@
 using System;
 using AutoMapper;
 using Hub.Shared.HostedServices.ServiceBusQueue;
-using Hub.Shared.Settings;
-using Hub.Shared.Storage.Azure;
 using Hub.Shared.Web.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -59,10 +57,6 @@ namespace Spreadsheet.HostedServices.ServiceBusQueueHost
             serviceCollection.AddTransient<ITabWriterService<ExchangeRatesTab>, TabWriterService<ExchangeRatesTab>>();            
             serviceCollection.AddTransient<ITabWriterService<BillingAccountTab>, TabWriterService<BillingAccountTab>>();
 
-            serviceCollection.AddTransient<IFileStorage, FileStorage>(x => new FileStorage(
-                configuration.GetValue<string>("STORAGE_ACCOUNT")));
-            
-            serviceCollection.AddTransient<ISettingProvider, SettingProvider>();
             serviceCollection.AddTransient<ISpreadsheetMetadataProvider, SpreadsheetMetadataProvider>();
             serviceCollection.AddTransient<IGoogleSpreadsheetConnector, GoogleSpreadsheetConnector>();
             serviceCollection.AddHubHttpClient<ICoinbaseApiConnector, CoinbaseApiConnector>(client =>

@@ -4,12 +4,7 @@ namespace Spreadsheet.Shared.Extensions
 {
     public static class DateTimeExtensions
     {
-        public static DateTime DateWithHour(this DateTime date) 
-        {
-            return new DateTime(date.Year, date.Month, date.Day, date.Hour, 0, 0);
-        }
-
-        public static string FormattedDate(this DateTime date) 
+        public static string FormattedDate(this DateTime date)
         {
             var day = date.Day < 10 ? $"0{date.Day}" : $"{date.Day}";
 

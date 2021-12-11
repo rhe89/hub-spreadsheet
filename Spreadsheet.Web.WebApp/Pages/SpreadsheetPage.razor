@@ -2,12 +2,10 @@
 @page "/edit/{Id}"
 @page "/copy/{Id}/{IsCopy:bool}"
 @page "/details/{Id}/{ReadOnly:bool}"
-
-@using Microsoft.AspNetCore.Components
-@using Spreadsheet.Data.Dto
 @using Spreadsheet.Providers
 @using Spreadsheet.Services
 @using Spreadsheet.Web.WebApp.Helpers
+@using Spreadsheet.Data.Dto
 
 @inject ISpreadsheetMetadataProvider _spreadsheetMetadataProvider
 @inject ISpreadsheetMetadataService _spreadsheetMetadataService
@@ -16,7 +14,7 @@
 @inject IJSRuntime _jsRuntime
 
 <section class="container mt-3">
-@if (Spreadsheet == null)
+    @if (Spreadsheet == null)
     {
         <p>
             <em>Loading...</em>
@@ -25,15 +23,15 @@
     else
     {
         <EditForm Model="@Spreadsheet" OnValidSubmit="Save" OnInvalidSubmit="ScrollToTop">
-        
+
             <FluentValidationValidator DisableAssemblyScanning="@true" @ref="@_spreadsheetValidator"/>
-        
+
             <div class="@Layout.FormRow">
                 <div class="@Layout.LabelContainer">
                     <label class="@Layout.Label">Name: </label>
                 </div>
                 <div class="@Layout.InputContainer">
-                    <InputText disabled="@ReadOnly" id="row-key" @bind-Value="Spreadsheet.Name" class="form-control" @oninput="(e) => Spreadsheet.Name = InputFormatter.ToUpperCase(e)"/>
+                    <InputText disabled="@ReadOnly" id="row-key" @bind-Value="Spreadsheet.Name" class="form-control" @oninput="e => Spreadsheet.Name = InputFormatter.ToUpperCase(e)"/>
                     <ValidationMessage For="@(() => Spreadsheet.Name)"/>
                 </div>
             </div>
@@ -42,7 +40,7 @@
                     <label class="@Layout.Label">Spreadsheet id (Google): </label>
                 </div>
                 <div class="@Layout.InputContainer">
-                    <InputText disabled="@ReadOnly" id="row-key" @bind-Value="Spreadsheet.SpreadsheetId" class="form-control" @oninput="(e) => Spreadsheet.SpreadsheetId = InputFormatter.Trim(e)"/>
+                    <InputText disabled="@ReadOnly" id="row-key" @bind-Value="Spreadsheet.SpreadsheetId" class="form-control" @oninput="e => Spreadsheet.SpreadsheetId = InputFormatter.Trim(e)"/>
                     <ValidationMessage For="@(() => Spreadsheet.SpreadsheetId)"/>
                 </div>
             </div>
@@ -80,7 +78,7 @@
                     <ValidationMessage For="@(() => Spreadsheet.Tabs)"/>
                 </div>
             </div>
-            
+
             @foreach (var spreadsheetTab in Spreadsheet.Tabs)
             {
                 var tabCounter = 1;
@@ -92,7 +90,7 @@
                                 <label class="@Layout.Label">Name: </label>
                             </div>
                             <div class="@Layout.InputContainer">
-                                <InputText disabled="@ReadOnly" id="@($"spreadsheet-tab-name-{tabCounter}")" @bind-Value="spreadsheetTab.Name" @onchange="(e) => spreadsheetTab.Name = InputFormatter.ToUpperCase(e)" class="form-control"/>
+                                <InputText disabled="@ReadOnly" id="@($"spreadsheet-tab-name-{tabCounter}")" @bind-Value="spreadsheetTab.Name" @onchange="e => spreadsheetTab.Name = InputFormatter.ToUpperCase(e)" class="form-control"/>
                                 <ValidationMessage For="@(() => spreadsheetTab.Name)"/>
                             </div>
                             <div class="col-1 offset-3">
@@ -104,7 +102,7 @@
                                 <label class="@Layout.Label">First column:</label>
                             </div>
                             <div class="@Layout.InputContainer">
-                                <InputText disabled="@ReadOnly" id="@($"spreadsheet-tab-first-column-{tabCounter}")" @bind-Value="spreadsheetTab.FirstColumn" @onchange="(e) => spreadsheetTab.FirstColumn = InputFormatter.ToUpperCase(e)" class="form-control"/>
+                                <InputText disabled="@ReadOnly" id="@($"spreadsheet-tab-first-column-{tabCounter}")" @bind-Value="spreadsheetTab.FirstColumn" @onchange="e => spreadsheetTab.FirstColumn = InputFormatter.ToUpperCase(e)" class="form-control"/>
                                 <ValidationMessage For="@(() => spreadsheetTab.FirstColumn)"/>
                             </div>
                         </div>
@@ -113,7 +111,7 @@
                                 <label class="@Layout.Label">Last column:</label>
                             </div>
                             <div class="@Layout.InputContainer">
-                                <InputText disabled="@ReadOnly" id="@($"spreadsheet-tab-last-column-{tabCounter}")" @bind-Value="spreadsheetTab.LastColumn" @onchange="(e) => spreadsheetTab.LastColumn = InputFormatter.ToUpperCase(e)" class="form-control"/>
+                                <InputText disabled="@ReadOnly" id="@($"spreadsheet-tab-last-column-{tabCounter}")" @bind-Value="spreadsheetTab.LastColumn" @onchange="e => spreadsheetTab.LastColumn = InputFormatter.ToUpperCase(e)" class="form-control"/>
                                 <ValidationMessage For="@(() => spreadsheetTab.LastColumn)"/>
                             </div>
                         </div>
@@ -122,13 +120,13 @@
                                 <ValidationMessage For="@(() => spreadsheetTab.Rows)"/>
                             </div>
                         </div>
-                        
+
                         <table class="table-striped mt-2">
                             @foreach (var row in spreadsheetTab.Rows)
                             {
                                 <tr>
                                     <td>
-                                        <InputText disabled="@ReadOnly" id="@($"spreadsheet-tab-{tabCounter}-row-{rowCounter}-key")" placeholder="Row key" @bind-Value="row.RowKey" @onchange="(e) => row.RowKey = InputFormatter.ToUpperCase(e)" class="form-control"/>
+                                        <InputText disabled="@ReadOnly" id="@($"spreadsheet-tab-{tabCounter}-row-{rowCounter}-key")" placeholder="Row key" @bind-Value="row.RowKey" @onchange="e => row.RowKey = InputFormatter.ToUpperCase(e)" class="form-control"/>
                                         <ValidationMessage For="@(() => row.RowKey)"/>
                                     </td>
                                     <td>
@@ -150,6 +148,7 @@
                         @{
                             tabCounter++;
                         }
+
                     </div>
                 </div>
             }
@@ -162,26 +161,27 @@
     }
 
 </section>
-  
 
 
 @code {
-    
+
     [Parameter]
     public string Id { get; set; }
+
     [Parameter]
     public bool IsCopy { get; set; }
+
     [Parameter]
     public bool ReadOnly { get; set; }
-    
+
     private SpreadsheetMetadataDto Spreadsheet { get; set; }
     private FluentValidationValidator _spreadsheetValidator;
-    
+
     protected override async Task OnInitializedAsync()
     {
         if (Spreadsheet != null)
             return;
-        
+
         if (!string.IsNullOrEmpty(Id))
         {
             if (IsCopy)
@@ -198,12 +198,12 @@
     private async Task Save()
     {
         _state.SetSaving(true);
-        
+
         await _spreadsheetMetadataService.CreateOrUpdateSpreadsheetMetadata(Spreadsheet);
-        
+
         _state.SetSaving(false);
     }
-    
+
     private void AddTab()
     {
         Spreadsheet.Tabs.Add(new SpreadsheetMetadataDto.Tab());
@@ -215,7 +215,7 @@
         spreadsheetTab.Rows.Add(new SpreadsheetMetadataDto.Row());
         _spreadsheetValidator.Validate(x => x.IncludeProperties(nameof(SpreadsheetMetadataDto.Tab.Rows)));
     }
-    
+
     private void RemoveTab(SpreadsheetMetadataDto.Tab spreadsheetTab)
     {
         Spreadsheet.Tabs.Remove(spreadsheetTab);

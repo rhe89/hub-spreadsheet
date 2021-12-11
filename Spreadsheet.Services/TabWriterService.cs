@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using JetBrains.Annotations;
 using Microsoft.Extensions.Logging;
 using Spreadsheet.Shared.Extensions;
 using Spreadsheet.Integration;
@@ -9,10 +10,10 @@ using Spreadsheet.Integration.Dto.Spreadsheet;
 
 namespace Spreadsheet.Services
 {
-    public interface ITabWriterService<TTab>
+    public interface ITabWriterService<[UsedImplicitly]TTab>
         where TTab : Tab, new()
     {
-        Task UpdateTab(IList<Cell> rows);
+        Task UpdateTab(IList<ICell> rows);
     }
     
     public class TabWriterService<TTab> : ITabWriterService<TTab>
@@ -31,7 +32,7 @@ namespace Spreadsheet.Services
             _logger = logger;
         }
 
-        public async Task UpdateTab(IList<Cell> rows)
+        public async Task UpdateTab(IList<ICell> rows)
         {
             var tab = await _tabReaderService.GetTab();
             
@@ -46,20 +47,20 @@ namespace Spreadsheet.Services
                 ReplaceColumn(tab, rows, columnIndexForCurrentPeriod);
             }
 
-            _logger.LogInformation($"Updating {tab.Name}");
+            _logger.LogInformation("Updating {TabName}", tab.Name);
 
             await UpdateTab(tab, tab.Rows.Count);
 
-            _logger.LogInformation($"Finished updating {tab.Name}");
+            _logger.LogInformation("Finished updating {TabName}", tab.Name);
         }
         
-        private async Task UpdateTab(Tab tab, int lastRow)
+        private async Task UpdateTab(TTab tab, int lastRow)
         {
             await _googleSpreadsheetConnector.UpdateSpreadsheetTab(tab, 1, lastRow);
         }
 
-        private void AddNewColumn(Tab tab,
-            IList<Cell> incomingCells)
+        private void AddNewColumn(TTab tab,
+            IList<ICell> incomingCells)
         {
             var newPeriod = Tab.GetCurrentPeriod();
 
@@ -84,8 +85,8 @@ namespace Spreadsheet.Services
             tab.Rows[^1].Cells.Add(lastUpdated);
         }
 
-        private void ReplaceColumn(Tab tab,
-            IList<Cell> incomingCells,
+        private void ReplaceColumn(TTab tab,
+            IList<ICell> incomingCells,
             int columnIndex)
         {
             foreach (var row in tab.Rows)
@@ -107,7 +108,7 @@ namespace Spreadsheet.Services
             SetLastUpdated(tab, columnIndex);
         }
 
-        private static void SetLastUpdated(Tab tab, 
+        private static void SetLastUpdated(TTab tab, 
             int columnIndex)
         {
             var lastUpdated = DateTime.Now.FormattedDate();
@@ -124,13 +125,13 @@ namespace Spreadsheet.Services
             }
         }
         
-        private bool ShouldUpdateRow(Tab tab, IEnumerable<Cell> incomingCells, Row row, out int rowIndex)
+        private bool ShouldUpdateRow(TTab tab, IEnumerable<ICell> incomingCells, Row row, out int rowIndex)
         {
             var cellInRowToUpdate = incomingCells.FirstOrDefault(x => x.RowKey == row.RowKey);
 
             if (cellInRowToUpdate == null)
             {
-                _logger.LogWarning($"No data (cell value) provided for row {row.RowKey} in tab {tab.Name}. Skipping");
+                _logger.LogInformation("No incoming data (cell value) provided for row {Row} in tab {Tab}", row.RowKey, tab.Name);
                 rowIndex = -1;
                 return false;
             }
@@ -140,7 +141,7 @@ namespace Spreadsheet.Services
             return true;
         }
 
-        private static void ExpandRowAndCellsIfNecessary(Tab tab, int currentRowIndex, int currentColumnIndex)
+        private static void ExpandRowAndCellsIfNecessary(TTab tab, int currentRowIndex, int currentColumnIndex)
         {
             if (tab.Rows.Count <= currentRowIndex)
             {

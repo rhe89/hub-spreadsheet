@@ -10,19 +10,22 @@ namespace Spreadsheet.Web.WebApp
         public static void Main(string[] args)
         {
             var configPath = $"{Directory.GetCurrentDirectory()}/../..";
-            
+
             var configuration = new ConfigurationBuilder()
                 .AddEnvironmentVariables()
                 .SetBasePath(configPath)
                 .AddJsonFile("appsettings.json", true)
                 .Build();
-            
+
             CreateHostBuilder(args, configuration).Build().Run();
         }
 
-        public static IHostBuilder CreateHostBuilder(string[] args, IConfigurationRoot configuration) =>
-            Host.CreateDefaultBuilder(args)
+        private static IHostBuilder CreateHostBuilder(string[] args, IConfiguration configuration)
+        {
+            return Host.CreateDefaultBuilder(args)
                 .ConfigureWebHostDefaults(webBuilder => { webBuilder.UseStartup<Startup>(); })
-                .ConfigureHostConfiguration(configurationBuilder => configurationBuilder.AddConfiguration(configuration));
+                .ConfigureHostConfiguration(
+                    configurationBuilder => configurationBuilder.AddConfiguration(configuration));
+        }
     }
 }

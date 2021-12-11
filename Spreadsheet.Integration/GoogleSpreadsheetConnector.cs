@@ -6,8 +6,7 @@ using Google.Apis.Auth.OAuth2;
 using Google.Apis.Services;
 using Google.Apis.Sheets.v4;
 using Google.Apis.Sheets.v4.Data;
-using Hub.Shared.Settings;
-using Hub.Shared.Storage.Azure;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Spreadsheet.Shared.Constants;
 using Spreadsheet.Integration.Dto.Spreadsheet;
@@ -20,32 +19,29 @@ namespace Spreadsheet.Integration
 
         Task UpdateSpreadsheetTab(Tab tab, int firstColumnRow, int lastColumnRow);
     }
-    
+
     public class GoogleSpreadsheetConnector : IGoogleSpreadsheetConnector
     {
-        private readonly ISettingProvider _settingProvider;
-        private readonly IFileStorage _fileStorage;
+        private readonly IConfiguration _configuration;
         private readonly ILogger<GoogleSpreadsheetConnector> _logger;
         private readonly string _applicationName;
 
-        public GoogleSpreadsheetConnector(ISettingProvider settingProvider, 
-            IFileStorage fileStorage,
+        public GoogleSpreadsheetConnector(IConfiguration configuration,
             ILogger<GoogleSpreadsheetConnector> logger)
         {
-            _settingProvider = settingProvider;
-            _fileStorage = fileStorage;
+            _configuration = configuration;
             _logger = logger;
             _applicationName = "Hub";
         }
-        
+
         public async Task UpdateSpreadsheetTab(Tab tab, int firstColumnRow, int lastColumnRow)
         {
-            var range =  GetRangeFormatted(tab.Name,
-            tab.FirstColumn,
-            firstColumnRow,
-            tab.LastColumn,
-            lastColumnRow);
-        
+            var range = GetRangeFormatted(tab.Name,
+                tab.FirstColumn,
+                firstColumnRow,
+                tab.LastColumn,
+                lastColumnRow);
+
             var updatedValues = new ValueRange
             {
                 MajorDimension = "ROWS",
@@ -53,31 +49,33 @@ namespace Spreadsheet.Integration
                 Range = range
             };
 
-            var sheetsService = await GetSheetsService();
+            var sheetsService = GetSheetsService();
 
             var update = sheetsService.Spreadsheets.Values.Update(updatedValues, tab.SpreadsheetId, range);
-            
-            update.ValueInputOption = SpreadsheetsResource.ValuesResource.UpdateRequest.ValueInputOptionEnum.USERENTERED;
+
+            update.ValueInputOption =
+                SpreadsheetsResource.ValuesResource.UpdateRequest.ValueInputOptionEnum.USERENTERED;
 
             await update.ExecuteAsync();
         }
-        
+
         public async Task LoadSpreadsheetTab(Tab tab)
         {
-            _logger.LogInformation($"Getting tab {tab.Name} in sheet with id {tab.SpreadsheetId} from Google API");
+            _logger.LogInformation("Getting tab {Tab} in sheet with id {Id} from Google API", tab.Name,
+                tab.SpreadsheetId);
 
-            var request = await GetSpreadsheetRequest(tab);
+            var request = GetSpreadsheetRequest(tab);
 
             var response = await request.ExecuteAsync();
-            
+
             tab.PopulateRows(response.Values);
         }
-        
-        private async Task<SpreadsheetsResource.ValuesResource.GetRequest> GetSpreadsheetRequest(Tab tab)
+
+        private SpreadsheetsResource.ValuesResource.GetRequest GetSpreadsheetRequest(Tab tab)
         {
             var range = GetRangeFormatted(tab.Name, tab.FirstColumn, tab.LastColumn);
 
-            var sheetsService = await GetSheetsService();
+            var sheetsService = GetSheetsService();
 
             return sheetsService.Spreadsheets.Values.Get(tab.SpreadsheetId, range);
         }
@@ -87,19 +85,18 @@ namespace Spreadsheet.Integration
             return $"{tabName}!{firstColumn}:{lastColumn}";
         }
 
-        private static string GetRangeFormatted(string tabName, string firstColumn, int firstColumnRow, string lastColumn, int lastColumnRow)
+        private static string GetRangeFormatted(string tabName, string firstColumn, int firstColumnRow,
+            string lastColumn, int lastColumnRow)
         {
             return $"{tabName}!{firstColumn}{firstColumnRow}:{lastColumn}{lastColumnRow}";
         }
-        
-        private async Task<SheetsService> GetSheetsService()
+
+        private SheetsService GetSheetsService()
         {
-            var serverCredentials = await GetServiceAccountCredential();
+            var serverCredentials = GetServiceAccountCredential();
 
             if (serverCredentials == null)
-            {
                 throw new SpreadsheetConnectorException("Getting Google service account credentials failed");
-            }
 
             try
             {
@@ -115,42 +112,44 @@ namespace Spreadsheet.Integration
                 throw new SpreadsheetConnectorException("Error when initializing SheetsService", e);
             }
         }
-        
-        private async Task<ServiceAccountCredential> GetServiceAccountCredential()
+
+        private ServiceAccountCredential GetServiceAccountCredential()
         {
-            var storageAccountFileShare = _settingProvider.GetSetting<string>(SettingConstants.StorageAccountFileShare);
-            var storageAccountFileShareCertificateFolder = _settingProvider.GetSetting<string>(SettingConstants.StorageAccountFileShareCertificateFolder);
-            var googleCertificateFileReference = _settingProvider.GetSetting<string>(SettingConstants.GoogleCertificate);
-            var keyFile = await _fileStorage.GetItem(storageAccountFileShare, storageAccountFileShareCertificateFolder, googleCertificateFileReference);
-            
-            var privateKey = _settingProvider.GetSetting<string>(SettingConstants.GooglePrivateKey);
-            var serviceAccountEmail = _settingProvider.GetSetting<string>(SettingConstants.GoogleServiceAccountEmail);
+            var googleCertificate = _configuration.GetValue<string>(SettingConstants.GoogleCertificate);
+            var serviceAccountEmail = _configuration.GetValue<string>(SettingConstants.GoogleServiceAccountEmail);
 
-            var certificate = new X509Certificate2(keyFile,
-                $"{privateKey}",
-                X509KeyStorageFlags.MachineKeySet |
-                X509KeyStorageFlags.PersistKeySet |
-                X509KeyStorageFlags.Exportable);
+            try
+            {
+                var certificate = new X509Certificate2(Convert.FromBase64String(googleCertificate),
+                    string.Empty,
+                    X509KeyStorageFlags.MachineKeySet |
+                    X509KeyStorageFlags.PersistKeySet |
+                    X509KeyStorageFlags.Exportable);
 
-            var accountCredential = new ServiceAccountCredential(
-                new ServiceAccountCredential.Initializer(serviceAccountEmail)
-                {
-                    Scopes = new[] { SheetsService.Scope.Spreadsheets }
-                }.FromCertificate(certificate));
+                var accountCredential = new ServiceAccountCredential(
+                    new ServiceAccountCredential.Initializer(serviceAccountEmail)
+                    {
+                        Scopes = new[] { SheetsService.Scope.Spreadsheets }
+                    }.FromCertificate(certificate));
 
-            return accountCredential;
+                return accountCredential;
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e, "Failed fetching service account credentials from Google");
+                return null;
+            }
         }
-        
+
         private class SpreadsheetConnectorException : Exception
         {
             public SpreadsheetConnectorException(string message) : base(message)
             {
             }
+
             public SpreadsheetConnectorException(string message, Exception exception) : base(message, exception)
             {
             }
         }
     }
-    
-    
 }

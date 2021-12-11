@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Net.Http;
 using System.Threading.Tasks;
@@ -11,19 +10,13 @@ namespace Spreadsheet.Integration
     {
         private const string AccountsPath = "/api/accounts";
 
-        protected BankApiConnector(HttpClient httpClient, string friendlyApiName) : base(httpClient, friendlyApiName) {}
-        
-        public async Task<Response<IList<AccountDto>>> GetAccounts()
+        protected BankApiConnector(HttpClient httpClient, string friendlyApiName) : base(httpClient, friendlyApiName)
+        {
+        }
+
+        public async Task<IList<AccountDto>> GetAccounts()
         {
             return await Get<IList<AccountDto>>(AccountsPath);
-        }
-    }
-    
-    public class ApiConnectorException : Exception
-    {
-        public ApiConnectorException(string responseErrorMessage) : base(responseErrorMessage)
-        {
-            
         }
     }
 }

@@ -18,21 +18,15 @@ namespace Spreadsheet.Providers
             _coinbaseApiConnector = coinbaseApiConnector;
             _logger = logger;
         }
-        
-        public async Task<IEnumerable<Cell>> GetData()
+
+        public async Task<IEnumerable<ICell>> GetData()
         {
-            _logger.LogInformation($"Getting exchange rates from {_coinbaseApiConnector.FriendlyApiName}");
+            _logger.LogInformation("Getting exchange rates from {ApiName}", _coinbaseApiConnector.FriendlyApiName);
 
-            var response = await _coinbaseApiConnector.GetExchangeRates();
+            var exchangeRates = await _coinbaseApiConnector.GetExchangeRates();
 
-            if (!response.Success)
-            {
-                throw new ApiConnectorException(response.ErrorMessage);
-            }
-
-            var exchangeRates = response.Data;
-            
-            _logger.LogInformation($"Got {exchangeRates.Count} exchange rates from {_coinbaseApiConnector.FriendlyApiName}");
+            _logger.LogInformation("Got {Count} exchange rates from {FriendlyApiName}", exchangeRates.Count,
+                _coinbaseApiConnector.FriendlyApiName);
 
             return exchangeRates;
         }

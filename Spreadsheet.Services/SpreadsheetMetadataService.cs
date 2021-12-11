@@ -1,4 +1,3 @@
-using System;
 using System.Threading.Tasks;
 using Spreadsheet.Data;
 using Spreadsheet.Data.Dto;
@@ -11,15 +10,14 @@ namespace Spreadsheet.Services
         Task CreateOrUpdateSpreadsheetMetadata(SpreadsheetMetadataDto spreadsheetMetadataDto);
         Task<SpreadsheetMetadataDto> InitializeSpreadsheetMetadataCopy(string id);
         SpreadsheetMetadataDto InitializeEmptySpreadsheetMetadata();
-        Task<bool> IsUnique(SpreadsheetMetadataDto spreadsheetMetadataDto);
     }
-    
+
     public class SpreadsheetMetadataService : ISpreadsheetMetadataService
     {
         private readonly ISpreadsheetCosmosDb _spreadsheetCosmosDb;
         private readonly ISpreadsheetMetadataProvider _spreadsheetMetadataProvider;
 
-        public SpreadsheetMetadataService(ISpreadsheetMetadataProvider spreadsheetMetadataProvider, 
+        public SpreadsheetMetadataService(ISpreadsheetMetadataProvider spreadsheetMetadataProvider,
             ISpreadsheetCosmosDb spreadsheetCosmosDb)
         {
             _spreadsheetMetadataProvider = spreadsheetMetadataProvider;
@@ -34,30 +32,21 @@ namespace Spreadsheet.Services
         public async Task<SpreadsheetMetadataDto> InitializeSpreadsheetMetadataCopy(string id)
         {
             var spreadsheet = await _spreadsheetMetadataProvider.GetSpreadsheet(id);
-            
+
             return spreadsheet;
         }
 
         public SpreadsheetMetadataDto InitializeEmptySpreadsheetMetadata()
         {
             var spreadsheet = new SpreadsheetMetadataDto();
-            
+
             var spreadsheetTabMetadata = new SpreadsheetMetadataDto.Tab();
-            
+
             spreadsheetTabMetadata.Rows.Add(new SpreadsheetMetadataDto.Row());
-            
+
             spreadsheet.Tabs.Add(spreadsheetTabMetadata);
 
             return spreadsheet;
-        }
-
-        public async Task<bool> IsUnique(SpreadsheetMetadataDto spreadsheetMetadataDto)
-        {
-            var duplicate =
-                await _spreadsheetMetadataProvider.GetSpreadsheet(spreadsheetMetadataDto.Name,
-                    spreadsheetMetadataDto.ValidFrom);
-
-            return duplicate == null;
         }
     }
 }

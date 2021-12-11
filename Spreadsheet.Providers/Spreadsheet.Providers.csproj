@@ -4,6 +4,10 @@
 	</PropertyGroup>
 
 	<ItemGroup>
+		<PackageReference Include="Hub.Shared.Storage.Repository.Core" Version="3.2" />
+	</ItemGroup>
+
+	<ItemGroup>
 		<ProjectReference Include="..\Spreadsheet.Shared\Spreadsheet.Shared.csproj" />
 		<ProjectReference Include="..\Spreadsheet.Integration\Spreadsheet.Integration.csproj" />
 	</ItemGroup>

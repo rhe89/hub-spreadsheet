@@ -12,7 +12,7 @@ namespace Spreadsheet.Integration.Dto.Spreadsheet
         public string Name { get; set; }
         public string FirstColumn { get; set; }
         public string LastColumn { get; set; }
-        private bool PopulateAllRows { get; set; } 
+        private bool PopulateAllRows { get; } 
         public IList<Row> Rows { get; }
         public IList<SpreadsheetMetadataDto.Row> SpreadsheetRowMetadataDtos { get; set; }
 

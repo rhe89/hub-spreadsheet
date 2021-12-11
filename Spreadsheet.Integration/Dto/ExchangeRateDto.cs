@@ -1,16 +1,14 @@
+using JetBrains.Annotations;
 using Spreadsheet.Shared.Extensions;
 using Spreadsheet.Integration.Dto.Spreadsheet;
 
 namespace Spreadsheet.Integration.Dto
 {
-    public class ExchangeRateDto : Cell
+    [UsedImplicitly]
+    public class ExchangeRateDto : Hub.Shared.DataContracts.Coinbase.ExchangeRateDto, ICell
     {
-        public string Currency { get; set; }
-        public decimal NOKRate { get; set; }
-        public decimal USDRate { get; set; }
-        public decimal EURRate { get; set; }
+        public string RowKey => Currency;
         
-        public override string RowKey => Currency;
-        public override string CellValue => NOKRate.ToComma();
+        public string CellValue => NOKRate.ToComma();
     }
 }

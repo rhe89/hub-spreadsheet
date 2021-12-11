@@ -12,7 +12,7 @@
 
 <h1>Spreadsheets</h1>
 
-<NavLink Match="NavLinkMatch.All" href="@($"/create")">Create new spreadsheet</NavLink>
+<NavLink Match="NavLinkMatch.All" href="@("/create")">Create new spreadsheet</NavLink>
 
 @if (_spreadsheets == null)
 {
@@ -61,19 +61,20 @@ else
     {
         _spreadsheets = await _spreadsheetMetadataProvider.GetSpreadsheets();
     }
-    
+
     private void CopySpreadsheet(string id)
     {
         _uriHelper.NavigateTo($"/copy/{id}/{true}/");
     }
-    
+
     private void Details(string id)
     {
         _uriHelper.NavigateTo($"/details/{id}/{true}");
     }
-    
+
     private void Edit(string id)
     {
         _uriHelper.NavigateTo($"/edit/{id}");
     }
+
 }

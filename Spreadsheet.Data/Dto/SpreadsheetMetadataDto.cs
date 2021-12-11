@@ -6,7 +6,6 @@ using SpreadsheetMetadata = Spreadsheet.Data.Documents.SpreadsheetMetadata;
 
 namespace Spreadsheet.Data.Dto
 {
-    [Serializable]
     public class SpreadsheetMetadataDto
     {
         public string SpreadsheetId { get; set; }
@@ -25,12 +24,12 @@ namespace Spreadsheet.Data.Dto
                 ValidFrom = ValidFrom,
                 ValidTo = ValidTo,
                 Tabs = Tabs.Select(tab =>
-                    new global::Spreadsheet.Data.Documents.Tab
+                    new Spreadsheet.Data.Documents.Tab
                     {
                         Name = tab.Name,
                         FirstColumn = tab.FirstColumn,
                         LastColumn = tab.LastColumn,
-                        Rows = tab.Rows.Select(row => new global::Spreadsheet.Data.Documents.Row
+                        Rows = tab.Rows.Select(row => new Spreadsheet.Data.Documents.Row
                         {
                             RowKey = row.RowKey,
                             Tags = row.Tags
