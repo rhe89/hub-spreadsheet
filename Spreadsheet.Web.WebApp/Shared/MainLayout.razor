@@ -1,22 +1,19 @@
-@inherits LayoutComponentBase
-
-@inject State _state
+﻿@inherits LayoutComponentBase
 @implements IDisposable
+@inject State _state
+
+<PageTitle>Spreadsheet.Web.WebApp</PageTitle>
 
 <div class="page">
-    <div class="main">
-        <div class="content px-4">
+    <main>
+        <article class="content px-4">
             @Body
-        </div>
+        </article>
+    </main>
+
+    <div id="saving-overlay" class="@(_state.Saving ? "" : "d-none")">
+        <p>Saving...</p>
     </div>
-
-    @if (_state.Saving)
-    {
-        <div id="saving-overlay">
-            <p>Saving...</p>
-        </div>
-    }
-
 </div>
 
 @code {

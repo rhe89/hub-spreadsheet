@@ -44,9 +44,11 @@ else
                     }
                 </td>
                 <td>
-                    <button @onclick="() => Details(spreadsheet.SpreadsheetId)" class="btn btn-link">Details</button>
-                    <button @onclick="() => Edit(spreadsheet.SpreadsheetId)" class="btn btn-link">Edit</button>
-                    <button @onclick="() => CopySpreadsheet(spreadsheet.SpreadsheetId)" class="btn btn-link">Create copy</button>
+                    <div class="btn-group">
+                        <button @onclick="() => Details(spreadsheet.SpreadsheetId)" class="btn btn-primary mx-1">Details</button>
+                        <button @onclick="() => Edit(spreadsheet.SpreadsheetId)" class="btn btn-primary m">Edit</button>
+                        <button @onclick="() => CopySpreadsheet(spreadsheet.SpreadsheetId)" class="btn btn-primary mx-1">Create copy</button>
+                    </div>
                 </td>
             </tr>
         }

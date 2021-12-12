@@ -1,17 +1,29 @@
+using FluentValidation;
+using FluentValidation.AspNetCore;
 using Hub.Shared.Web.BlazorServer;
-using Microsoft.Extensions.Hosting;
+using Microsoft.AspNetCore.Hosting.StaticWebAssets;
+using Microsoft.Extensions.DependencyInjection;
+using Spreadsheet.Data;
+using Spreadsheet.Data.AutoMapper;
+using Spreadsheet.Data.Dto;
+using Spreadsheet.Providers;
+using Spreadsheet.Services;
+using Spreadsheet.Web.WebApp;
+using Spreadsheet.Web.WebApp.Validation;
 
-namespace Spreadsheet.Web.WebApp;
+var builder = BlazorServerBuilder.CreateWebApplicationBuilder(args);
 
-public class Program
-{
-    public static void Main(string[] args)
-    {
-        CreateHostBuilder(args)
-            .Build()
-            .Run();
-    }
+builder.Services.AddTransient<ISpreadsheetCosmosDb, SpreadsheetCosmosDb>();
+builder.Services.AddTransient<ISpreadsheetMetadataProvider, SpreadsheetMetadataProvider>();
+builder.Services.AddTransient<ISpreadsheetMetadataService, SpreadsheetMetadataService>();
+builder.Services.AddTransient<IValidator<SpreadsheetMetadataDto>, SpreadsheetMetadataValidator>();
+builder.Services.AddSingleton<State>();
 
-    private static IHostBuilder CreateHostBuilder(string[] args) =>
-        HostBuilder<Startup, DependencyRegistrationFactory>.Create(args);
-}
+builder.Services.AddAutoMapper(c => { c.AddSpreadsheetProfiles(); });
+
+builder.Services.AddFluentValidation();
+StaticWebAssetsLoader.UseStaticWebAssets(builder.Environment, builder.Configuration);
+
+var app = builder.BuildApp();
+
+app.Run();
