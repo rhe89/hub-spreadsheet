@@ -42,9 +42,8 @@ public class SpreadsheetMetadataProvider : ISpreadsheetMetadataProvider
             .GetSpreadsheetMetadataQueryable();
 
         var spreadsheets = queryable.Where(x =>
-                x.Name == SpreadsheetMetadataConstants.BudgetSpreadsheetName &&
                 DateTime.Now >= x.ValidFrom &&
-                DateTime.Now <= x.ValidTo)
+                DateTime.Now < x.ValidTo)
             .ToList();
 
         return Map(spreadsheets.FirstOrDefault());
@@ -54,7 +53,7 @@ public class SpreadsheetMetadataProvider : ISpreadsheetMetadataProvider
     {
         var spreadsheet = await GetCurrentBudgetSpreadsheetMetadata();
 
-        return spreadsheet.Tabs.FirstOrDefault(x => x.Name == tabName)?.Rows;
+        return spreadsheet?.Tabs?.FirstOrDefault(x => x.Name == tabName)?.Rows;
     }
 
     public async Task<IList<SpreadsheetMetadataDto>> GetSpreadsheets()
