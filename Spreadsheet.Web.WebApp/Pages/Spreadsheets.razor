@@ -10,7 +10,7 @@
 
 @inject NavigationManager _uriHelper
 
-<div class="container mt-3">
+<main class="container mt-3">
 
     <header class="row">
         <div class="col">
@@ -18,7 +18,7 @@
         </div>
     </header>
     
-    <section class="card mt-5">
+    <section class="card mt-5 card-table">
         <div class="card-body">
             @if (_spreadsheets == null)
             {
@@ -65,7 +65,7 @@
             }
         </div>
     </section>
-</div>
+</main>
 
 @code {
     private IList<SpreadsheetMetadataDto> _spreadsheets;

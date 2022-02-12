@@ -16,7 +16,7 @@
 @inject IJSRuntime _jsRuntime
 @inject ILogger<SpreadsheetPage> _logger;
 
-<div class="container mt-3">
+<main class="container mt-3">
     @if (Spreadsheet == null)
     {
         <p>
@@ -25,7 +25,7 @@
     }
     else
     {
-        <section class="card mt-2">
+        <section class="card mt-2 min-width">
             <div class="card-body">
                 <div class="row">
                     <div class="col-4 btn-group ms-3">
@@ -53,7 +53,7 @@
             <FluentValidationValidator 
                 DisableAssemblyScanning="@true" 
                 @ref="@_spreadsheetValidator"/>
-            <section class="card mt-2">
+            <section class="card mt-2 min-width">
                 <div class="card-body">
                     <div class="@Layout.FormRow">
                         <div class="@Layout.LabelContainer">
@@ -110,19 +110,18 @@
             </section>
 
             <section class="row mt-5">
-                <header class="col-12">
-                    <h2 class="float-start ms-3">
+                <header class="col-2">
+                    <h2>
                         Tabs
                     </h2>
+                </header>
+                <div class="col-2 offset-md-8">
                     <button
                         disabled="@Disabled"
-                        class="btn btn-primary float-end me-3"
+                        class="btn btn-primary"
                         type="button" @onclick="AddTab">
                         Add tab
                     </button>
-                </header>
-                <div class="col-3">
-                    
                 </div>
             </section>
             <div class="row">
@@ -133,21 +132,10 @@
 
             @foreach (var spreadsheetTab in Spreadsheet.Tabs)
             {
-                <section class="card mt-2">
+                <section class="card mt-5 min-width">
                     <div class="card-body">
                         <div class="@Layout.FormRow">
-                            <div class="@Layout.LabelContainer">
-                                <label class="@Layout.Label">Name: </label>
-                            </div>
-                            <div class="@Layout.InputContainer">
-                                <InputText disabled="@Disabled"  
-                                           @bind-Value="spreadsheetTab.Name" 
-                                           @onchange="e => spreadsheetTab.Name = InputFormatter.ToUpperCase(e)"
-                                           @onblur="Save"
-                                           class="form-control"/>
-                                <ValidationMessage For="@(() => spreadsheetTab.Name)"/>
-                            </div>
-                            <div class="col-1 offset-3">
+                            <div class="col-2 offset-md-10">
                                 <button disabled="@Disabled"
                                         class="btn btn-danger"
                                         @onclick="() => RemoveTab(spreadsheetTab)">
@@ -157,12 +145,26 @@
                         </div>
                         <div class="@Layout.FormRow">
                             <div class="@Layout.LabelContainer">
+                                <label class="@Layout.Label">Name: </label>
+                            </div>
+                            <div class="@Layout.InputContainer">
+                                <InputText disabled="@Disabled"
+                                           @bind-Value="spreadsheetTab.Name"
+                                           @onchange="e => spreadsheetTab.Name = InputFormatter.ToUpperCase(e)"
+                                           @onblur="Save"
+                                           class="form-control"/>
+                                <ValidationMessage For="@(() => spreadsheetTab.Name)"/>
+                            </div>
+
+                        </div>
+                        <div class="@Layout.FormRow">
+                            <div class="@Layout.LabelContainer">
                                 <label class="@Layout.Label">First column:</label>
                             </div>
                             <div class="@Layout.InputContainer">
-                                <InputText 
-                                    disabled="@Disabled" 
-                                    @bind-Value="spreadsheetTab.FirstColumn" 
+                                <InputText
+                                    disabled="@Disabled"
+                                    @bind-Value="spreadsheetTab.FirstColumn"
                                     @onchange="e => spreadsheetTab.FirstColumn = InputFormatter.ToUpperCase(e)"
                                     @onblur="Save"
                                     class="form-control"/>
@@ -174,8 +176,8 @@
                                 <label class="@Layout.Label">Last column:</label>
                             </div>
                             <div class="@Layout.InputContainer">
-                                <InputText disabled="@Disabled" 
-                                           @bind-Value="spreadsheetTab.LastColumn" 
+                                <InputText disabled="@Disabled"
+                                           @bind-Value="spreadsheetTab.LastColumn"
                                            @onchange="e => spreadsheetTab.LastColumn = InputFormatter.ToUpperCase(e)"
                                            @onblur="Save"
                                            class="form-control"/>
@@ -188,22 +190,22 @@
                             </div>
                         </div>
 
-                        <table class="table-striped mt-2">
+                        <table class="table-striped mt-5">
                             @foreach (var row in spreadsheetTab.Rows)
                             {
                                 <tr>
                                     <td class="pb-2">
-                                        <InputText disabled="@Disabled" 
-                                                   placeholder="Row key" 
-                                                   @bind-Value="row.RowKey" 
+                                        <InputText disabled="@Disabled"
+                                                   placeholder="Row key"
+                                                   @bind-Value="row.RowKey"
                                                    @onchange="e => row.RowKey = InputFormatter.ToUpperCase(e)"
                                                    @onblur="Save"
                                                    class="form-control"/>
                                         <ValidationMessage For="@(() => row.RowKey)"/>
                                     </td>
-                                    <td class="ps-3 pb-2"> 
-                                        <InputText disabled="@Disabled" 
-                                                   placeholder="Tags" 
+                                    <td class="ps-3 pb-2">
+                                        <InputText disabled="@Disabled"
+                                                   placeholder="Tags"
                                                    @bind-Value="row.Tags"
                                                    @onblur="Save"
                                                    class="form-control"/>
@@ -235,7 +237,7 @@
         </EditForm>
     }
 
-</div>
+</main>
 
 
 @code {

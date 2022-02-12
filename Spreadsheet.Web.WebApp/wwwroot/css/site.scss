@@ -54,6 +54,35 @@ input,
   background: $card-bg;
 }
 
+.col-1,
+.col-2,
+.col-4,
+.col-6 {
+  width: 100%;
+}
+
+.min-width {
+  min-width: 565px;
+}
+
+@include media-breakpoint-up(md) {
+  .col-1 {
+    width: 8.33333333%;
+  }
+
+  .col-2 {
+    width: 16.66666667%;
+  }
+
+  .col-4 {
+    width: 33.33333333%;
+  }
+
+  .col-6 {
+    width: 50%;
+  }
+}
+
 .content {
   padding-top: 1.1rem;
 
