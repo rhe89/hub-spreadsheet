@@ -10,51 +10,62 @@
 
 @inject NavigationManager _uriHelper
 
-<h1>Spreadsheets</h1>
+<div class="container mt-3">
 
-<NavLink Match="NavLinkMatch.All" href="@("/create")">Create new spreadsheet</NavLink>
+    <header class="row">
+        <div class="col">
+            <h1>Spreadsheets</h1>
+        </div>
+    </header>
+    
+    <section class="card mt-5">
+        <div class="card-body">
+            @if (_spreadsheets == null)
+            {
+                <p>
+                    <em>Loading...</em>
+                </p>
+            }
+            else
+            {
+                <NavLink class="btn btn-primary float-end" Match="NavLinkMatch.All" href="@("/create")">Create new spreadsheet</NavLink>
 
-@if (_spreadsheets == null)
-{
-    <p>
-        <em>Loading...</em>
-    </p>
-}
-else
-{
-    <table class="table">
-        <thead>
-        <tr>
-            <th>Name</th>
-            <th>Valid from</th>
-            <th>Valid to</th>
-            <th>Actions</th>
-        </tr>
-        </thead>
-        <tbody>
-        @foreach (var spreadsheet in _spreadsheets)
-        {
-            <tr>
-                <td>@spreadsheet.Name</td>
-                <td>@spreadsheet.ValidFrom.ToShortDateString()</td>
-                <td>
-                    @if (spreadsheet.ValidTo != DateTime.MinValue)
+                <table class="table table-borderless mt-3">
+                    <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Valid from</th>
+                        <th>Valid to</th>
+                        <th>Actions</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    @foreach (var spreadsheet in _spreadsheets)
                     {
-                        @spreadsheet.ValidTo.ToShortDateString()
+                        <tr>
+                            <td class="py-3">@spreadsheet.Name</td>
+                            <td class="py-3">@spreadsheet.ValidFrom.ToShortDateString()</td>
+                            <td class="py-3">
+                                @if (spreadsheet.ValidTo != DateTime.MinValue)
+                                {
+                                    @spreadsheet.ValidTo.ToShortDateString()
+                                }
+                            </td>
+                            <td>
+                                <div class="btn-group">
+                                    <button @onclick="() => Details(spreadsheet.SpreadsheetId)" class="btn btn-primary me-3">Details</button>
+                                    <button @onclick="() => Edit(spreadsheet.SpreadsheetId)" class="btn btn-primary me-3">Edit</button>
+                                    <button @onclick="() => CopySpreadsheet(spreadsheet.SpreadsheetId)" class="btn btn-primary">Create copy</button>
+                                </div>
+                            </td>
+                        </tr>
                     }
-                </td>
-                <td>
-                    <div class="btn-group">
-                        <button @onclick="() => Details(spreadsheet.SpreadsheetId)" class="btn btn-primary mx-1">Details</button>
-                        <button @onclick="() => Edit(spreadsheet.SpreadsheetId)" class="btn btn-primary m">Edit</button>
-                        <button @onclick="() => CopySpreadsheet(spreadsheet.SpreadsheetId)" class="btn btn-primary mx-1">Create copy</button>
-                    </div>
-                </td>
-            </tr>
-        }
-        </tbody>
-    </table>
-}
+                    </tbody>
+                </table>
+            }
+        </div>
+    </section>
+</div>
 
 @code {
     private IList<SpreadsheetMetadataDto> _spreadsheets;
