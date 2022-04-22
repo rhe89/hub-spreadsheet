@@ -5,7 +5,7 @@ using Spreadsheet.Shared.Extensions;
 namespace Spreadsheet.Integration.Dto;
 
 [UsedImplicitly]
-public class TransactionDto : Hub.Shared.DataContracts.Sbanken.TransactionDto, ICell
+public class TransactionCell : Hub.Shared.DataContracts.Banking.Dto.TransactionDto, ICell
 {
     public string RowKey { get; init; }
         

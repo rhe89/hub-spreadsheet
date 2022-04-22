@@ -7,11 +7,11 @@ using Spreadsheet.HostedServices.ServiceBusQueueHost.Commands;
 
 namespace Spreadsheet.HostedServices.ServiceBusQueueHost.QueueListeners;
 
-public class CoinbaseProAccountsUpdatedQueueListener : ServiceBusHostedService
+public class BankingAccountsUpdatedQueueListener : ServiceBusHostedService
 {
-    public CoinbaseProAccountsUpdatedQueueListener(ILogger<CoinbaseProAccountsUpdatedQueueListener> logger, 
+    public BankingAccountsUpdatedQueueListener(ILogger<BankingAccountsUpdatedQueueListener> logger,
         IConfiguration configuration,
-        UpdateCoinbaseProAccountsCommand queuedCommand, 
+        UpdateBankingAccountsCommand queuedCommand,
         IQueueProcessor queueProcessor,
         TelemetryClient telemetryClient) : base(logger, 
         configuration,

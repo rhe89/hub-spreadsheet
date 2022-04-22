@@ -9,24 +9,23 @@ namespace Spreadsheet.Providers;
 
 public class ExchangeRatesTabDataProvider : ITabDataProvider<ExchangeRatesTab>
 {
-    private readonly ICoinbaseApiConnector _coinbaseApiConnector;
+    private readonly ICryptoApiConnector _cryptoApiConnector;
     private readonly ILogger<ExchangeRatesTabDataProvider> _logger;
 
-    public ExchangeRatesTabDataProvider(ICoinbaseApiConnector coinbaseApiConnector,
+    public ExchangeRatesTabDataProvider(ICryptoApiConnector cryptoApiConnector,
         ILogger<ExchangeRatesTabDataProvider> logger)
     {
-        _coinbaseApiConnector = coinbaseApiConnector;
+        _cryptoApiConnector = cryptoApiConnector;
         _logger = logger;
     }
 
     public async Task<IEnumerable<ICell>> GetData()
     {
-        _logger.LogInformation("Getting exchange rates from {ApiName}", _coinbaseApiConnector.FriendlyApiName);
+        _logger.LogInformation("Getting exchange rates from {ApiName}", _cryptoApiConnector.FriendlyApiName);
 
-        var exchangeRates = await _coinbaseApiConnector.GetExchangeRates();
+        var exchangeRates = await _cryptoApiConnector.GetExchangeRates();
 
-        _logger.LogInformation("Got {Count} exchange rates from {FriendlyApiName}", exchangeRates.Count,
-            _coinbaseApiConnector.FriendlyApiName);
+        _logger.LogInformation("Got {Count} exchange rates from {FriendlyApiName}", exchangeRates.Count, _cryptoApiConnector.FriendlyApiName);
 
         return exchangeRates;
     }

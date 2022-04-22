@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
+using Hub.Shared.DataContracts.Banking.Constants;
 using Hub.Shared.Storage.Repository.Core;
 using Microsoft.Extensions.Logging;
 using Spreadsheet.Shared.Constants;
@@ -15,19 +16,19 @@ using Spreadsheet.Integration.Dto.Spreadsheet.Budget.Tabs;
 
 namespace Spreadsheet.Providers;
 
-public class BillingAccountTransactionsProvider : ITabDataProvider<BillingAccountTab>
+public class BillingPaymentsTabDataProvider : ITabDataProvider<BillingPaymentsTab>
 {
-    private readonly ISbankenApiConnector _sbankenApiConnector;
+    private readonly IBankingApiConnector _bankingApiConnector;
     private readonly ISpreadsheetMetadataProvider _spreadsheetMetadataProvider;
     private readonly IHubDbRepository _hubDbRepository;
-    private readonly ILogger<BillingAccountTransactionsProvider> _logger;
+    private readonly ILogger<BillingPaymentsTabDataProvider> _logger;
 
-    public BillingAccountTransactionsProvider(ISbankenApiConnector sbankenApiConnector,
+    public BillingPaymentsTabDataProvider(IBankingApiConnector bankingApiConnector,
         ISpreadsheetMetadataProvider spreadsheetMetadataProvider,
         IHubDbRepository hubDbRepository,
-        ILogger<BillingAccountTransactionsProvider> logger)
+        ILogger<BillingPaymentsTabDataProvider> logger)
     {
-        _sbankenApiConnector = sbankenApiConnector;
+        _bankingApiConnector = bankingApiConnector;
         _spreadsheetMetadataProvider = spreadsheetMetadataProvider;
         _hubDbRepository = hubDbRepository;
         _logger = logger;
@@ -36,40 +37,37 @@ public class BillingAccountTransactionsProvider : ITabDataProvider<BillingAccoun
     public async Task<IEnumerable<ICell>> GetData()
     {
         _logger.LogInformation("Getting row metadata for tab {TabName}",
-            SpreadsheetTabMetadataConstants.BillingAccountTabName);
+            SpreadsheetTabMetadataConstants.BillingPaymentsTabName);
 
-        var rows = await _spreadsheetMetadataProvider.GetRowsInTabForCurrentSpreadsheet(SpreadsheetTabMetadataConstants.BillingAccountTabName);
+        var rows = await _spreadsheetMetadataProvider.GetRowsInTabForCurrentSpreadsheet(SpreadsheetTabMetadataConstants.BillingPaymentsTabName);
 
         if (rows == null)
         {
-            _logger.LogWarning("No metadata for rows in tab {TabName} found", SpreadsheetTabMetadataConstants.BillingAccountTabName);
+            _logger.LogWarning("No metadata for rows in tab {TabName} found", SpreadsheetTabMetadataConstants.BillingPaymentsTabName);
             return null;
         }
 
         _logger.LogInformation("Got metadata on {Count} rows", rows.Count);
 
-        var transactionsFromSbanken = await GetBillingAccountTransactionsFromSbankenApi();
+        var transactionsFromBankingApi = await GetBillingPaymentsFromBankingApi();
 
-        if (transactionsFromSbanken == null) return null;
+        if (transactionsFromBankingApi == null) return null;
 
-        static Expression<Func<BillingAccountTransaction, bool>> Predicate()
-        {
-            return x => x.TransactionDate.Month == DateTime.Now.Month &&
-                        x.TransactionDate.Year == DateTime.Now.Year;
-        }
+        Expression<Func<BillingAccountTransaction, bool>> transactionFilter = x => x.TransactionDate.Month == DateTime.Now.Month &&
+                                                             x.TransactionDate.Year == DateTime.Now.Year;
 
         var transactionsInDb = await _hubDbRepository
-            .WhereAsync<BillingAccountTransaction, BillingAccountTransactionDto>(Predicate());
+            .WhereAsync<BillingAccountTransaction, BillingAccountTransactionDto>(transactionFilter);
 
-        var transactionsFromSbankenList = transactionsFromSbanken.ToList();
+        var transactionsFromBankingApiList = transactionsFromBankingApi.ToList();
 
-        _logger.LogInformation("Got {Count} transactions to update from Sbanken", transactionsFromSbankenList.Count);
+        _logger.LogInformation("Got {Count} transactions to update", transactionsFromBankingApiList.Count);
 
-        var transactionsToUpdateInTab = new List<TransactionDto>();
+        var transactionsToUpdateInTab = new List<TransactionCell>();
 
         var anyNewTransactions = false;
 
-        foreach (var transaction in transactionsFromSbankenList)
+        foreach (var transaction in transactionsFromBankingApiList)
         {
             if (transaction.TransactionId == null)
             {
@@ -114,7 +112,7 @@ public class BillingAccountTransactionsProvider : ITabDataProvider<BillingAccoun
             await _hubDbRepository.ExecuteQueueAsync();
 
             transactionsInDb = await _hubDbRepository
-                .WhereAsync<BillingAccountTransaction, BillingAccountTransactionDto>(Predicate());
+                .WhereAsync<BillingAccountTransaction, BillingAccountTransactionDto>(transactionFilter);
         }
 
         foreach (var row in rows)
@@ -128,7 +126,7 @@ public class BillingAccountTransactionsProvider : ITabDataProvider<BillingAccoun
                 continue;
             }
 
-            transactionsToUpdateInTab.Add(new TransactionDto
+            transactionsToUpdateInTab.Add(new TransactionCell
             {
                 RowKey = row.RowKey,
                 TransactionDate = transactionsForRow.Last().TransactionDate,
@@ -141,16 +139,15 @@ public class BillingAccountTransactionsProvider : ITabDataProvider<BillingAccoun
         return transactionsToUpdateInTab;
     }
 
-    private async Task<IEnumerable<TransactionDto>> GetBillingAccountTransactionsFromSbankenApi()
+    private async Task<IEnumerable<TransactionCell>> GetBillingPaymentsFromBankingApi()
     {
-        _logger.LogInformation("Getting transactions from {ApiName}", _sbankenApiConnector.FriendlyApiName);
+        _logger.LogInformation("Getting transactions from {ApiName}", _bankingApiConnector.FriendlyApiName);
 
         var ageInDays = DateTime.Now.Day;
 
-        var transactions = await _sbankenApiConnector.GetBillingAccountTransactions(ageInDays);
+        var transactions = await _bankingApiConnector.GetTransactions(AccountTypes.Billing, ageInDays);
 
-        _logger.LogInformation("Got {Count} transactions from {ApiName}", transactions.Count,
-            _sbankenApiConnector.FriendlyApiName);
+        _logger.LogInformation("Got {Count} transactions from {ApiName}", transactions.Count, _bankingApiConnector.FriendlyApiName);
 
         return transactions;
     }

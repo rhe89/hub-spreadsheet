@@ -5,7 +5,7 @@ using Spreadsheet.Integration.Dto.Spreadsheet;
 namespace Spreadsheet.Integration.Dto;
 
 [UsedImplicitly]
-public class AccountDto : Hub.Shared.DataContracts.Banking.AccountDto, ICell
+public class BankingAccountCell : Hub.Shared.DataContracts.Banking.Dto.AccountDto, ICell
 {
     public string RowKey => Name;
         
