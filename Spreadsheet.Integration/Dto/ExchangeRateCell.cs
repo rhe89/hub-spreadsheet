@@ -1,5 +1,5 @@
+using System.Globalization;
 using JetBrains.Annotations;
-using Spreadsheet.Shared.Extensions;
 using Spreadsheet.Integration.Dto.Spreadsheet;
 
 namespace Spreadsheet.Integration.Dto;
@@ -8,6 +8,5 @@ namespace Spreadsheet.Integration.Dto;
 public class ExchangeRateCell : Hub.Shared.DataContracts.Crypto.Dto.ExchangeRateDto, ICell
 {
     public string RowKey => Currency;
-        
-    public string CellValue => NOKRate.ToComma();
+    public string CellValue => NOKRate.ToString(CultureInfo.CurrentCulture);
 }

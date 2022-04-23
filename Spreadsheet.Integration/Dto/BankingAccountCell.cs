@@ -1,5 +1,5 @@
-﻿using JetBrains.Annotations;
-using Spreadsheet.Shared.Extensions;
+﻿using System.Globalization;
+using JetBrains.Annotations;
 using Spreadsheet.Integration.Dto.Spreadsheet;
 
 namespace Spreadsheet.Integration.Dto;
@@ -8,6 +8,5 @@ namespace Spreadsheet.Integration.Dto;
 public class BankingAccountCell : Hub.Shared.DataContracts.Banking.Dto.AccountDto, ICell
 {
     public string RowKey => Name;
-        
-    public string CellValue => Balance.ToComma();
+    public string CellValue => Balance.ToString(CultureInfo.CurrentCulture);
 }

@@ -7,6 +7,5 @@ public static class MapperConfigurationExpressionExtensions
     public static void AddSpreadsheetProfiles(this IMapperConfigurationExpression mapperConfigurationExpression)
     {
         mapperConfigurationExpression.AddProfile<SpreadsheetMetadataMapperProfile>();
-        mapperConfigurationExpression.AddProfile<BillingAccountTransactionMapperProfile>();
     }
 }

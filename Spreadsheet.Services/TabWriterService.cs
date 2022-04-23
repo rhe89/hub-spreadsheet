@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
 using JetBrains.Annotations;
@@ -68,16 +69,14 @@ public class TabWriterService<TTab> : ITabWriterService<TTab>
             
         foreach (var row in tab.Rows)
         {
-            var shouldUpdateRow = ShouldUpdateRow(tab, incomingCells, row, out var rowIndex);
+            var shouldUpdateRow = ShouldUpdateRow(tab, incomingCells, row, out var rowIndex, out var cellValue);
 
             if (!shouldUpdateRow)
             {
                 continue;
             }
-                
-            var cellInRowToUpdate = incomingCells.First(x => x.RowKey == row.RowKey);
-
-            tab.Rows[rowIndex].Cells.Add(cellInRowToUpdate.CellValue);
+            
+            tab.Rows[rowIndex].Cells.Add(cellValue);
         }
 
         var lastUpdated = DateTime.Now.FormattedDate();
@@ -91,18 +90,16 @@ public class TabWriterService<TTab> : ITabWriterService<TTab>
     {
         foreach (var row in tab.Rows)
         {
-            var shouldUpdateRow = ShouldUpdateRow(tab, incomingCells, row, out var rowIndex);
+            var shouldUpdateRow = ShouldUpdateRow(tab, incomingCells, row, out var rowIndex, out var cellValue);
 
             if (!shouldUpdateRow)
             {
                 continue;
             }
 
-            var cellInRowToUpdate = incomingCells.First(x => x.RowKey == row.RowKey);
-
             ExpandRowAndCellsIfNecessary(tab, rowIndex, columnIndex);
 
-            tab.Rows[rowIndex].Cells[columnIndex] = cellInRowToUpdate.CellValue;
+            tab.Rows[rowIndex].Cells[columnIndex] = cellValue;
         }
 
         SetLastUpdated(tab, columnIndex);
@@ -125,19 +122,27 @@ public class TabWriterService<TTab> : ITabWriterService<TTab>
         }
     }
         
-    private bool ShouldUpdateRow(TTab tab, IEnumerable<ICell> incomingCells, Row row, out int rowIndex)
+    private bool ShouldUpdateRow(TTab tab, IEnumerable<ICell> incomingCells, Row row, out int rowIndex, out string cellValue)
     {
-        var cellInRowToUpdate = incomingCells.FirstOrDefault(x => x.RowKey == row.RowKey);
+        var incomingValuesForCell = incomingCells
+            .Where(incomingCell => incomingCell.RowKey != null && row.RowKey.Contains(incomingCell.RowKey))
+            .Select(x => x.CellValue)
+            .ToList();
 
-        if (cellInRowToUpdate == null)
+        if (!incomingValuesForCell.Any())
         {
             _logger.LogInformation("No incoming data (cell value) provided for row {Row} in tab {Tab}", row.RowKey, tab.Name);
             rowIndex = -1;
+            cellValue = string.Empty;
             return false;
         }
 
         rowIndex = row.RowIndex;
-            
+
+        var decimalValues = incomingValuesForCell.Select(value => decimal.Parse(value, NumberStyles.Number));
+
+        cellValue = decimalValues.Sum().ReplacePeriodWithComma();
+
         return true;
     }
 

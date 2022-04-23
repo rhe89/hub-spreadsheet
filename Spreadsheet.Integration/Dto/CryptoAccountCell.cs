@@ -1,6 +1,6 @@
+using System.Globalization;
 using JetBrains.Annotations;
 using Spreadsheet.Integration.Dto.Spreadsheet;
-using Spreadsheet.Shared.Extensions;
 
 namespace Spreadsheet.Integration.Dto;
 
@@ -8,6 +8,5 @@ namespace Spreadsheet.Integration.Dto;
 public class CryptoAccountCell : Hub.Shared.DataContracts.Crypto.Dto.AccountDto, ICell
 {
     public string RowKey => Currency;
-        
-    public string CellValue => Balance.ToComma();
+    public string CellValue => Balance.ToString(CultureInfo.CurrentCulture);
 }
