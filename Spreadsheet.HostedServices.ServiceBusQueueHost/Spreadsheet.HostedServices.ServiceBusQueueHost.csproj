@@ -4,8 +4,8 @@
 	</PropertyGroup>
 
 	<ItemGroup>
-		<PackageReference Include="Hub.Shared.HostedServices.ServiceBusQueue" Version="6.1.2" />
-		<PackageReference Include="Hub.Shared.Settings" Version="6.1.2" />
+		<PackageReference Include="Hub.Shared.HostedServices.ServiceBusQueue" Version="6.1.3" />
+		<PackageReference Include="Hub.Shared.Settings" Version="6.1.3" />
 	</ItemGroup>
 
 	<ItemGroup>

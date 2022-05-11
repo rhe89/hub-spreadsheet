@@ -1,17 +1,81 @@
+using System;
 using Hub.Shared.HostedServices.ServiceBusQueue;
+using Hub.Shared.Settings;
+using Hub.Shared.Web.Http;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Spreadsheet.Data;
+using Spreadsheet.Data.AutoMapper;
+using Spreadsheet.HostedServices.ServiceBusQueueHost.Commands;
+using Spreadsheet.HostedServices.ServiceBusQueueHost.QueueListeners;
+using Spreadsheet.Integration;
+using Spreadsheet.Integration.Dto.Spreadsheet.Budget.Tabs;
+using Spreadsheet.Providers;
+using Spreadsheet.Services;
+using Spreadsheet.Shared.Constants;
 
-namespace Spreadsheet.HostedServices.ServiceBusQueueHost;
-
-public static class Program
+ServiceBusHostBuilder
+    .CreateHostBuilder<SpreadsheetDbContext>(args, "SQL_DB_SPREADSHEET")
+    .ConfigureServices(AddServices)
+    .Build()
+    .Run();
+    
+void AddServices(HostBuilderContext hostBuilderContext, IServiceCollection serviceCollection )
 {
-    public static void Main(string[] args)
-    {
-        new Bootstrapper<DependencyRegistrationFactory, SpreadsheetDbContext>(args, 
-                "SQL_DB_SPREADSHEET")
-            .CreateHostBuilder()
-            .Build()
-            .Run();
-    }
+    serviceCollection.AddTransient<ISpreadsheetCosmosDb, SpreadsheetCosmosDb>();
+
+    serviceCollection.AddTransient<ITabReaderService<ResultsAndSavingsTab>>(x =>
+        new TabReaderService<ResultsAndSavingsTab>(x.GetRequiredService<ISpreadsheetMetadataProvider>(),
+            x.GetRequiredService<IGoogleSpreadsheetConnector>(),
+            SpreadsheetTabMetadataConstants.ResultAndSavingTabName));
+
+    serviceCollection.AddTransient<ITabReaderService<BankingAccountsTab>>(x =>
+        new TabReaderService<BankingAccountsTab>(x.GetRequiredService<ISpreadsheetMetadataProvider>(),
+            x.GetRequiredService<IGoogleSpreadsheetConnector>(),
+            SpreadsheetTabMetadataConstants.BankingAccountsTabName));
+
+    serviceCollection.AddTransient<ITabReaderService<CryptoAccountsTab>>(x =>
+        new TabReaderService<CryptoAccountsTab>(x.GetRequiredService<ISpreadsheetMetadataProvider>(),
+            x.GetRequiredService<IGoogleSpreadsheetConnector>(),
+            SpreadsheetTabMetadataConstants.CryptoAccountsTabName));
+
+    serviceCollection.AddTransient<ITabReaderService<BillingPaymentsTab>>(x =>
+        new TabReaderService<BillingPaymentsTab>(x.GetRequiredService<ISpreadsheetMetadataProvider>(),
+            x.GetRequiredService<IGoogleSpreadsheetConnector>(),
+            SpreadsheetTabMetadataConstants.BillingPaymentsTabName));
+
+    serviceCollection.AddTransient<ITabReaderService<ExchangeRatesTab>>(x =>
+        new TabReaderService<ExchangeRatesTab>(x.GetRequiredService<ISpreadsheetMetadataProvider>(),
+            x.GetRequiredService<IGoogleSpreadsheetConnector>(),
+            SpreadsheetTabMetadataConstants.ExchangeRatesTabName));
+
+    serviceCollection.AddTransient<ITabDataProvider<BankingAccountsTab>, BankingAccountsTabDataProvider>();
+    serviceCollection.AddTransient<ITabDataProvider<CryptoAccountsTab>, CryptoAccountsTabDataProvider>();
+    serviceCollection.AddTransient<ITabDataProvider<ExchangeRatesTab>, ExchangeRatesTabDataProvider>();
+    serviceCollection.AddTransient<ITabDataProvider<BillingPaymentsTab>, BillingPaymentsTabDataProvider>();
+
+    serviceCollection.AddTransient<ITabWriterService<BankingAccountsTab>, TabWriterService<BankingAccountsTab>>();
+    serviceCollection.AddTransient<ITabWriterService<CryptoAccountsTab>, TabWriterService<CryptoAccountsTab>>();
+    serviceCollection.AddTransient<ITabWriterService<ExchangeRatesTab>, TabWriterService<ExchangeRatesTab>>();
+    serviceCollection.AddTransient<ITabWriterService<BillingPaymentsTab>, TabWriterService<BillingPaymentsTab>>();
+
+    serviceCollection.AddTransient<ISpreadsheetMetadataProvider, SpreadsheetMetadataProvider>();
+    serviceCollection.AddTransient<IGoogleSpreadsheetConnector, GoogleSpreadsheetConnector>();
+    serviceCollection.AddHubHttpClient<ICryptoApiConnector, CryptoApiConnector>(client =>
+        client.BaseAddress = new Uri(hostBuilderContext.Configuration.GetValue<string>(ApiEndpoints.Crypto)));
+    serviceCollection.AddHubHttpClient<IBankingApiConnector, BankingApiConnector>(client =>
+        client.BaseAddress = new Uri(hostBuilderContext.Configuration.GetValue<string>(ApiEndpoints.Banking)));
+
+    serviceCollection.AddAutoMapper(c => { c.AddSpreadsheetProfiles(); });
+
+    serviceCollection.AddTransient<UpdateBillingPaymentsCommand>();
+    serviceCollection.AddTransient<UpdateCryptoAccountsCommand>();
+    serviceCollection.AddTransient<UpdateExchangeRatesCommand>();
+    serviceCollection.AddTransient<UpdateBankingAccountsCommand>();
+
+    serviceCollection.AddHostedService<BillingPaymentsUpdatedService>();
+    serviceCollection.AddHostedService<CryptoAccountsUpdatedQueueListener>();
+    serviceCollection.AddHostedService<ExchangeRatesUpdatedService>();
+    serviceCollection.AddHostedService<BankingAccountsUpdatedQueueListener>();
 }
