@@ -6,9 +6,9 @@
 	<ItemGroup>
 		<PackageReference Include="Google.Apis.Auth" Version="1.36.1" />
 		<PackageReference Include="Google.Apis.Sheets.v4" Version="1.36.1.1443" />
-		<PackageReference Include="Hub.Shared.DataContracts.Crypto" Version="6.1.3" />
-		<PackageReference Include="Hub.Shared.DataContracts.Banking" Version="6.1.3" />
-		<PackageReference Include="Hub.Shared.Web.Http" Version="6.1.3" />
+		<PackageReference Include="Hub.Shared.DataContracts.Crypto" Version="6.2.0" />
+		<PackageReference Include="Hub.Shared.DataContracts.Banking" Version="6.2.0" />
+		<PackageReference Include="Hub.Shared.Web.Http" Version="6.2.0" />
 	</ItemGroup>
 
 	<ItemGroup>
