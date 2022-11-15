@@ -1,5 +1,9 @@
+using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
+using Hub.Shared.DataContracts.Banking.Query;
+using Hub.Shared.Storage.ServiceBus.MessageBody;
 using Microsoft.Extensions.Logging;
 using Spreadsheet.Integration;
 using Spreadsheet.Integration.Dto.Spreadsheet;
@@ -19,14 +23,30 @@ public class BankingAccountsTabDataProvider : ITabDataProvider<BankingAccountsTa
         _logger = logger;
     }
 
-    public async Task<IEnumerable<ICell>> GetData()
+    public async Task<IEnumerable<ICell>> GetData(string parameters)
     {
-        _logger.LogInformation("Getting accounts from {ApiName}", _bankingApiConnector.FriendlyApiName);
+        var bankingAccountsUpdatedBody = BankingAccountBalancesUpdatedBody.Deserialize(parameters);
+        
+        var month = bankingAccountsUpdatedBody?.Month ?? DateTime.Now.Month;
+        var year = bankingAccountsUpdatedBody?.Year ?? DateTime.Now.Year;
 
-        var accounts = await _bankingApiConnector.GetAccounts();
+        var accountQuery = new AccountQuery
+        {
+            IncludeDiscontinuedAccounts = true,
+            IncludeSharedAccounts = true,
+            BalanceToDate = new DateTime(year, month, DateTime.DaysInMonth(year, month)),
+        };
+        
+        _logger.LogInformation(
+            "Getting account balances from {ApiName} for {Month}.{Year}",
+            _bankingApiConnector.FriendlyApiName,
+            month,
+            year);
+        
+        var accounts = await _bankingApiConnector.GetAccountBalances(accountQuery);
 
         _logger.LogInformation("Got {Count} accounts from {ApiName}", accounts.Count, _bankingApiConnector.FriendlyApiName);
 
-        return accounts;
+        return accounts.OrderBy(x => x.CreatedDate);
     }
 }

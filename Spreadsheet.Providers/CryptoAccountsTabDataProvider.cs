@@ -19,7 +19,7 @@ public class CryptoAccountsTabDataProvider : ITabDataProvider<CryptoAccountsTab>
         _logger = logger;
     }
 
-    public async Task<IEnumerable<ICell>> GetData()
+    public async Task<IEnumerable<ICell>> GetData(string parameters)
     {
         _logger.LogInformation("Getting accounts from {ApiName}", _cryptoAccountApiConnector.FriendlyApiName);
 

@@ -37,11 +37,11 @@ public class TabReaderService<TTab> : ITabReaderService<TTab>
         {
             throw new SpreadsheetNotFoundException("No metadata exists for budget spreadsheet for current date");
         }
-            
+
         var tab = SetTabDtoFromSpreadsheetMetadata(spreadsheetMetadata, _tabName);
             
         await PopulateRowsInTab(tab);
-
+        
         return tab;
     }
 
@@ -58,14 +58,17 @@ public class TabReaderService<TTab> : ITabReaderService<TTab>
                 nameof(tabName));
         }
 
-        return new TTab
+        var tab = new TTab
         {
             Name = spreadsheetTabMetadata.Name,
             SpreadsheetId = spreadSheet.SpreadsheetId,
             FirstColumn = spreadsheetTabMetadata.FirstColumn,
-            LastColumn = spreadsheetTabMetadata.LastColumn,
-            SpreadsheetRowMetadataDtos = spreadsheetTabMetadata.Rows
+            LastColumn = spreadsheetTabMetadata.LastColumn
         };
+        
+        tab.Init();
+        
+        return tab;
     }
 
     private async Task PopulateRowsInTab(Tab tab)

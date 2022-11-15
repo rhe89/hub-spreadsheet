@@ -1,8 +1,8 @@
-using System;
 using System.Collections.Generic;
 using System.Net.Http;
 using System.Threading.Tasks;
-using Hub.Shared.DataContracts.Banking.SearchParameters;
+using Hub.Shared.DataContracts.Banking.Dto;
+using Hub.Shared.DataContracts.Banking.Query;
 using Hub.Shared.Web.Http;
 using JetBrains.Annotations;
 using Spreadsheet.Integration.Dto;
@@ -12,8 +12,9 @@ namespace Spreadsheet.Integration;
 public interface IBankingApiConnector
 {
     public string FriendlyApiName { get; }
-    Task<IList<BankingAccountCell>> GetAccounts();
-    Task<IList<TransactionCell>> GetTransactions(string accountType, int ageInDays);
+    Task<IList<BankingAccountBalanceCell>> GetAccountBalances(AccountQuery accountQuery);
+    Task<IList<TransactionDto>> GetTransactions(TransactionQuery transactionQuery);
+    Task<IList<ScheduledTransactionDto>> GetScheduledTransactions(ScheduledTransactionQuery scheduledTransactionQuery);
 }
 
 [UsedImplicitly]
@@ -21,18 +22,24 @@ public class BankingApiConnector : HttpClientService, IBankingApiConnector
 {
     private const string AccountsPath = "/api/accounts";
     private const string TransactionsPath = "/api/transactions";
+    private const string ScheduledTransactionsPath = "/api/scheduledtransactions";
 
     public BankingApiConnector(HttpClient httpClient) : base(httpClient, "BankingApi")
     {
     }
     
-    public async Task<IList<BankingAccountCell>> GetAccounts()
+    public async Task<IList<BankingAccountBalanceCell>> GetAccountBalances(AccountQuery accountQuery)
     {
-        return await Post<IList<BankingAccountCell>>(AccountsPath, new AccountSearchParameters { MergeAccountsWithSameNameFromDifferentBanks = true });
+        return await Post<IList<BankingAccountBalanceCell>>(AccountsPath, accountQuery);
     }
 
-    public async Task<IList<TransactionCell>> GetTransactions(string accountType, int ageInDays)
+    public async Task<IList<TransactionDto>> GetTransactions(TransactionQuery transactionQuery)
     {
-        return await Post<IList<TransactionCell>>(TransactionsPath, new TransactionSearchParameters { AccountTypes = new [] { accountType }, FromDate = DateTime.Now.AddDays(-ageInDays)});
+        return await Post<IList<TransactionDto>>(TransactionsPath, transactionQuery);
+    }
+
+    public async Task<IList<ScheduledTransactionDto>> GetScheduledTransactions(ScheduledTransactionQuery scheduledTransactionQuery)
+    {
+        return await Post<IList<ScheduledTransactionDto>>(ScheduledTransactionsPath, scheduledTransactionQuery);
     }
 }

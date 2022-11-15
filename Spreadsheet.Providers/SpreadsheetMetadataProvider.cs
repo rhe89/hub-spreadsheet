@@ -13,7 +13,6 @@ public interface ISpreadsheetMetadataProvider
     Task<SpreadsheetMetadataDto> GetSpreadsheet(string id);
     Task<IList<SpreadsheetMetadataDto>> GetSpreadsheets();
     Task<SpreadsheetMetadataDto> GetCurrentBudgetSpreadsheetMetadata();
-    Task<IList<SpreadsheetMetadataDto.Row>> GetRowsInTabForCurrentSpreadsheet(string tabName);
 }
 
 public class SpreadsheetMetadataProvider : ISpreadsheetMetadataProvider
@@ -48,13 +47,6 @@ public class SpreadsheetMetadataProvider : ISpreadsheetMetadataProvider
         return Map(spreadsheets.FirstOrDefault());
     }
 
-    public async Task<IList<SpreadsheetMetadataDto.Row>> GetRowsInTabForCurrentSpreadsheet(string tabName)
-    {
-        var spreadsheet = await GetCurrentBudgetSpreadsheetMetadata();
-
-        return spreadsheet?.Tabs?.FirstOrDefault(x => x.Name == tabName)?.Rows;
-    }
-
     public async Task<IList<SpreadsheetMetadataDto>> GetSpreadsheets()
     {
         var spreadsheets = await _spreadsheetCosmosDb.GetSpreadsheetMetadata();
@@ -80,12 +72,7 @@ public class SpreadsheetMetadataProvider : ISpreadsheetMetadataProvider
                 {
                     Name = tab.Name,
                     FirstColumn = tab.FirstColumn,
-                    LastColumn = tab.LastColumn,
-                    Rows = tab.Rows?.Select(row => new SpreadsheetMetadataDto.Row
-                    {
-                        RowKey = row.RowKey,
-                        Tags = row.Tags
-                    }).ToList()
+                    LastColumn = tab.LastColumn
                 }).ToList()
         };
     }

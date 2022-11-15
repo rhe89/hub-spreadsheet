@@ -41,9 +41,7 @@ public class SpreadsheetMetadataService : ISpreadsheetMetadataService
         var spreadsheet = new SpreadsheetMetadataDto();
 
         var spreadsheetTabMetadata = new SpreadsheetMetadataDto.Tab();
-
-        spreadsheetTabMetadata.Rows.Add(new SpreadsheetMetadataDto.Row());
-
+        
         spreadsheet.Tabs.Add(spreadsheetTabMetadata);
 
         return spreadsheet;

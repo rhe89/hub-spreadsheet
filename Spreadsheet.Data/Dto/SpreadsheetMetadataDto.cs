@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Newtonsoft.Json;
 using SpreadsheetMetadata = Spreadsheet.Data.Documents.SpreadsheetMetadata;
 
 namespace Spreadsheet.Data.Dto;
@@ -28,12 +27,7 @@ public class SpreadsheetMetadataDto
                 {
                     Name = tab.Name,
                     FirstColumn = tab.FirstColumn,
-                    LastColumn = tab.LastColumn,
-                    Rows = tab.Rows.Select(row => new Spreadsheet.Data.Documents.Row
-                    {
-                        RowKey = row.RowKey,
-                        Tags = row.Tags
-                    }).ToList()
+                    LastColumn = tab.LastColumn
                 }).ToList()
         };
     }
@@ -46,17 +40,5 @@ public class SpreadsheetMetadataDto
         public string FirstColumn { get; set; }
         
         public string LastColumn { get; set; }
-        
-        public IList<Row> Rows { get; set; } = new List<Row>();
-    }
-        
-    [Serializable]
-    public class Row
-    {
-        public string RowKey { get; set; }
-        public string Tags { get; set; }
-
-        [JsonIgnore]
-        public IEnumerable<string> TagList => Tags?.Split(",");
     }
 }

@@ -14,7 +14,8 @@ namespace Spreadsheet.Services;
 public interface ITabWriterService<[UsedImplicitly]TTab>
     where TTab : Tab, new()
 {
-    Task UpdateTab(IList<ICell> rows);
+    Task UpdateTab(IList<ICell> cellsInColumn);
+    Task UpdateTab(IList<ICell> cellsInColumn, string period);
 }
     
 public class TabWriterService<TTab> : ITabWriterService<TTab>
@@ -32,20 +33,31 @@ public class TabWriterService<TTab> : ITabWriterService<TTab>
         _googleSpreadsheetConnector = googleSpreadsheetConnector;
         _logger = logger;
     }
+    
+    public async Task UpdateTab(IList<ICell> cellsInColumn)
+    {
+        var currentPeriod = Tab.GetCurrentPeriod();
 
-    public async Task UpdateTab(IList<ICell> rows)
+        await UpdateTab(cellsInColumn, currentPeriod);
+    }
+
+    public async Task UpdateTab(IList<ICell> cellsInColumn, string period)
     {
         var tab = await _tabReaderService.GetTab();
-            
-        var columnIndexForCurrentPeriod = tab.GetColumnOfCurrentPeriodInSheet();
+        
+        var columnIndexForCurrentPeriod = tab.GetColIndexOfPeriodInSheet(period);
 
-        if (columnIndexForCurrentPeriod == -1)
+        var columnExistsForCurrentPeriod = columnIndexForCurrentPeriod != -1;
+        
+        if (columnExistsForCurrentPeriod)
         {
-            AddNewColumn(tab, rows);
+            UpdateCellsInColumn(tab, cellsInColumn, columnIndexForCurrentPeriod);
         }
         else
         {
-            ReplaceColumn(tab, rows, columnIndexForCurrentPeriod);
+            columnIndexForCurrentPeriod = AddNewColumn(tab);
+            
+            UpdateCellsInColumn(tab, cellsInColumn, columnIndexForCurrentPeriod);
         }
 
         _logger.LogInformation("Updating {TabName}", tab.Name);
@@ -60,102 +72,60 @@ public class TabWriterService<TTab> : ITabWriterService<TTab>
         await _googleSpreadsheetConnector.UpdateSpreadsheetTab(tab, 1, lastRow);
     }
 
-    private void AddNewColumn(TTab tab,
-        IList<ICell> incomingCells)
+    private int AddNewColumn(TTab tab)
     {
         var newPeriod = Tab.GetCurrentPeriod();
-
-        tab.Rows.First().Cells.Add(newPeriod);
             
-        foreach (var row in tab.Rows)
-        {
-            var shouldUpdateRow = ShouldUpdateRow(tab, incomingCells, row, out var rowIndex, out var cellValue);
+        tab.Month.Cells.Add(newPeriod);
 
-            if (!shouldUpdateRow)
-            {
-                continue;
-            }
-            
-            tab.Rows[rowIndex].Cells.Add(cellValue);
-        }
+        tab.FillUnCompleteRows();
 
-        var lastUpdated = DateTime.Now.FormattedDate();
-
-        tab.Rows[^1].Cells.Add(lastUpdated);
+        return tab.NumberOfCellsInRows;
     }
 
-    private void ReplaceColumn(TTab tab,
-        IList<ICell> incomingCells,
+    private void UpdateCellsInColumn(TTab tab,
+        IList<ICell> incomingCellsInColumn,
         int columnIndex)
     {
-        foreach (var row in tab.Rows)
-        {
-            var shouldUpdateRow = ShouldUpdateRow(tab, incomingCells, row, out var rowIndex, out var cellValue);
+        var matchingCells = new List<ICell>();
 
-            if (!shouldUpdateRow)
-            {
-                continue;
-            }
-
-            ExpandRowAndCellsIfNecessary(tab, rowIndex, columnIndex);
-
-            tab.Rows[rowIndex].Cells[columnIndex] = cellValue;
-        }
-
-        SetLastUpdated(tab, columnIndex);
-    }
-
-    private static void SetLastUpdated(TTab tab, 
-        int columnIndex)
-    {
-        var lastUpdated = DateTime.Now.FormattedDate();
-
-        var row = tab.Rows[^1];
-
-        if (row.Cells.Count <= columnIndex)
-        {
-            row.Cells.Add(lastUpdated);
-        }
-        else
-        {
-            row.Cells[columnIndex] = lastUpdated;
-        }
-    }
+        var preservedRows = new List<Row>{ tab.Month, tab.LastUpdated };
         
-    private bool ShouldUpdateRow(TTab tab, IEnumerable<ICell> incomingCells, Row row, out int rowIndex, out string cellValue)
-    {
-        var incomingValuesForCell = incomingCells
-            .Where(incomingCell => incomingCell.RowKey != null && row.RowKey.Contains(incomingCell.RowKey))
-            .Select(x => x.CellValue)
-            .ToList();
-
-        if (!incomingValuesForCell.Any())
+        foreach (var row in tab.Rows)
         {
-            _logger.LogInformation("No incoming data (cell value) provided for row {Row} in tab {Tab}", row.RowKey, tab.Name);
-            rowIndex = -1;
-            cellValue = string.Empty;
-            return false;
+            if (preservedRows.Any(preservedRow => preservedRow == row))
+            {
+                continue;
+            }
+
+            var matchingCell = incomingCellsInColumn
+                .FirstOrDefault(incomingCell => incomingCell.RowKey != null &&
+                                                (row.RowKey.Contains(incomingCell.RowKey) ||
+                                                 (string.IsNullOrEmpty(row.RowKey))));
+
+            if (matchingCell == null)
+            {
+                continue;
+            }
+            
+            matchingCells.Add(matchingCell);
+
+            row.Cells[columnIndex] = decimal
+                .Parse(matchingCell.CellValue, CultureInfo.InvariantCulture)
+                .ReplacePeriodWithComma();
         }
 
-        rowIndex = row.RowIndex;
+        var nonMatchingCells = incomingCellsInColumn.Except(matchingCells);
 
-        var decimalValues = incomingValuesForCell.Select(value => decimal.Parse(value, NumberStyles.Number));
-
-        cellValue = decimalValues.Sum().ReplacePeriodWithComma();
-
-        return true;
-    }
-
-    private static void ExpandRowAndCellsIfNecessary(TTab tab, int currentRowIndex, int currentColumnIndex)
-    {
-        if (tab.Rows.Count <= currentRowIndex)
+        foreach (var incomingCell in nonMatchingCells)
         {
-            tab.AddRowToExistingSheet(new Row(2));
+            var newRow = tab.AddRow(incomingCell.RowKey);
+            
+            newRow.Cells[columnIndex] = decimal
+                .Parse(incomingCell.CellValue, NumberStyles.Number)
+                .ReplacePeriodWithComma();
         }
 
-        while (tab.Rows[currentRowIndex].Cells.Count <= currentColumnIndex)
-        {
-            tab.Rows[currentRowIndex].Cells.Add(0);
-        }
+        tab.LastUpdated.Cells[columnIndex] = DateTime.Now.FormattedDate();
     }
 }

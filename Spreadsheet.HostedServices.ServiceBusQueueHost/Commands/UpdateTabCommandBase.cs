@@ -11,19 +11,19 @@ namespace Spreadsheet.HostedServices.ServiceBusQueueHost.Commands;
 public abstract class UpdateTabCommandBase<TTab> : ServiceBusQueueCommand
     where TTab : Tab, new()
 {
-    private readonly ITabDataProvider<TTab> _tabDataProvider;
-    private readonly ITabWriterService<TTab> _tabWriterService;
+    protected readonly ITabDataProvider<TTab> TabDataProvider;
+    protected readonly ITabWriterService<TTab> TabWriterService;
 
     protected UpdateTabCommandBase(ITabDataProvider<TTab> tabDataProvider,
         ITabWriterService<TTab> tabWriterService)
     {
-        _tabDataProvider = tabDataProvider;
-        _tabWriterService = tabWriterService;
+        TabDataProvider = tabDataProvider;
+        TabWriterService = tabWriterService;
     }
         
     public override async Task Execute(CancellationToken cancellationToken)
     {
-        var data = await _tabDataProvider.GetData();
+        var data = await TabDataProvider.GetData(Message);
 
         var list = data?.ToList();
             
@@ -32,6 +32,6 @@ public abstract class UpdateTabCommandBase<TTab> : ServiceBusQueueCommand
             return;
         }
             
-        await _tabWriterService.UpdateTab(list);
+        await TabWriterService.UpdateTab(list);
     }
 }

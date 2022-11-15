@@ -1,8 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Spreadsheet.Shared.Constants;
-using Spreadsheet.Data.Dto;
 
 namespace Spreadsheet.Integration.Dto.Spreadsheet;
 
@@ -12,37 +10,35 @@ public abstract class Tab
     public string Name { get; init; }
     public string FirstColumn { get; init; }
     public string LastColumn { get; init; }
-    private bool PopulateAllRows { get; } 
     public IList<Row> Rows { get; }
-    public IList<SpreadsheetMetadataDto.Row> SpreadsheetRowMetadataDtos { get; init; }
+    public Row Month => Rows.First();
+    public Row LastUpdated => Rows.Last();
+    public int NumberOfCellsInRows { get; set; }
 
     protected Tab()
     {
         Rows = new List<Row>();
-        PopulateAllRows = true;
+    }
+
+    public void Init()
+    {
+        var indexOfLastColumn = LastColumn.ToUpper()[0] - 64;
+
+        NumberOfCellsInRows = indexOfLastColumn;
     }
         
-    public int GetColumnOfCurrentPeriodInSheet()
+    public int GetColIndexOfPeriodInSheet(string period)
     {
-        var currentPeriod = GetCurrentPeriod();
-
-        return GetColIndexOfPeriodInSheet(currentPeriod);
-    }
-        
-    private int GetColIndexOfPeriodInSheet(string period)
-    {
-        var idx = 0;
-
         var periodRow = Rows.First();
 
-        foreach (var col in periodRow.Cells)
+        for (var index = 0; index < periodRow.Cells.Count; index++)
         {
+            var col = periodRow.Cells[index];
+            
             if (col.ToString() == period)
             {
-                return idx;
+                return index;
             }
-
-            idx++;
         }
 
         return -1;
@@ -55,22 +51,69 @@ public abstract class Tab
 
     public void PopulateRows(IList<IList<object>> sheet)
     {
-        for (var i = 0; i < sheet.Count; i++)
+        if (sheet == null)
         {
-            var cellsInRow = sheet[i];
-            var rowKey = cellsInRow[0].ToString();
-                
-            if (PopulateAllRows || 
-                i == SpreadsheetRowMetadataConstants.PeriodRowIndex || 
-                SpreadsheetRowMetadataDtos.Any(x => x.RowKey == rowKey))
+            InitializeNewTab();
+            FillUnCompleteRows();
+            return;
+        }
+        
+        foreach (var cellsInRow in sheet)
+        {
+            var row = new Row(cellsInRow);
+
+            Rows.Add(row);
+        }
+
+        FillUnCompleteRows();
+    }
+
+    private void InitializeNewTab()
+    {
+        //First row = Month row
+        var firstRow = new Row(new List<object> { "" });
+        
+        for (var month = 1; month < NumberOfCellsInRows; month++)
+        {
+            firstRow.Cells.Add($"{month}/{DateTime.Now.Year}");
+        }
+        
+        Rows.Add(firstRow);
+        
+        //Last row = Last updated row
+        Rows.Add(new Row(new List<object> { "Last updated" }));
+    }
+
+    public void FillUnCompleteRows()
+    {
+        foreach (var row in Rows)
+        {
+            FillUnCompleteCellsInRow(row);
+        }
+    }
+
+    private void FillUnCompleteCellsInRow(Row row)
+    {
+        for (var cellIndex = 0; cellIndex < NumberOfCellsInRows; cellIndex++)
+        {
+            if (row.Cells.ElementAtOrDefault(cellIndex) == null)
             {
-                Rows.Add(new Row(i, rowKey, cellsInRow));
+                row.Cells.Insert(cellIndex, "");
             }
         }
     }
 
-    public void AddRowToExistingSheet(Row row)
+    public Row AddRow(string rowKey)
     {
-        Rows.Add(row);
+        //Shift LastUpdated one row down
+        Rows.Add(new Row(LastUpdated.Cells));
+
+        var newRow = Rows[^2];
+        
+        newRow.Cells = new List<object>(NumberOfCellsInRows) { rowKey };
+        
+        FillUnCompleteCellsInRow(newRow);
+
+        return newRow;
     }
 }

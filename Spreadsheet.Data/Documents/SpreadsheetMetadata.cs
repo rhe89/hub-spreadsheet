@@ -37,16 +37,4 @@ public class Tab
         
     [JsonProperty] 
     public string LastColumn { get; set; }
-
-    [JsonProperty] 
-    public virtual ICollection<Row> Rows { get; set; }
-}
-
-[JsonObject]
-public class Row
-{
-    [JsonProperty] 
-    public string RowKey { get; set; }
-    [JsonProperty] 
-    public string Tags { get; set; }
 }

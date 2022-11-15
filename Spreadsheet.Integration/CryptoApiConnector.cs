@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using System.Net.Http;
 using System.Threading.Tasks;
-using Hub.Shared.DataContracts.Crypto.SearchParameters;
+using Hub.Shared.DataContracts.Crypto.Query;
 using Hub.Shared.Web.Http;
 using JetBrains.Annotations;
 using Spreadsheet.Integration.Dto;
@@ -27,11 +27,11 @@ public class CryptoApiConnector : HttpClientService, ICryptoApiConnector
     
     public async Task<IList<CryptoAccountCell>> GetAccounts()
     {
-        return await Post<IList<CryptoAccountCell>>(AccountsPath, new AccountSearchParameters { MergeAccountsWithSameNameFromDifferentExchanges = true});
+        return await Post<IList<CryptoAccountCell>>(AccountsPath, new AccountQuery { MergeAccountsWithSameNameFromDifferentExchanges = true});
     }
 
     public async Task<IList<ExchangeRateCell>> GetExchangeRates()
     {
-        return await Post<IList<ExchangeRateCell>>(ExchangeRatesPath, new ExchangeRateSearchParameters());
+        return await Post<IList<ExchangeRateCell>>(ExchangeRatesPath, new ExchangeRateQuery());
     }
 }

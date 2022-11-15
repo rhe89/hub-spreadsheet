@@ -19,7 +19,7 @@ public class ExchangeRatesTabDataProvider : ITabDataProvider<ExchangeRatesTab>
         _logger = logger;
     }
 
-    public async Task<IEnumerable<ICell>> GetData()
+    public async Task<IEnumerable<ICell>> GetData(string parameters)
     {
         _logger.LogInformation("Getting exchange rates from {ApiName}", _cryptoApiConnector.FriendlyApiName);
 
