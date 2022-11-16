@@ -14,10 +14,3 @@ services:
             context: ./
             dockerfile: Spreadsheet.Web.Api/Dockerfile
         image: "rhe89/hub-spreadsheet-api"
-
-    spreadsheet-webapp:
-        container_name: "spreadsheet_webapp"
-        build:
-            context: ./
-            dockerfile: Spreadsheet.Web.WebApp/Dockerfile
-        image: "rhe89/hub-spreadsheet-webapp"
