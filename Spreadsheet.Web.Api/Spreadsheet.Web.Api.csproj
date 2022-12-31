@@ -4,11 +4,13 @@
 	</PropertyGroup>
 
 	<ItemGroup>
-		<PackageReference Include="Hub.Shared.Web.Api" Version="7.0.0" />
+		<PackageReference Include="Hub.Shared.DataContracts.Spreadsheet" Version="7.2" />
+		<PackageReference Include="Hub.Shared.Web.Api" Version="7.2" />
 	</ItemGroup>
 
 	<ItemGroup>
 		<ProjectReference Include="..\Spreadsheet.Data\Spreadsheet.Data.csproj" />
+		<ProjectReference Include="..\Spreadsheet.Services\Spreadsheet.Services.csproj" />
 	</ItemGroup>
 
 </Project>

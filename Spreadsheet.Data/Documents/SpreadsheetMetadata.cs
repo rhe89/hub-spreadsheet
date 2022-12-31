@@ -20,7 +20,7 @@ public class SpreadsheetMetadata
     public DateTime ValidFrom { get; set; }
 
     [JsonProperty] 
-    public DateTime ValidTo { get; set; }
+    public DateTime? ValidTo { get; set; }
 
     [JsonProperty] 
     public virtual ICollection<Tab> Tabs { get; set; }

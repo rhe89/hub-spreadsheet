@@ -4,8 +4,8 @@
 	</PropertyGroup>
 
 	<ItemGroup>
-		<PackageReference Include="Hub.Shared.HostedServices.ServiceBusQueue" Version="7.0.0" />
-		<PackageReference Include="Hub.Shared.Settings" Version="7.0.0" />
+		<PackageReference Include="Hub.Shared.HostedServices.ServiceBusQueue" Version="7.2" />
+		<PackageReference Include="Hub.Shared.Settings" Version="7.2" />
 	</ItemGroup>
 
 	<ItemGroup>
@@ -16,4 +16,8 @@
 		<ProjectReference Include="..\Spreadsheet.Services\Spreadsheet.Services.csproj" />
 	</ItemGroup>
 
+	<ItemGroup>
+		<Folder Include="Commands" />
+		<Folder Include="QueueListeners" />
+	</ItemGroup>
 </Project>

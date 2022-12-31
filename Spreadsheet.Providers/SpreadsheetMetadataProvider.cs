@@ -10,48 +10,32 @@ namespace Spreadsheet.Providers;
 
 public interface ISpreadsheetMetadataProvider
 {
-    Task<SpreadsheetMetadataDto> GetSpreadsheet(string id);
-    Task<IList<SpreadsheetMetadataDto>> GetSpreadsheets();
-    Task<SpreadsheetMetadataDto> GetCurrentBudgetSpreadsheetMetadata();
+    Task<SpreadsheetMetadataDto> Get(string spreadsheetName, DateTime from);
 }
 
 public class SpreadsheetMetadataProvider : ISpreadsheetMetadataProvider
 {
-    private readonly ISpreadsheetCosmosDb _spreadsheetCosmosDb;
+    private readonly ICosmosDbContext _cosmosDbContext;
 
-    public SpreadsheetMetadataProvider(ISpreadsheetCosmosDb spreadsheetCosmosDb)
+    public SpreadsheetMetadataProvider(
+        ICosmosDbContext cosmosDbContext)
     {
-        _spreadsheetCosmosDb = spreadsheetCosmosDb;
+        _cosmosDbContext = cosmosDbContext;
     }
-
-    public async Task<SpreadsheetMetadataDto> GetSpreadsheet(string id)
+    
+    public async Task<SpreadsheetMetadataDto> Get(string spreadsheetName, DateTime from)
     {
-        var queryable = await _spreadsheetCosmosDb
+        var queryable = await _cosmosDbContext
             .GetSpreadsheetMetadataQueryable();
 
-        var spreadsheets = queryable.Where(x => x.Id == id).ToList();
-
-        return Map(spreadsheets.FirstOrDefault());
-    }
-
-    public async Task<SpreadsheetMetadataDto> GetCurrentBudgetSpreadsheetMetadata()
-    {
-        var queryable = await _spreadsheetCosmosDb
-            .GetSpreadsheetMetadataQueryable();
-
-        var spreadsheets = queryable.Where(x =>
-                DateTime.Now >= x.ValidFrom &&
-                DateTime.Now < x.ValidTo)
+        var spreadsheets = queryable
+            .Where(
+                x => x.Name == spreadsheetName || x.Name.Contains(spreadsheetName) &&
+                     from >= x.ValidFrom &&
+                     (x.ValidTo == null || from < x.ValidTo))
             .ToList();
 
         return Map(spreadsheets.FirstOrDefault());
-    }
-
-    public async Task<IList<SpreadsheetMetadataDto>> GetSpreadsheets()
-    {
-        var spreadsheets = await _spreadsheetCosmosDb.GetSpreadsheetMetadata();
-
-        return spreadsheets.Select(Map).ToList();
     }
 
     private static SpreadsheetMetadataDto Map(SpreadsheetMetadata spreadsheetMetadata)

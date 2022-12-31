@@ -4,10 +4,10 @@
 	</PropertyGroup>
 
 	<ItemGroup>
-		<PackageReference Include="Hub.Shared.DataContracts.Crypto" Version="7.0.0" />
-		<PackageReference Include="Hub.Shared.DataContracts.Banking" Version="7.0.0" />
-		<PackageReference Include="Hub.Shared.GoogleApi" Version="7.0.0" />
-		<PackageReference Include="Hub.Shared.Web.Http" Version="7.0.0" />
+		<PackageReference Include="Hub.Shared.DataContracts.Crypto" Version="7.2" />
+		<PackageReference Include="Hub.Shared.DataContracts.Banking" Version="7.2" />
+		<PackageReference Include="Hub.Shared.GoogleApi" Version="7.2" />
+		<PackageReference Include="Hub.Shared.Web.Http" Version="7.2" />
 	</ItemGroup>
 
 	<ItemGroup>

@@ -10,7 +10,7 @@ public class SpreadsheetMetadataDto
     public string SpreadsheetId { get; set; }
     public string Name { get; set; }
     public DateTime ValidFrom { get; set; }
-    public DateTime ValidTo { get; set; }
+    public DateTime? ValidTo { get; set; }
     public IList<Tab> Tabs { get; set; } = new List<Tab>();
 
     public SpreadsheetMetadata MapToEntity()
