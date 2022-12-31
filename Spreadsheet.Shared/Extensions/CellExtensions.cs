@@ -1,4 +1,6 @@
 using System;
+using System.Linq;
+using System.Text.RegularExpressions;
 
 namespace Spreadsheet.Shared.Extensions;
 
@@ -43,15 +45,13 @@ public static class CellExtensions
             return 0;
         }
 
-        var numberStringStripped = numberString
-            .Replace("kr", "")
-            .Replace(" ", "");
+        var numberStringStripped = String.Concat(numberString.Where(char.IsNumber));
 
         if (!decimal.TryParse(numberStringStripped, out var number))
         {
-            throw new ArgumentException(nameof(numberStringStripped), $"Invalid format: '{numberString}' (Result was {numberStringStripped})");
+            throw new ArgumentException(nameof(numberStringStripped), $"Invalid format: '{numberString}' (Result was '{numberStringStripped}')");
         }
-
+        
         return number;
     }
 }
