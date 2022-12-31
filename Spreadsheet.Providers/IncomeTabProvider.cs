@@ -45,9 +45,7 @@ public class IncomeTabProvider : TabProvider<IncomeTab>, IIncomeTabProvider
         {
             var month = dateRow.Cells[colIndex].ParseDateStringInCell();
 
-            var amountString = incomeRow.Cells[colIndex].ToString()?.Replace("kr", "").Replace(" ", "") ?? "0";
-            
-            var amount = decimal.Parse(amountString);
+            var amount = incomeRow.Cells[colIndex].ParseNumberInCell();
             
             incomeList.Add(new IncomeDto
             {

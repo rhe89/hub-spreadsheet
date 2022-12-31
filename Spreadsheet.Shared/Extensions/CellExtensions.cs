@@ -33,4 +33,23 @@ public static class CellExtensions
 
         return new DateTime(year, month, day);
     }
+    
+    public static decimal ParseNumberInCell(this object dateCell)
+    {
+        var decimalString = dateCell.ToString();
+
+        if (string.IsNullOrWhiteSpace(decimalString))
+        {
+            return 0;
+        }
+
+        var numberStringStripped = decimalString.Replace("kr", "").Replace(" ", "");
+
+        if (!decimal.TryParse(numberStringStripped, out var number))
+        {
+            throw new ArgumentException(nameof(decimalString), $"Invalid format of number string: {decimalString}");
+        }
+
+        return number;
+    }
 }
