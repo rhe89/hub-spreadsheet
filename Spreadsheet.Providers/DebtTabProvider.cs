@@ -7,6 +7,7 @@ using Hub.Shared.DataContracts.Spreadsheet.Query;
 using Spreadsheet.Integration;
 using Spreadsheet.Integration.Dto.Spreadsheet;
 using Spreadsheet.Shared.Constants;
+using Spreadsheet.Shared.Extensions;
 
 namespace Spreadsheet.Providers;
 
@@ -39,17 +40,12 @@ public class DebtTabProvider : TabProvider<DebtTab>, IDebtTabProvider
         
         foreach (var row in tab.Rows)
         {
-            var dateCell = row.Cells[0];
+            var month = row.Cells[0].ParseDateStringInCell();
             
-
-            var dateString = dateCell.ToString() ?? String.Empty;
-            
-            if (string.IsNullOrWhiteSpace(dateString))
+            if (month == DateTime.MinValue)
             {
                 continue;
             }
-            
-            var month = DateTime.Parse(dateString);
             
             var mortgageCell = row.Cells[1];
 

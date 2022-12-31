@@ -7,6 +7,7 @@ using Hub.Shared.DataContracts.Spreadsheet.Query;
 using Spreadsheet.Integration;
 using Spreadsheet.Integration.Dto.Spreadsheet;
 using Spreadsheet.Shared.Constants;
+using Spreadsheet.Shared.Extensions;
 
 namespace Spreadsheet.Providers;
 
@@ -42,7 +43,7 @@ public class IncomeTabProvider : TabProvider<IncomeTab>, IIncomeTabProvider
         
         for (var colIndex = 1; colIndex < tab.NumberOfCellsInRows; colIndex++)
         {
-            var month = DateTime.Parse(dateRow.Cells[colIndex].ToString() ?? string.Empty);
+            var month = dateRow.Cells[colIndex].ParseDateStringInCell();
 
             var amountString = incomeRow.Cells[colIndex].ToString()?.Replace("kr", "").Replace(" ", "") ?? "0";
             
