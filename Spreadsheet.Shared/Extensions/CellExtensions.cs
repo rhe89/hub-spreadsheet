@@ -17,7 +17,7 @@ public static class CellExtensions
 
         if (dateParts.Length != 3)
         {
-            throw new ArgumentException(nameof(dateString), $"Invalid format of date string. Excepted dd.MM.yyyy, actual {dateString}");
+            throw new ArgumentException(nameof(dateString), $"Invalid format: Excepted dd.MM.yyyy, actual '{dateString}'");
         }
 
         var dayString = dateParts[0];
@@ -28,26 +28,28 @@ public static class CellExtensions
             !int.TryParse(monthString, out var month) ||
             !int.TryParse(yearString, out var year))
         {
-            throw new ArgumentException(nameof(dateString), $"Invalid format of date string. Excepted dd.MM.yyyy, actual {dateString}");
+            throw new ArgumentException(nameof(dateString), $"Invalid format: Excepted dd.MM.yyyy, actual '{dateString}'");
         }
 
         return new DateTime(year, month, day);
     }
     
-    public static decimal ParseNumberInCell(this object dateCell)
+    public static decimal ParseNumberInCell(this object numberCell)
     {
-        var decimalString = dateCell.ToString();
+        var numberString = numberCell.ToString();
 
-        if (string.IsNullOrWhiteSpace(decimalString))
+        if (string.IsNullOrWhiteSpace(numberString))
         {
             return 0;
         }
 
-        var numberStringStripped = decimalString.Replace("kr", "").Replace(" ", "");
+        var numberStringStripped = numberString
+            .Replace("kr", "")
+            .Replace(" ", "");
 
         if (!decimal.TryParse(numberStringStripped, out var number))
         {
-            throw new ArgumentException(nameof(decimalString), $"Invalid format of number string: {decimalString}");
+            throw new ArgumentException(nameof(numberStringStripped), $"Invalid format: '{numberString}' (Result was {numberStringStripped})");
         }
 
         return number;
